@@ -18,22 +18,22 @@ set(0,'defaultAxesTickLabelInterpreter','latex');
 
 %% GNSS orbital parameters
 
-a = 11500;
-e = 0;
-i = 55;
+a_GNSS = 11500;
+e_GNSS = 0;
+i_GNSS = 55;
 mi = 42828.3;                   % mars gravity constant [km^2/s^3]
 J2 = 1.955e-3;                  % mars J2 gravity coefficient
 V = 1.6318e11;                  % mars volume [km^3]
 R = nthroot(3*V/(4*pi), 3);     % mars equivalent radius [km]
-n = sqrt(mi/a^3);               % mars angular velocity [rad/s]
-v_GNSS = sqrt(mi/a);            % linear velocity of the GNSS constellation [km/s]
+n = sqrt(mi/a_GNSS^3);               % mars angular velocity [rad/s]
+v_GNSS = sqrt(mi/a_GNSS);            % linear velocity of the GNSS constellation [km/s]
 
 %% Orbital Parameters secular variation (J2 on GNNS orbit) 
-K = -3*J2*sqrt(mi)*R^2/(2*a^(7/2)*(1-e^2)^2);
+K = -3*J2*sqrt(mi)*R^2/(2*a_GNSS^(7/2)*(1-e_GNSS^2)^2);
 
 % variation per seconds in rad
-RAAN_dot = K*cosd(i);
-PA_dot = K*(5/2*(sind(i))^2 - 2);
+RAAN_dot = K*cosd(i_GNSS);
+PA_dot = K*(5/2*(sind(i_GNSS))^2 - 2);
 
 % variation per days in degrees
 RAAN_d = RAAN_dot*86400*180/pi;
@@ -62,7 +62,7 @@ for i = 1:N                         % i: phasing angle
         dT_rev = dT_tot/j;          
         T_phas = T - dT_rev;
         a_phas  = (T_phas*sqrt(mi)/(2*pi))^(2/3);
-        ra_phas = a;
+        ra_phas = a_GNSS;
         rp_phas = 2*a_phas - ra_phas;
         e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
         v_phas = sqrt(mi/a_phas)*(1 - e_phas);
@@ -77,13 +77,13 @@ zlabel('\Delta_v [km/s]'), title('phasing maneuver')
 %% Homhann transfer from ECS to GNSS
 % ECS constellation is not defined, circular orbit in the same plane of GNSS as an hyphotesys
 
-a_ECS = a:500:25000;
+a_ECS = a_GNSS:500:25000;
 N = length(a_ECS);
 
 dv_h = zeros(N, 1);
 for i = 1:N
     ra_h = a_ECS(i);
-    rp_h = a;
+    rp_h = a_GNSS;
     a_h = (ra_h + rp_h)/2;
     v_ECS = sqrt(mi/a_ECS(i));
     vp_h = sqrt(2*mi*(1/rp_h - 1/(2*a_h)));
@@ -94,3 +94,23 @@ end
 figure; plot(a_ECS, dv_h, 'LineWidth', 2)
 xlabel('radius of ECS orbit [km]'), ylabel('\Delta_v [km/s]');
 title('ECS to GNSS transfer')
+
+%% Low Thrust analytical-approx for GNSS to ECS transfer
+% acceleration along theta direction and constant mass
+
+m_GMS = 1000;               % mass [kg]
+T = 0.01:0.005:1;           % thrust [N]
+a_GMS = R + 200;            % radius of the final orbit [km]
+at = T/m_GMS*1e-3;          % acceleration [km/s^2]
+
+t = (a_GNSS - a_GMS)./(at*a_GMS*sqrt(a_GNSS/mi))/86400/30;
+
+figure; plot(T, t, 'LineWidth', 2)
+xlabel('on-board continuos thrust [N]'), ylabel('tof [months]');
+title('GNSS to GMS transfer')
+
+% Tlt = 2*12*30*86400;                    % transfer time wanted [s]
+% 
+% a_GMS = a_GNSS/(1 - at*Tlt*sqrt(a_GNSS/mi));
+
+
