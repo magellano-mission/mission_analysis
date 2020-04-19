@@ -26,6 +26,7 @@ J2 = 1.955e-3;                  % mars J2 gravity coefficient
 V = 1.6318e11;                  % mars volume [km^3]
 R = nthroot(3*V/(4*pi), 3);     % mars equivalent radius [km]
 n = sqrt(mi/a^3);               % mars angular velocity [rad/s]
+v_GNSS = sqrt(mi/a);            % linear velocity of the GNSS constellation [km/s]
 
 %% Orbital Parameters secular variation (J2 on GNNS orbit) 
 K = -3*J2*sqrt(mi)*R^2/(2*a^(7/2)*(1-e^2)^2);
@@ -33,12 +34,10 @@ K = -3*J2*sqrt(mi)*R^2/(2*a^(7/2)*(1-e^2)^2);
 % variation per seconds in rad
 RAAN_dot = K*cosd(i);
 PA_dot = K*(5/2*(sind(i))^2 - 2);
-theta_dot = n - K*(1 - 3/2*(sind(i))^2);
 
 % variation per days in degrees
 RAAN_d = RAAN_dot*86400*180/pi;
 PA_d = PA_dot*86400*180/pi;
-theta_d = theta_dot*86400*180/pi;
 
 t = 0:365; 
 
@@ -49,3 +48,49 @@ title('RAAN variation');
 figure; plot(t, t*PA_d, 'LineWidth', 2);
 xlabel('t [days]'); ylabel(' PA [deg]'); 
 title('PA variation');
+
+%% Phasing Maneuver in GNSS orbit
+% computing the cost of the maneuver wrt the phasing angle and number of revolutions
+
+T = 2*pi/n;                         % GNSS period [s]
+N = 180;
+
+dv_phas = NaN(N, N/2);
+for i = 1:N                         % i: phasing angle
+    for j = 3:N/2                     % j: number of revolutions
+        dT_tot = (i*pi/180)/n;
+        dT_rev = dT_tot/j;          
+        T_phas = T - dT_rev;
+        a_phas  = (T_phas*sqrt(mi)/(2*pi))^(2/3);
+        ra_phas = a;
+        rp_phas = 2*a_phas - ra_phas;
+        e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
+        v_phas = sqrt(mi/a_phas)*(1 - e_phas);
+        dv_phas(i, j) = 2*abs(v_GNSS - v_phas);
+    end
+end
+
+surf(1:N, 1:N/2, dv_phas', 'EdgeColor', 'none')
+colorbar; xlabel('phasing angle [deg]'), ylabel('number of revolutions');
+zlabel('\Delta_v [km/s]'), title('phasing maneuver')
+
+%% Homhann transfer from ECS to GNSS
+% ECS constellation is not defined, circular orbit in the same plane of GNSS as an hyphotesys
+
+a_ECS = a:500:25000;
+N = length(a_ECS);
+
+dv_h = zeros(N, 1);
+for i = 1:N
+    ra_h = a_ECS(i);
+    rp_h = a;
+    a_h = (ra_h + rp_h)/2;
+    v_ECS = sqrt(mi/a_ECS(i));
+    vp_h = sqrt(2*mi*(1/rp_h - 1/(2*a_h)));
+    va_h = sqrt(2*mi*(1/ra_h - 1/(2*a_h)));
+    dv_h(i) = abs(v_ECS - va_h) + abs(v_GNSS - vp_h);
+end
+
+figure; plot(a_ECS, dv_h, 'LineWidth', 2)
+xlabel('radius of ECS orbit [km]'), ylabel('\Delta_v [km/s]');
+title('ECS to GNSS transfer')
