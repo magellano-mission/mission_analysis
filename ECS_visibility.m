@@ -40,7 +40,7 @@ OrbPar(3) = 55*pi/180;
 OrbPar(4)  = 0;
 OrbPar(5) = 0;
 OrbPar1 = OrbPar; OrbPar2 = OrbPar;
-theta0_sat1 = 0; theta0_sat2 = 0*pi/180;
+theta0_sat1 = 0; theta0_sat2 = 120*pi/180;
 
 Mars = 4;
 Earth = 3;
