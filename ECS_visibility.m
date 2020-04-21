@@ -1,8 +1,6 @@
 %{
 script for analyze ECS visibility
 
-%try
-
 %}
 
 %% Matlab Initialization
