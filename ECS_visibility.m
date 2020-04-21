@@ -24,9 +24,9 @@ RI.YWorldLimits = [-90 90];                         % earth image y sizes
 
 DateInit = [2025, 1, 1, 0, 0, 0];                           % date of start
 DayInit = date2mjd2000(DateInit);                           % initial time  [days]
-DateEnd = [2026, 1, 1, 0, 0, 0];                            % date of end
+DateEnd = [2027, 1, 1, 0, 0, 0];                            % date of end
 DayEnd = date2mjd2000(DateEnd);                             % end time  [days]
-N = 50000;
+N = 100000;
 days = linspace(DayInit, DayEnd, N);
 dTdays = (DayEnd - DayInit);
 dT = dTdays*86400;                              % simulation time [s]
@@ -93,8 +93,10 @@ figure; hold on;
 plot3(RR1(ll,1),RR1(ll,2),RR1(ll,3),'b'); plot3(RR1(nl,1),RR1(nl,2),RR1(nl,3),'r')
 plot3(RR2(ll,1),RR2(ll,2),RR2(ll,3),'b'); plot3(RR2(nl,1),RR2(nl,2),RR2(nl,3),'r')
 
+return
+
 %% on mars pov video
-v = VideoWriter('Mars_POV.avi');
+v = VideoWriter('Mars_POV', 'MPEG-4');
 v.FrameRate = 30;
 open(v);
 
@@ -117,7 +119,7 @@ imshow(flipud(I), RI);
 set(gca,'YDir','normal')
 set(gca,'Color','none','visible','off')
 
-for i = 1:10:N
+for i = 1:2:N
         
     h1.XData = RR4(i, 1);
     h1.YData = RR4(i, 2);
