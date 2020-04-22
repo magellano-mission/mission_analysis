@@ -109,8 +109,5 @@ figure; plot(T, t, 'LineWidth', 2)
 xlabel('on-board continuos thrust [N]'), ylabel('tof [months]');
 title('GNSS to GMS transfer')
 
-% Tlt = 2*12*30*86400;                    % transfer time wanted [s]
-% 
-% a_GMS = a_GNSS/(1 - at*Tlt*sqrt(a_GNSS/mi));
 
 
