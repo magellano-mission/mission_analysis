@@ -22,11 +22,11 @@ RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];                       % earth image x sizes
 RI.YWorldLimits = [-90 90];                         % earth image y sizes
 
-DateInit = [2023, 6, 1, 0, 0, 0];                          % date of start
+DateInit = [2023, 1, 1, 0, 0, 0];                          % date of start
 DayInit = date2mjd2000(DateInit);                           % initial time  [days]
-DateEnd = [2024, 1, 1, 0, 0, 0];                            % date of end
+DateEnd = [2033, 1, 1, 0, 0, 0];                            % date of end
 DayEnd = date2mjd2000(DateEnd);                             % end time  [days]
-N = 10000;
+N = 1000000;
 days = linspace(DayInit, DayEnd, N);
 dTdays = (DayEnd - DayInit);
 dT = dTdays*86400;                              % simulation time [s]
@@ -40,7 +40,7 @@ OrbPar(3) = 55*pi/180;
 OrbPar(4)  = 0;
 OrbPar(5) = 0;
 OrbPar1 = OrbPar; OrbPar2 = OrbPar;
-theta0_sat1 = 0; theta0_sat2 = 0*pi/180;
+theta0_sat1 = 0; theta0_sat2 = 120*pi/180;
 
 Mars = 4;
 Earth = 3;
@@ -54,7 +54,7 @@ norm_rSc = OrbPar(1);
 
 phi1 = acos(R/norm_rSc);                
 
-los_Mars = zeros(N, 1); los_Sun = zeros(N, 1);
+los = zeros(N, 1);
 RR1 = zeros(N, 3); RR2 = zeros(N, 3);
 RR3 = zeros(N, 3); RR4 = zeros(N, 3); 
 for i = 1:N
@@ -92,22 +92,24 @@ for i = 1:N
     theta2 = acos(Rsun/norm_rS2E);
     
     if phi_sat1 < (phi1 + phi2) || phi_sat2 < (phi1 + phi2) 
-        los_Mars(i) = 1;
+        los_Mars = 1;
+    else 
+        los_Mars = 0;
     end    
     
     if theta_sat1 < (theta1_sat1 + theta2) || theta_sat2 < (theta1_sat2 + theta2)
-        los_Sun(i) = 1;
+        los_Sun = 1;
+    else
+        los_Sun = 0;
     end
+    
+    los(i) = los_Mars*los_Sun;
     
 end
 
-figure; plot(t/86400, los_Mars, 'LineWidth', 2);
-xlabel('t [days]'); ylabel('los'); 
-title('line of sight ECS-Earth');
-
-figure; plot(t/86400, los_Sun, 'LineWidth', 2);
-xlabel('t [days]'); ylabel('los'); 
-title('line of sight ECS-Earth');
+figure; plot(t/86400, los, 'LineWidth', 2);
+xlabel('t [days]'); ylabel('los'); ylim([-0.1, 1.1]);
+title('line of sight ECS-Earth with a failure');
 
 % ll = (los_Mars == 1);
 % nl = not(ll);
@@ -156,51 +158,51 @@ title('line of sight ECS-Earth');
 % close('Sun_POV')
 
 %% on mars pov video
-
-figure('units', 'normalized', 'outerposition', [0.3 0.3 0.3 0.7], 'Name', 'Mars_POV', 'NumberTitle', 'off', 'Color', 'black');
-hold on
-view(-140, 30)
-set(gca,'Color','none','visible','off')
-set(gca,'YDir','normal')
-axis([-1.3e4, 1.3e4, -1.3e4, 1.3e4, -1.3e4, 1.3e4])
-
-v = VideoWriter('Mars_POV');
-v.FrameRate = 60;
-v.Quality = 100;
-open(v);
-
-[X, Y, Z] = ellipsoid(0, 0, 0, R, R, R, 100); % spheric centered earth
-planet = surf(X, Y, -Z,'Edgecolor', 'none');
-set(planet,'FaceColor','texturemap','Cdata',I)
-
-h4 = plot3(RR4(:, 1), RR4(:, 2), RR4(:, 3), 'LineWidth', 1);
-h1 = plot3(RR4(1, 1), RR4(1, 2), RR4(1, 3), 'bo','MarkerSize', 10, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b');
-h2 = quiver3(0, 0, 0, RR3(1, 1), RR3(1, 2), RR3(1, 3),'Color','r');
-h3 = plot3(0, 0, 0, 'ko','MarkerSize', 1, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
-
-Nv = 15*v.FrameRate;               % total frames
-
-RR4v = RR4(1:Nv, :);
-RR3v = RR3(1:floor(N/Nv):N, :);
-
-for i = 1:Nv
-    h1.XData = RR4v(i, 1);
-    h1.YData = RR4v(i, 2);
-    h1.ZData = RR4v(i, 3);
-    
-    hold on
-    delete(h2)
-    h2 = quiver3(0, 0, 0, RR3v(i, 1), RR3v(i, 2), RR3v(i, 3),'Color','r');
-    
-    tof = strcat('time: ', " ", num2str(floor(dTdays*i*11/N)), ' [days]');
-    legend(h3, {tof}, 'TextColor', 'w', 'Location', 'northeast')
-    
-    drawnow 
-
-    frame = getframe(gcf);
-    writeVideo(v, frame);
-    
-end
-
-close(v)
-close('Mars_POV')
+% 
+% figure('units', 'normalized', 'outerposition', [0.3 0.3 0.3 0.7], 'Name', 'Mars_POV', 'NumberTitle', 'off', 'Color', 'black');
+% hold on
+% view(-140, 30)
+% set(gca,'Color','none','visible','off')
+% set(gca,'YDir','normal')
+% axis([-1.3e4, 1.3e4, -1.3e4, 1.3e4, -1.3e4, 1.3e4])
+% 
+% v = VideoWriter('Mars_POV');
+% v.FrameRate = 60;
+% v.Quality = 100;
+% open(v);
+% 
+% [X, Y, Z] = ellipsoid(0, 0, 0, R, R, R, 100); % spheric centered earth
+% planet = surf(X, Y, -Z,'Edgecolor', 'none');
+% set(planet,'FaceColor','texturemap','Cdata',I)
+% 
+% h4 = plot3(RR4(:, 1), RR4(:, 2), RR4(:, 3), 'LineWidth', 1);
+% h1 = plot3(RR4(1, 1), RR4(1, 2), RR4(1, 3), 'bo','MarkerSize', 10, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b');
+% h2 = quiver3(0, 0, 0, RR3(1, 1), RR3(1, 2), RR3(1, 3),'Color','r');
+% h3 = plot3(0, 0, 0, 'ko','MarkerSize', 1, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
+% 
+% Nv = 15*v.FrameRate;               % total frames
+% 
+% RR4v = RR4(1:Nv, :);
+% RR3v = RR3(1:floor(N/Nv):N, :);
+% 
+% for i = 1:Nv
+%     h1.XData = RR4v(i, 1);
+%     h1.YData = RR4v(i, 2);
+%     h1.ZData = RR4v(i, 3);
+%     
+%     hold on
+%     delete(h2)
+%     h2 = quiver3(0, 0, 0, RR3v(i, 1), RR3v(i, 2), RR3v(i, 3),'Color','r');
+%     
+%     tof = strcat('time: ', " ", num2str(floor(dTdays*i*11/N)), ' [days]');
+%     legend(h3, {tof}, 'TextColor', 'w', 'Location', 'northeast')
+%     
+%     drawnow 
+% 
+%     frame = getframe(gcf);
+%     writeVideo(v, frame);
+%     
+% end
+% 
+% close(v)
+% close('Mars_POV')

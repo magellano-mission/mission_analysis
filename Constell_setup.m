@@ -43,7 +43,7 @@ t = 0:365;
 
 figure; plot(t, t*RAAN_d, 'LineWidth', 2);
 xlabel('t [days]'); ylabel(' RAAN [deg]'); 
-title('RAAN variation');
+title('RAAN variation due to J2');
 
 figure; plot(t, t*PA_d, 'LineWidth', 2);
 xlabel('t [days]'); ylabel(' PA [deg]'); 
@@ -98,16 +98,16 @@ title('ECS to GNSS transfer')
 %% Low Thrust analytical-approx for GNSS to ECS transfer
 % acceleration along theta direction and constant mass
 
-m_GMS = 1000;               % mass [kg]
+m_RS = 1000;                % mass [kg]
 T = 0.01:0.005:1;           % thrust [N]
-a_GMS = R + 200;            % radius of the final orbit [km]
-at = T/m_GMS*1e-3;          % acceleration [km/s^2]
+a_RS = R + 1000;            % radius of the final orbit [km]
+at = T/m_RS*1e-3;           % acceleration [km/s^2]
 
-t = (a_GNSS - a_GMS)./(at*a_GMS*sqrt(a_GNSS/mi))/86400/30;
+t = (a_GNSS - a_RS)./(at*a_RS*sqrt(a_GNSS/mi))/86400/30;
 
 figure; plot(T, t, 'LineWidth', 2)
 xlabel('on-board continuos thrust [N]'), ylabel('tof [months]');
-title('GNSS to GMS transfer')
+title('Arch #1 - GNSS orbit to RS orbit')
 
 
 
