@@ -12,34 +12,6 @@ tt = ones(length(x), 1) * t;
 [lat_S, lon_S] = groundTrack(r, tt);
 lon_S = real(lon_S);
 
-% if lat < max(lat_S) && lat > min(lat_S) && lon < max(lon_S) && lon > min(lon_S) % check this
-%     N = 1;
-%         A = 1;
-% else
-%     N = 0;
-%             B = 1;
-% end
-% 
-% if min(lon_S) < -150 && max(lon_S) > 150
-%     if lon > 0
-%         if lat < max(lat_S) && lat > min(lat_S) && lon > min(lon_S(lon_S>0)) % check this
-%             N = 1;
-%                     C = 1;
-%         else
-%             N = 0;
-%                     D = 1;
-%         end
-%     else
-%         if lat < max(lat_S) && lat > min(lat_S) && lon < max(lon_S(lon_S<0)) % check this
-%             N = 1;
-%                     E = 1;
-%         else
-%             N = 0;
-%                     F = 1;
-%         end
-%     end
-% end
-
 if min(lon_S) < -150 && max(lon_S) > 150
     p = 0;
 

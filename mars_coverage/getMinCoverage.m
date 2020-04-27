@@ -1,4 +1,12 @@
 function cov = getMinCoverage(walker, bw, SMA, INC, lon, lat, disc, alt)
+% walker: [TT, P, F]
+% bw: beamwidth (degree)
+% SMA: semi-major axis [km]
+% INC: inclination [degree]
+% lon: [min_long max_long] (degree)
+% lat: [min_lat max_lat] (degree)
+% disc: [discret_lon discret_lat]
+% alt: altitude (km)
 
 if nargin == 7
     alt = 0;
@@ -11,6 +19,7 @@ P = walker(2);
 F = walker(3);
 
 n = 2000;
+
 n_sat = TT/P;
 n_orbits = P;
 
@@ -26,11 +35,11 @@ tspan = linspace(0, 3*T_orb, n);
 
 X0 = [SMA, 1e-8, INC, 0, 0, 0];
 
-gamma = deg2rad(bw);
+gamma = deg2rad(bw/2);
 
 opt = odeset('AbsTol', 1e-6, 'RelTol', 1e-6);
 
-N = zeros(n,n_sat * n_orbits);
+N = zeros(n,n_sat * n_orbits); %[time istant x number of satellite]
 N_mesh = zeros(n_lat, n_lon);
 N_mesh_mean = zeros(n_lat, n_lon);
 
