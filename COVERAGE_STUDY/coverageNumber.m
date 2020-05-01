@@ -1,11 +1,11 @@
-function N = coverageNumber2(lat, lon, t, Y, theta)
+function N = coverageNumber(lat, lon, t, Y, theta, h)
 %lat, lon of the target
 %t 
 %Y state vector
 %theta :footprint area angle @ center [deg]
 Y = squeeze(Y);
 Y = Y/norm(Y);
-r = lla2MCI(lat, lon, t);
+r = lla2MCI(lat, lon, t, h);
 
 if acos(dot(r,Y)) < (theta)
     N = 1;

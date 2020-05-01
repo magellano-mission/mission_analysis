@@ -39,12 +39,12 @@ N_orbits = 3;
 
 %orbital periods computation
 tic
-[YYY, T, THETA] = const_orbits(walker, bw, SMA, INC, alt, timesteps, N_orbits);
+[YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, alt, timesteps, N_orbits);
 toc
 
 %% Coverage history
 tic
-[time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, lon, lat, disc);
+[time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, H, lon, lat, disc);
 toc
 %% post-processing &figures of merit computation
 tic
@@ -62,7 +62,7 @@ n_orbits = P;
 rM = almanac('mars','radius','kilometers','sphere');
 
 subplot(1,2,1), 
-I = imread('mars.jpg');                            % Mars image
+I = imread('Mars.jpg');                            % Mars image
 RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];                       % Mars image x sizes
 RI.YWorldLimits = [-90 90];                         % Mars image y sizes

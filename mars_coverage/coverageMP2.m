@@ -3,8 +3,8 @@ clear, clc, close all
 mu = astroConstants(14);
 R = 3389.5;
 
-SMA = 11500;
-INC = deg2rad(55);
+SMA = 15000;
+INC = deg2rad(45);
 
 P_mars = 24*3600 + 39 * 60;
 SMA_stationary =  (mu * (P_mars / (2*pi))^2)^(1/3);
@@ -14,7 +14,7 @@ TT = 12;
 P = 3;
 F = 2;
 
-n = 2000;
+n = 2500;
 n_sat = TT/P;
 n_orbits = P;
 
@@ -32,7 +32,7 @@ tspan = linspace(0, 3*T_orb, n);
 
 X0 = [SMA, 1e-8, INC, 0, 0, 0];
 
-gamma = deg2rad(20);
+gamma = deg2rad(10);
 
 opt = odeset('AbsTol', 1e-6, 'RelTol', 1e-6);
 
@@ -56,15 +56,15 @@ for lo = 1 : n_lon
             end
         end
         
-%         X01 = [SMA_stationary, 1e-8, 1e-15, 0, 0, 0];
-%         for kk = 1 : 3
-%             X01(6) = (kk - 1) * 2 * pi /3;
-%             [T,Y] = trajectory(X01, tspan, mu, opt);
-%             theta = footPrintRadius(gamma, Y, alt);
-%             for jj = 1 : n
-%                 N(jj, n_orbits * n_sat + kk) = coverageNumber(LAT(la), LON(lo), T(jj), Y(jj,:), theta(jj));
-%             end
-%         end
+        X01 = [SMA_stationary, 1e-8, 1e-15, 0, 0, 0];
+        for kk = 1 : 3
+            X01(6) = (kk - 1) * 2 * pi /3;
+            [T,Y] = trajectory(X01, tspan, mu, opt);
+            theta = footPrintRadius(gamma, Y, alt);
+            for jj = 1 : n
+                N(jj, n_orbits * n_sat + kk) = coverageNumber(LAT(la), LON(lo), T(jj), Y(jj,:), theta(jj));
+            end
+        end
         
         NN = sum(N,2);
         N_min = min(NN);
@@ -78,25 +78,23 @@ toc
 
 figure
 imagesc(LON, LAT, N_mesh)
-title('Minimum satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
+title('Min sats cov - bw 40 deg', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
-xlim([-180,180])
-ylim([-90, 90])
+xlim([-170,170])
+ylim([-80, 80])
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
 ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
 colorbar
 % colormap(gray)
 
-%%
-
 figure
 imagesc(LON, LAT, N_mesh_mean)
-title('Minimum satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
+title('Mean sats cov - bw 40 deg', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
-xlim([-180,180])
-ylim([-90, 90])
+xlim([-170,170])
+ylim([-80, 80])
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
 ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
 colorbar

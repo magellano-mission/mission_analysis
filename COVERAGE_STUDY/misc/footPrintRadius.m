@@ -1,10 +1,10 @@
-function [theta, x] = footPrintRadius(gamma, Y, altitude)
+function [theta, h] = footPrintRadius(gamma, Y, altitude)
 %gamma: bw/2 [deg]
 %Y : position state [km]
 %altitude: [km] 
 n = length(Y(:,1));
 
-x = zeros(n,1);
+h = zeros(n,1);
 theta = zeros(n,1);
 
 for kk = 1 : n
@@ -17,7 +17,7 @@ for kk = 1 : n
     %gamma = eta
     theta(kk) = abs(pi/2 - gamma - acos( cos(pi/2 - gamma) * (1 + h / R) ));
     
-    x(kk) = R * sin(theta(kk)); %footprint lenght ???
+    h(kk) = h;
 end
 
 end

@@ -1,4 +1,4 @@
-function cov = getMinCoverage(walker, bw, SMA, INC, lon, lat, disc, alt)
+function [cov, N_mesh, N_mesh_mean] = getMinCoverage(walker, bw, SMA, INC, lon, lat, disc, alt)
 % walker: [TT, P, F]
 % bw: beamwidth (degree)
 % SMA: semi-major axis [km]
@@ -18,7 +18,7 @@ TT = walker(1);
 P = walker(2);
 F = walker(3);
 
-n = 2000;
+n = 3000;
 
 n_sat = TT/P;
 n_orbits = P;
@@ -49,7 +49,7 @@ for lo = 1 : n_lon
         
         for ii = 1 : n_orbits
             for kk = 1 : n_sat
-                X0(6) = (kk - 1) * pi /2 + (ii - 1) * F * 2 * pi / TT;
+                X0(6) = (kk - 1) * pi*2/n_sat + (ii - 1) * F * 2 * pi / TT;
                 X0(4) = (ii - 1) * 2 * pi / P;
                 [T,Y] = trajectory(X0, tspan, mu, opt);
                 theta = footPrintRadius(gamma, Y, alt);

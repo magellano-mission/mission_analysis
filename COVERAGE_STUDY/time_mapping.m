@@ -1,4 +1,4 @@
-function [time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, lon, lat, disc)
+function [time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, H, lon, lat, disc)
 
 timesteps = length(T);
 
@@ -30,7 +30,7 @@ for jj = 1 : timesteps
                    for kk = 1 : n_sat
                     %for each timestep, checking if point P is inside
                     %footprint
-                    kkk = coverageNumber(LAT(la), LON(lo), T(jj), instant_states((ii-1)*n_sat + kk,1,:), THETA((ii-1)*n_sat + kk,jj));
+                    kkk = coverageNumber(LAT(la), LON(lo), T(jj), instant_states((ii-1)*n_sat + kk,1,:), THETA((ii-1)*n_sat + kk,jj), H((ii-1)*n_sat + kk,jj));
                     instant_map(lo,la) = kkk + instant_map(lo,la);
                    end
                    end
