@@ -1,4 +1,4 @@
-function [YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, timesteps, N_orbits, alt)
+function [YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, alt, timesteps, N_orbits)
 
 if nargin == 7
     alt = 0;

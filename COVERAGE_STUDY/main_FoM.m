@@ -42,7 +42,7 @@ N_orbits = 3;               % number of orbits
 
 %orbital periods computation
 tic
-[YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, alt, timesteps, N_orbits);
+[YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, timesteps, N_orbits, alt);
 toc
 
 %% Coverage history
