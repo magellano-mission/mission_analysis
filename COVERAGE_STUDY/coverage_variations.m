@@ -33,7 +33,7 @@ bw = 40;                    % NS beamwidth [deg]
 % Parameters
 lon = [-180, 180];          
 lat = [-90,90];
-disc = [10 10];             % discretization grid
+disc = [15 15];             % discretization grid
 alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)
 timesteps = 1000;               
 N_orbits = 3;               % number of orbits
@@ -55,4 +55,18 @@ for inc = 1:length(inclinations)
         end
 end
 
+%% PLOT of performances
+figure()
+sgtitle(strcat('N sats:',num2str(walker(1)), ', Bw:', num2str(bw),', N orbits:',num2str(N_orbits)))
+LAT = linspace(lat(1), lat(2), disc(2));
+for j =1:length(inclinations)
+fix_inc = squeeze(Min_cov_lat(j,:,:));
+subplot(3,2,j); sss = pcolor(semi_major_axes, LAT, fix_inc' ); hold on
+
+sss.FaceColor = 'Interp';
+sss.EdgeColor = 'k';
+
+xlabel('SMA [km]'), ylabel('LAT [deg]')
+title(strcat('i = ',num2str(inclinations(j)), ' deg')), colorbar
+end
 
