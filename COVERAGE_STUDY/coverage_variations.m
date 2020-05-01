@@ -27,8 +27,8 @@ walker =[18,3,2];         % full constellation - original
 % walker = [1,1,1];           % one satellite plot
 % walker = [15,3,2];        % reduced constellation
 
-bw = 40;                    % NS beamwidth [deg]
-% bw = 20;                  % RS beamwidth [deg]
+% bw = 40;                    % NS beamwidth [deg]
+bw = 20;                  % RS beamwidth [deg]
 
 % Parameters
 lon = [-180, 180];          
@@ -70,7 +70,7 @@ sss.FaceColor = 'Interp';
 sss.EdgeColor = 'k';
 for cont = 1:length(LAT)
     for cont2 = 1:length(semi_major_axes)
-        if fix_inc(cont2,cont)>=Treshold
+        if fix_inc(cont2,cont)>=1
              plot(semi_major_axes(cont2), LAT(cont), 'r.','Markersize',10)
         end
     end
