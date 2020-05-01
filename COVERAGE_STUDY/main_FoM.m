@@ -23,7 +23,7 @@
 %% Setup
 clear, close, clc
 
-walker =[21,3,2];         % full constellation - original
+walker =[15,3,2];         % full constellation - original
 % walker = [1,1,1];           % one satellite plot
 % walker = [15,3,2];        % reduced constellation
 
@@ -50,8 +50,9 @@ tic
 [time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, H, lon, lat, disc);
 toc
 %% post-processing & figures of merit computation
+trashold = 1; %number of satellites seen from grid targets
 tic
-[N_min, N_mean, cov] = getMinCoverage(disc, time_map);
+[N_min, N_mean, cov, percent_cov, max_cov_gap, mean_cov_gap] = getMinCoverage(disc, time_map, T(end)-T(1), trashold);
 toc
 
 %% PLOTS
@@ -61,6 +62,7 @@ figure
 texture = imread('Mars.jpg');
 x=[-180 180]; y=[-90 90];
 texture = flipud(texture);
+
 image(x, y, texture), hold on,
 view(0,-90);
 axis([-180 180,-90,90])
@@ -76,19 +78,20 @@ for i=1:length(LON)
         plot(LON(i),LAT(j),'r+'), hold on
     end
 end
-title('Minimum satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
+title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
 ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
 colorbar
 
-figure
+%percent_cov, max_cov_gap, mean_cov_gap
+figure('Name', 'percent coverage')
 image(x, y, texture), hold on,
 view(0,-90);
 axis([-180 180,-90,90])
 xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-sss1 = pcolor(LON, LAT, N_mean'); hold on
+sss1 = pcolor(LON, LAT, percent_cov'); hold on
 sss1.FaceColor = 'Interp';
 sss1.EdgeColor = 'interp';
 sss1.FaceAlpha = 0.7;
@@ -97,15 +100,60 @@ for i=1:length(LON)
         plot(LON(i),LAT(j),'r+'), hold on
     end
 end
-title('Mean satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
+title('Percent coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
-% xlim([-180,180])
-% ylim([-80, 80])
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
 ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
 colorbar
-% colormap(gray)
+
+figure('Name','max coverage map')
+
+image(x, y, texture), hold on,
+view(0,-90);
+axis([-180 180,-90,90])
+xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+
+sss = pcolor(LON, LAT, max_cov_gap'); hold on
+sss.FaceColor = 'Interp';
+sss.EdgeColor = 'interp';
+sss.FaceAlpha = 0.7;
+
+for i=1:length(LON)
+    for j=1:length(LAT)
+        plot(LON(i),LAT(j),'r+'), hold on
+    end
+end
+title('Maximum coverage gap', 'interpreter', 'latex', 'FontSize', 20)
+hold on
+yline(0)
+xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
+ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+colorbar
+
+figure('Name','Mean coverage gap')
+
+image(x, y, texture), hold on,
+view(0,-90);
+axis([-180 180,-90,90])
+xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+
+sss = pcolor(LON, LAT, mean_cov_gap'); hold on
+sss.FaceColor = 'Interp';
+sss.EdgeColor = 'interp';
+sss.FaceAlpha = 0.7;
+
+for i=1:length(LON)
+    for j=1:length(LAT)
+        plot(LON(i),LAT(j),'r+'), hold on
+    end
+end
+title('Minimum satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
+hold on
+yline(0)
+xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
+ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+colorbar
 %%
 figure
 axis equal
