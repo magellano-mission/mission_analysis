@@ -20,6 +20,7 @@ x = (curv_radius + h)*cos(delta)*cos(alpha);
 y = (curv_radius + h)*cos(delta)*sin(alpha);
 z = ((cos(ang_ecc)^2)*curv_radius + h)*sin(delta);
 r = [x; y; z];
+r = r/norm(r);
 
 end
 

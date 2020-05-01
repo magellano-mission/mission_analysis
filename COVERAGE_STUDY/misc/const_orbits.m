@@ -1,6 +1,6 @@
 function [YYY, T, THETA, H] = const_orbits(walker, bw, SMA, INC, timesteps, N_orbits, alt)
 
-if nargin == 7
+if nargin == 6
     alt = 0;
 end
 

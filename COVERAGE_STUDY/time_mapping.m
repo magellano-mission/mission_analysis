@@ -10,16 +10,18 @@ n_orbits = P;
 n_lon = disc(1);            % number of discretizing points in longitude
 n_lat = disc(2);            % number of discretizing points in latitude
 
-delta_lon = (lon(2) - lon(1))/n_lon;    % longitude step
-delta_lat = (lat(2) - lat(1))/n_lat;    % latitude step
+% delta_lon = (lon(2) - lon(1))/n_lon;    % longitude step
+% delta_lat = (lat(2) - lat(1))/n_lat;    % latitude step
+% 
+% % Discertization
+% LON = (lon(1)+delta_lon/2:delta_lon:lon(2)-delta_lon/2);
+% LAT = (lat(1)+delta_lat/2:delta_lat:lat(2)-delta_lat/2);
 
-% Discertization
-LON = (lon(1) + delta_lon/2:delta_lon:lon(2)-delta_lon/2);
-LAT = (lat(1) + delta_lat/2:delta_lat:lat(2)-delta_lat/2);
+LON = linspace(lon(1), lon(2), n_lon);
+LAT = linspace(lat(1), lat(2), n_lat);
 
 time_map = zeros(n_lon, n_lat, timesteps);
 for jj = 1 : timesteps
-   waitforit = waitbar(jj/timesteps);
     instant_states = YYY(:,jj,:);               % 2D matrix (dimension squeezed later)
     instant_map = zeros(n_lon,n_lat);           % how many sats can view a certain point in a certain istant of time
     for lo = 1 : n_lon
@@ -37,6 +39,5 @@ for jj = 1 : timesteps
 time_map(:,:,jj) = instant_map;
 
 end
-delete(waitforit)
 
 end

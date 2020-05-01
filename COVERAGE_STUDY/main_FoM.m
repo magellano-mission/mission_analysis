@@ -23,8 +23,8 @@
 %% Setup
 clear, close, clc
 
-% walker =[21,3,2];         % full constellation - original
-walker = [1,1,1];           % one satellite plot
+walker =[21,3,2];         % full constellation - original
+% walker = [1,1,1];           % one satellite plot
 % walker = [15,3,2];        % reduced constellation
 
 bw = 40;                    % NS beamwidth [deg]
@@ -53,65 +53,12 @@ toc
 tic
 [N_min, N_mean, cov] = getMinCoverage(disc, time_map);
 toc
-%% Constellation plot & groundtrack
-figure
 
-mu = astroConstants(14);
-TT = walker(1);
-P = walker(2);
-F = walker(3);
-n_sat = TT/P;
-n_orbits = P;
-rM = almanac('mars','radius','kilometers','sphere');
-
-subplot(1,2,1), 
-I = imread('Mars.jpg');                            % Mars image
-RI = imref2d(size(I));
-RI.XWorldLimits = [-180 180];                       % Mars image x sizes
-RI.YWorldLimits = [-90 90];                         % Mars image y sizes
-[X, Y, Z] = ellipsoid(0, 0, 0, rM, rM, rM, 100); % spheric centered Mars
-planet = surf(X, Y, -Z,'Edgecolor', 'none');
-hold on
-set(planet,'FaceColor','texturemap','Cdata',I)
-axis equal
-set(gca,'Color','black')
-
-subplot(1,2,2),
-
-%mars texture reading 
-texture = imread('Mars.jpg');
-x=[-180 180]; y=[-90 90];
-texture = flipud(texture);
-image(x, y, texture), hold on,
-view(0,-90);
-axis([-180 180,-90,90])
-xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-pointY = animatedline('Color','y','Marker','o','MarkerSize',100);
-
-for jjjj=1:timesteps
- for ii = 1 : n_orbits
-     colors = ['g','y','b'];
-            for kk = 1 : n_sat
-                Y = squeeze(YYY((ii-1)*n_sat + kk,:,:));
-                theta = THETA((ii-1)*n_sat + kk,:);
-                
-                subplot(1,2,1),plot3(Y(:,1),Y(:,2),Y(:,3), colors(ii)), hold on
-                addpoints(pointY, Y(jjjj,1),Y(jjjj,2),Y(jjjj,3)), hold on
-                
-                subplot(1,2,2),
-                [latSS, lonSS, ~] = groundTrack(Y, T);
-                sca = scircle1(latSS(jjjj), lonSS(jjjj), rad2deg(theta(1)));
-                geo = geoshow(sca(:,1),sca(:,2)); hold on
-                plot(lonSS,latSS,strcat(colors(ii),'.'),'MarkerSize',0.5)
-            end
- end
- pause(0.1)
-  subplot(1,2,1)
-% clearpoints(pointY)
-end
 %% PLOTS
 figure
 
+%mars texture reading 
+texture = imread('Mars.jpg');
 x=[-180 180]; y=[-90 90];
 texture = flipud(texture);
 image(x, y, texture), hold on,
@@ -182,4 +129,59 @@ for jjjj = 1:timesteps
 timevarying.CData =  time_map(:,:,jjjj)';
     drawnow
     pause(0.07)
+end
+
+%% Constellation plot & groundtrack
+figure
+
+mu = astroConstants(14);
+TT = walker(1);
+P = walker(2);
+F = walker(3);
+n_sat = TT/P;
+n_orbits = P;
+rM = almanac('mars','radius','kilometers','sphere');
+
+subplot(1,2,1), 
+I = imread('Mars.jpg');                            % Mars image
+RI = imref2d(size(I));
+RI.XWorldLimits = [-180 180];                       % Mars image x sizes
+RI.YWorldLimits = [-90 90];                         % Mars image y sizes
+[X, Y, Z] = ellipsoid(0, 0, 0, rM, rM, rM, 100); % spheric centered Mars
+planet = surf(X, Y, -Z,'Edgecolor', 'none');
+hold on
+set(planet,'FaceColor','texturemap','Cdata',I)
+axis equal
+set(gca,'Color','black')
+
+subplot(1,2,2),
+
+x=[-180 180]; y=[-90 90];
+texture = flipud(texture);
+image(x, y, texture), hold on,
+view(0,-90);
+axis([-180 180,-90,90])
+xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+pointY = animatedline('Color','y','Marker','o','MarkerSize',100);
+%%
+for jjjj=1:timesteps
+ for ii = 1 : n_orbits
+     colors = ['g','y','b'];
+            for kk = 1 : n_sat
+                Y = squeeze(YYY((ii-1)*n_sat + kk,:,:));
+                theta = THETA((ii-1)*n_sat + kk,:);
+                
+                subplot(1,2,1),plot3(Y(:,1),Y(:,2),Y(:,3), colors(ii)), hold on
+                addpoints(pointY, Y(jjjj,1),Y(jjjj,2),Y(jjjj,3)), hold on
+                
+                subplot(1,2,2),
+                [latSS, lonSS, ~] = groundTrack(Y, T);
+                sca = scircle1(latSS(jjjj), lonSS(jjjj), rad2deg(theta(1)));
+                geo = geoshow(sca(:,1),sca(:,2)); hold on
+                plot(lonSS,latSS,strcat(colors(ii),'.'),'MarkerSize',0.5)
+            end
+ end
+ pause(0.1)
+  subplot(1,2,1)
+% clearpoints(pointY)
 end
