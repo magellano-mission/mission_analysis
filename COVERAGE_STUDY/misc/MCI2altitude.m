@@ -10,12 +10,12 @@ function[alt,R_real] = MCI2altitude(r)
 % Other m-files required :  none 
 
 
-r = r * 1000; % km-m conversion 
+r = r * 1000;               % [km] to [m] conversion 
 x = r(1); y = r(2) ; z = r(3); 
 
 % WGS84 ellipsoid constants:
-a = 3395428; %??????
-b = 3377678; %??????
+a = 3395428;                % Mars equatorial radius [m]
+b = 3377678;                % Mars polar radius [m]
 e = sqrt(1 - b^2 / a^2);
 
 % calculations:
@@ -28,7 +28,7 @@ R_real   = a./sqrt(1-e^2.*sin(lat).^2);
 alt = p./cos(lat)-R_real;
 
 % Return Output in km 
-alt = alt/1000; % km conversion 
+alt = alt/1000; 
 R_real = R_real/1000;
 
 return

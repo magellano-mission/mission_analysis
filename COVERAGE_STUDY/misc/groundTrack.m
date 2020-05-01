@@ -3,15 +3,15 @@ function [lat, lon, rad] = groundTrack(r, t)
 %We have to include the case of keplerian parameters instead of cartesian
 %ones.
 
-    % Greenwich initial position
-    thetaG = 0;     %[rad]
-    % Earth rotation rate
+    % Airy0 crater initial position
+    theta_Airy_0 = 0;     %[rad]
+    % Mars rotation rate
     T = 1.026 * 24 * 3600;
-    we = 2 * pi / T;    %[rad/s]
+    wM = 2 * pi / T;    %[rad/s]
     
 [alpha, delta] = angles(r);
 lat = delta;
-lon = alpha - (thetaG*ones(size(r,1),1) + we*t);
+lon = alpha - (theta_Airy_0*ones(size(r,1),1) + wM*t);
 
 rad = [lat, lon];
 while any(lon > pi)

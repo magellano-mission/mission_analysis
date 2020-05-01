@@ -1,5 +1,5 @@
-%% Coverage: Figures of Merit
-clear, close, clc
+% Coverage: Figures of Merit
+
 %HP:
 %circular orbits
 %all constellation parameters fixed 
@@ -8,12 +8,7 @@ clear, close, clc
 %groundtrack based approach
 %conical shaped beam
 
-%funzioni: 
-%groundtrack: ok
-%access area: aggiungere geoidetics
-%
-
-%FoM:
+%FoM: TO BE ADDED
 % Percent coverage
 % maximum gap
 % mean gap
@@ -24,18 +19,26 @@ clear, close, clc
 % lambda0 = acos(rM/(norm(Y)));
 % IAA = K_A*(1-cos(lambda0));
 
-% walker =[21,3,2];
-walker = [1,1,1]; %one satellite plot
-% walker = [15,3,2];
-bw = 40;
-SMA = 11500;
-INC = deg2rad(55);
-lon = [-180, 180];
+
+%% Setup
+clear, close, clc
+
+% walker =[21,3,2];         % full constellation - original
+walker = [1,1,1];           % one satellite plot
+% walker = [15,3,2];        % reduced constellation
+
+bw = 40;                    % NS beamwidth [deg]
+% bw = 20;                  % RS beamwidth [deg]
+
+% Parameters
+SMA = 11500;                % semi-major axis [km]
+INC = deg2rad(55);          % inclination [deg]
+lon = [-180, 180];          
 lat = [-90,90];
-disc = [10 10];
-alt = 0;
-timesteps = 1000;
-N_orbits = 3;
+disc = [10 10];             % discretization grid
+alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)
+timesteps = 1000;               
+N_orbits = 3;               % number of orbits
 
 %orbital periods computation
 tic
@@ -46,7 +49,7 @@ toc
 tic
 [time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, H, lon, lat, disc);
 toc
-%% post-processing &figures of merit computation
+%% post-processing & figures of merit computation
 tic
 [N_min, N_mean, cov] = getMinCoverage(disc, time_map);
 toc
