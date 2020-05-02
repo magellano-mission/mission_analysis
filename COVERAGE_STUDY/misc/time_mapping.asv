@@ -15,7 +15,7 @@ LAT = linspace(lat(1), lat(2), n_lat);
 
 time_map = zeros(n_lon, n_lat, timesteps);
 for jj = 1 : timesteps
-    instant_states = squeeze(YYY(:,jj,:));               % 2D matrix (dimension squeezed later)
+    instant_states = YYY(:,jj,:);               % 2D matrix (dimension squeezed later)
     instant_map = zeros(n_lon,n_lat);           % how many sats can view a certain point in a certain istant of time
     for lo = 1 : n_lon
         for la = 1 : n_lat

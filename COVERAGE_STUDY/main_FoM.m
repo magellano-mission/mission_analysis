@@ -23,7 +23,7 @@
 %% Setup
 clear, close, clc
 
-walker = [21,3,2];         % full constellation - original
+walker = [18,3,2];         % full constellation - original
 % walker = [1,1,1];           % one satellite plot
 % walker = [15,3,2];        % reduced constellation
 
@@ -104,12 +104,12 @@ plot(LON(3),LAT(3),'wo','MarkerFace','r')        % Skipper (Mars-Penguin)
 text(LON(3)+3,LAT(3)+3,'Skipper (Mars-Penguin)','Color','w')
 
 
-% for i=1:length(LON)
-%     for j=1:length(LAT)
-%         plot(LON(i),LAT(j),'r+'), hold on
-%     end
-% end
-%title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+for i=1:length(LON)
+    for j=1:length(LAT)
+        plot(LON(i),LAT(j),'r+'), hold on
+    end
+end
+title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
