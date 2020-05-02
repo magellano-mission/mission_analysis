@@ -38,10 +38,9 @@ switch SimType
             else
                legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Best') 
             end
-            xlabel('SMA [km]'), ylabel('Beamwidth [deg]')
-            title(strcat('Inclination = ',num2str(rad2deg(inclinations(k))), ' deg'))
+            
         end
-
+        
         
         
 end
