@@ -101,7 +101,7 @@ plot(LON(22),LAT(30),'wo','MarkerFace','r')        % ExoMars
 text(LON(22)+3,LAT(30)-3,'ExoMars','Color','w')
 
 plot(LON(3),LAT(3),'wo','MarkerFace','r')        % Skipper (Mars-Penguin)
-text(LON(3)+3,LAT(3)+3,'Skipper (Mars-Penguin)','Color','w')
+text(LON(3)+3,LAT(3)-3,'ExoMars','Color','w')
 
 
 % for i=1:length(LON)
@@ -109,7 +109,7 @@ text(LON(3)+3,LAT(3)+3,'Skipper (Mars-Penguin)','Color','w')
 %         plot(LON(i),LAT(j),'r+'), hold on
 %     end
 % end
-%title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
 hold on
 yline(0)
 xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
