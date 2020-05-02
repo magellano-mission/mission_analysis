@@ -9,15 +9,15 @@ para.wM = 2 * pi / T_lla2;              % [rad/s]
 para.theta_Airy_0 = 0;             % Mars principal meridian
 
 %% Setup
-wlk_vec = [15, 18, 21];       % number of satellites
-bw = 20:20:100;           % beamwidth [deg]
-inclinations = deg2rad(15:10:55);
-semi_major_axes = 6500:1000:11500;
+wlk_vec = [15];       % number of satellites
+bw = 20;           % beamwidth [deg]
+inclinations = deg2rad(55);
+semi_major_axes = 11500;
 Treshold = 4; 
 
 % Parameters
 lon = [-180, 180];          
-lat = [-30,30];
+lat = [-90, 90];
 disc = [15 6];             % discretization grid
 lon = linspace(lon(1), lon(2), disc(1));
 lat = linspace(lat(1), lat(2), disc(2));
@@ -27,4 +27,5 @@ N_orbits = 3;              % number of orbits
 
 %% plot selection
 
-SimType = "Dani";
+% SimType = "Dani";
+SimType = "FPCP";

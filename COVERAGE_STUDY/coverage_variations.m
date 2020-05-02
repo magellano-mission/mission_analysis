@@ -1,7 +1,8 @@
 % Coverage: Figures of Merit
 close all; clear; clc
-% load('matriciozza.mat')
 
+%% Adding to path
+addpath(genpath(fileparts(pwd)))
 
 %% Figure Initialization
 set(0,'DefaultFigureUnits', 'normalized');
@@ -16,9 +17,12 @@ set(0,'defaultAxesTickLabelInterpreter','latex');
 %%
 run('data.m')
 
+%% check
+check_errors(SimType, wlk_vec, inclinations, bw, semi_major_axes)
+
 %% Sim
 [Min_cov_lat, time_map, N_min, N_mean] = NestedFor(wlk_vec, inclinations, bw, semi_major_axes, lon, lat, timesteps, N_orbits, alt, para);
 save('matriciozza.mat', 'Min_cov_lat')
 
 %% plot
-sim_plots(SimType, wlk_vec, inclinations, bw, semi_major_axes, Min_cov_lat);
+sim_plots(SimType, wlk_vec, inclinations, bw, semi_major_axes, Min_cov_lat, lon, lat, N_min);
