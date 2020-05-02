@@ -13,35 +13,49 @@ Nb = length(bw);
 
 switch SimType
     case "Dani"
+        System = ["NS", "RS"];
+        Incl_string = string(round(inclinations*180/pi));
         
-        C = (Min_cov_lat >= 4);
-        for k = 1:Ni
-            figure; hold on; grid on
-            C_ith = squeeze(C(:, :, k, :));
-            for i = 1:Nb
-                for j = 1:Na
-                    C_sat = C_ith(i, j, :);
-                    if C_sat(1) == 1
-                        h1 = plot(semi_major_axes(j), bw(i), 'og', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
-                    elseif C_sat(1) == 0 && C_sat(2) == 1
-                        h2 = plot(semi_major_axes(j), bw(i), 'oy', 'MarkerSize', 10, 'MarkerFaceColor', 'y');
-                    elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 1
-                        h3 = plot(semi_major_axes(j), bw(i), 'o', 'Color', [255, 191, 0]/255, 'MarkerSize', 10, 'MarkerFaceColor', [255, 191, 0]/255);
-                    elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 0
-                        h4 = plot(semi_major_axes(j), bw(i), 'or', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
+        C_ns = (Min_cov_lat >= 4);
+        C_rs = (Min_cov_lat >= 1);
+        for c = 1:2
+            for k = 1:Ni
+                fig = figure; hold on; grid on
+                if c == 1
+                    C = C_ns;
+                elseif c == 2
+                    C = C_rs;
+                end
+                
+                C_ith = squeeze(C(:, :, k, :));
+                for i = 1:Nb
+                    for j = 1:Na
+                        C_sat = C_ith(i, j, :);
+                        if C_sat(1) == 1
+                            h1 = plot(semi_major_axes(j), bw(i), 'og', 'MarkerSize', 14, 'MarkerFaceColor', 'g');
+                        elseif C_sat(1) == 0 && C_sat(2) == 1
+                            h2 = plot(semi_major_axes(j), bw(i), 'oy', 'MarkerSize', 14, 'MarkerFaceColor', 'y');
+                        elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 1
+                            h3 = plot(semi_major_axes(j), bw(i), 'o', 'Color', [255, 191, 0]/255, 'MarkerSize', 14, 'MarkerFaceColor', [255, 191, 0]/255);
+                        elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 0
+                            h4 = plot(semi_major_axes(j), bw(i), 'or', 'MarkerSize', 14, 'MarkerFaceColor', 'r');
+                        end
                     end
                 end
-            end
-            
-            if exist('h3', 'var') 
-                legend([h1, h2, h3, h4], {'min 15 sat', 'min 18 sat', 'min 21 sat', 'no cov'}, 'Location', 'Best')
-            else
-               legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Best') 
+                
+                if exist('h3', 'var')
+                    legend([h1, h2, h3, h4], {'min 15 sat', 'min 18 sat', 'min 21 sat', 'no cov'}, 'Location', 'Northeast')
+                else
+                    legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Northeast')
+                end
+                Title = strcat(System(c), " coverage, i = ", Incl_string(k) );
+                xlabel('sma [km]'), ylabel('beam-width [deg]'), title(Title)
+                title_save = strcat(System(c), "_coverage_i=", Incl_string(k) );
+                saveas(fig, strcat(title_save, '.png'))
+                
             end
             
         end
-        
-        
         
 end
 

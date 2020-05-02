@@ -10,8 +10,8 @@ para.theta_Airy_0 = 0;             % Mars principal meridian
 
 %% Setup
 wlk_vec = [15, 18, 21];       % number of satellites
-bw = [20, 40, 70];           % beamwidth [deg]
-inclinations = deg2rad(25:10:45);
+bw = 20:20:100;           % beamwidth [deg]
+inclinations = deg2rad(15:10:55);
 semi_major_axes = 6500:1000:11500;
 Treshold = 4; 
 
