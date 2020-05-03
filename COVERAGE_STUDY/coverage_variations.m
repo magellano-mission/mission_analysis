@@ -14,7 +14,6 @@ set(0,'DefaultAxesYGrid','on')
 set(0,'defaultLegendInterpreter','latex');
 set(0,'defaultAxesTickLabelInterpreter','latex');
 
-<<<<<<< HEAD
 %%
 run('data.m')
 
@@ -27,7 +26,6 @@ save('matriciozza.mat', 'Min_cov_lat')
 
 %% plot
 sim_plots(SimType, wlk_vec, inclinations, bw, semi_major_axes, Min_cov_lat, lon, lat, N_min);
-=======
 % K_A = 2*pi;
 % lambda0 = acos(rM/(norm(Y)));
 % IAA = K_A*(1-cos(lambda0));
@@ -85,6 +83,24 @@ fix_bw = squeeze(Min_cov_lat(j,:,:));
 subplot(3,2,j); sss = pcolor(semi_major_axes, LAT, fix_bw' ); hold on
 sss.FaceColor = 'Interp';
 sss.EdgeColor = 'k';
+end
+for cont = 1:length(LAT)
+    for cont2 = 1:length(semi_major_axes)
+        if fix_bw(cont2,cont)>=Treshold
+             plot(semi_major_axes(cont2), LAT(cont), 'r.','Markersize',10)
+        end
+end
+end
+%% PLOT of performances
+figure1 = figure();
+sgtitle(strcat('Min coverage per latitude - f(SMA); N sats: ',num2str(walker(1)), ', Inc: ', num2str(rad2deg(inclin)),', N orbits: ',num2str(N_orbits)))
+LAT = linspace(lat(1), lat(2), disc(2));
+
+for j =1:length(bw)
+fix_bw = squeeze(Min_cov_lat(j,:,:));
+subplot(3,2,j); sss = pcolor(semi_major_axes, LAT, fix_bw' ); hold on
+sss.FaceColor = 'Interp';
+sss.EdgeColor = 'k';
 for cont = 1:length(LAT)
     for cont2 = 1:length(semi_major_axes)
         if fix_bw(cont2,cont)>=Treshold
@@ -101,5 +117,3 @@ annotation(figure1,'textbox',...
     [0.072875 0.925329428989751 0.14353125 0.0453879941434846],...
     'String',{strcat('red dots: N sats visible >= ', num2str(Treshold))},...
     'FitBoxToText','off');
-
->>>>>>> parent of e2edd09... abbiamo fatto casino (ma in meglio)

@@ -1,9 +1,5 @@
-<<<<<<< HEAD
+
 function [N_min, N_mean, cov] = getMinCoverage(LON, LAT, time_map)
-%[N_min, N_mean, cov, percent_cov, max_cov_gap, mean_cov_gap] = getMinCoverage(disc, time_map, T_obs, trashold)
-=======
-function [N_min, N_mean, cov, percent_cov, max_cov_gap, mean_cov_gap] = getMinCoverage(disc, time_map, T_obs, trashold)
->>>>>>> parent of e2edd09... abbiamo fatto casino (ma in meglio)
 
 % disc: [discret_lon discret_lat]
 % time_map: temporal-spatil history

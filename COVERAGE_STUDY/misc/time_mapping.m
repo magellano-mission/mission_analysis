@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 function time_map = time_mapping(walker, YYY, T, THETA, H, LON, LAT, para)
-=======
-function [time_map, LON, LAT] = time_mapping(walker, YYY, T, THETA, H, lon, lat, disc)
->>>>>>> parent of e2edd09... abbiamo fatto casino (ma in meglio)
 
 % Setup
 timesteps = length(T);
@@ -10,10 +6,8 @@ TT = walker(1);             % total number of satellites
 P = walker(2);              % number of planes
 n_sat = TT/P;
 n_orbits = P;
-<<<<<<< HEAD
 n_lon = length(LON);
 n_lat = length(LAT);
-=======
 
 n_lon = disc(1);            % number of discretizing points in longitude
 n_lat = disc(2);            % number of discretizing points in latitude
@@ -27,7 +21,6 @@ n_lat = disc(2);            % number of discretizing points in latitude
 
 LON = linspace(lon(1), lon(2), n_lon);
 LAT = linspace(lat(1), lat(2), n_lat);
->>>>>>> parent of e2edd09... abbiamo fatto casino (ma in meglio)
 
 time_map = zeros(n_lon, n_lat, timesteps);
 for jj = 1 : timesteps
