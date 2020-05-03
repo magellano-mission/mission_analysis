@@ -1,4 +1,4 @@
-function[rr,vv]=kep2car2(a,e,i,OM,om,th,mu)
+function[rr,vv]=kep2car2(kep,mu)
 % Transformation from Keplerian elements to cartesian coordinates
 %
 % -------------------------------------------------------------------------
@@ -15,6 +15,14 @@ function[rr,vv]=kep2car2(a,e,i,OM,om,th,mu)
 % Output arguments:
 % rr [3x1] position vector [km]
 % vv [3x1] velocity vector [km/s]
+
+a = kep(1);
+e = kep(2);
+i = kep(3);
+OM = kep(4);
+om = kep(5);
+th = kep(6);
+
 
 R3_OM=[cos(OM) sin(OM) 0
       -sin(OM) cos(OM) 0

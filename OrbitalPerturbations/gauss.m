@@ -56,7 +56,7 @@ v = sqrt( 2*mu_m/r  - mu_m/a);
 t_hat = vv/norm(vv);
 h_hat = cross(rr,vv)/norm(cross(rr,vv));
 n_hat = cross(h_hat,t_hat);
-A = [ t_hat  n_hat  h_hat ];
+A = [ t_hat  n_hat  h_hat ]
 
 % J2 Effect
 k = 3/2 * J2 * mu_m * R_real^2 / r^4;
@@ -65,7 +65,7 @@ a_j2_x = k*(rr(1)/r *(5 *rr(3)^2/r^2 -1));
 a_j2_y = k*(rr(2)/r *(5 *rr(3)^2/r^2 -1));
 a_j2_z = k*(rr(3)/r *(5 *rr(3)^2/r^2 -3));
 
-a_J2 = [a_j2_x; a_j2_y; a_j2_z]; % [km/s^2]
+a_J2 = [a_j2_x; a_j2_y; a_j2_z] % [km/s^2]
 
 % J3 Effect
 kz = 1/2 * J3 * mu_m * R_real^3 / r^5;
@@ -102,7 +102,7 @@ rr_rel_m = rr_phobos - rr;
 r_rel_m = norm(rr_rel_m);
 
 % Phobos gravitational acceleration
-a_phobos = mu_phobos * (rr_rel_m/r_rel_m^3 - rr_phobos/r_phobos^3);
+a_phobos = mu_phobos * (rr_rel_m/r_rel_m^3 - rr_phobos/r_phobos^3)
 
 % a_phobos = 0;
 
@@ -123,7 +123,7 @@ rr_rel_d = rr_deimos - rr;
 r_rel_d = norm(rr_rel_d);
 
 % Deimos gravitational acceleration
-a_deimos = mu_deimos * (rr_rel_d/r_rel_d^3 - rr_deimos/r_deimos^3);
+a_deimos = mu_deimos * (rr_rel_d/r_rel_d^3 - rr_deimos/r_deimos^3)
 
 % a_deimos = 0;
 
@@ -187,7 +187,7 @@ a_drag = 0.5*rho*V_REL*v_rel*Ac_m*cD;
 
 % TOTAL ACCELERATIONS
 a_tot = a_J2 + a_J3 + a_J4 + a_phobos + a_deimos + a_srp + a_drag + a_sun;
-a_tnh = A' * a_tot;
+a_tnh = A' * a_tot
 
 at = a_tnh(1);  % Thrust aligned with velocity vector (converted to km/s^2)
 an = a_tnh(2);
