@@ -49,9 +49,10 @@ function [value,isterminal,direction] = event_cont_thrust(t_seconds, x, paramete
 %         eclipse = 1;
 %     end
     
+    delta_v = parameters.Isp * 9.81* log(parameters.M0/(parameters.M0 - states(7)));
     eclipse = 1;
     %check on position 
-    value = [rSOI - r_sc_norm; eclipse; (t_seconds - t0sym) - t_BO]; 
+    value = [rSOI - r_sc_norm; eclipse; (t_seconds - t0sym) - t_BO; delta_v - parameters.delta_v]; 
     %isterminal defied previously
     direction = [0; 0; 0]; %to be corrected
 end

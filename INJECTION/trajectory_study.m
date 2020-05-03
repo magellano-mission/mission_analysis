@@ -1,8 +1,8 @@
-%% CONTINUOS THRUST THRUST 
+%% CONTINUOS THRUST
 close all, clear all, clc
 
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
-parameters.t_BO = 3000000;                                     % burnout time (chemical thrust)
+parameters.t_BO = 3000000;                                 % burnout time (chemical thrust)
 parameters.T = [-10; 0; 0];                                % thrust [N] (constant for the moment)
 parameters.Is = 200;                                       % specific impulse [s]
 parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
@@ -12,7 +12,7 @@ parameters.isInterp = 0;
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 parameters.tmax = date2mjd2000([2021, 1, 10, 0, 0, 0]);
 parameters.opt = odeset('RelTol',1e-10, 'AbsTol',1e-10,'Events', @event_cont_thrust);
-
+%parameters.delta_v_req = ...
 
 % [T, Y] = gauss_cont_thrust_model(X0, parameters);
 if parameters.isInterp == 1

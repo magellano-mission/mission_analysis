@@ -22,7 +22,11 @@ function [T_tot,states_tot, parout_tot, events] = model_continuous_thrust(X0, pa
 %             turned onanyway, will code it later)
 %                 parameters.T = [0; 0; 0];
 %             end
-            
+            if i_e == 4
+                parameters.T = [0; 0; 0];
+                parameters.t_BO = parameters.tmax*86400 - T(end) + 1;
+                isTactive = 0;
+            end
             T_tot = [T_tot; T];
             states_tot = [states_tot; states];
             parout_tot = [parout_tot; parout];

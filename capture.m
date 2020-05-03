@@ -1,6 +1,4 @@
-function [dt_flyby, dv_tot] = capture(kep_cap, delta, parameters, mu)
-% function [rp,dt_flyby, dv_tot] = capture(ID1,ID2,ID3,R_atm,flyby_date,dep_date,arr_date, parameters, mu)
-%PLOT_GA 
+function [dt_flyby, dv_req] = capture(kep_cap, delta, mu)
 %Plot of asymptotes and hyperbolic path in occurrence of the flyby
 %
 % INPUT
@@ -10,12 +8,8 @@ function [dt_flyby, dv_tot] = capture(kep_cap, delta, parameters, mu)
 %OUTPUT
 %   - rp [km] minimum radius of approach of hyperbolic path (from center)
 %   - dt_flyby [hours] TOF across Flyby planet's SOI
-%   - dv_tot [km/s] Total deltaV provided by powered g.a. (dv@peric.+ g.a.)
-%
-%
-% Authors : Apeksha Veeranna Roopashree / Sergio Bonnacorsi /
-%                     Alberto Chiaradia / Louis Aucouturier
-%
+%   - dv_tot [km/s] impulsive delta_v
+
 
 %Discretization of hyperbola
 n_iter = 1000;
@@ -59,6 +53,10 @@ l_pos_Vect_m = zeros(3,n_iter);
 kep_hyp = kep_cap;
 kep_hyp(1) = a_m;
 kep_hyp(2) = e_m;
+
+[~, v_ell] = kep2car(kep_cap);
+[~, v_hyp] = kep2car(kep_hyp);
+dv_req = v_hyp - v_ell;
 
 for i = 1:n_iter
     kep_hyp(6) = ltheta_m(i);
