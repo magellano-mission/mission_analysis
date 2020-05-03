@@ -7,8 +7,8 @@ switch data.SimType
         System = ["NS", "RS"];
         Incl_string = string(round(data.inc*180/pi));
         
-        C_ns = (Cov_Results.Min_cov_lat >= 4);
-        C_rs = (Cov_Results.Min_cov_lat >= 1);
+        C_ns = (Cov_Results.Min_cov_latlon >= 4);
+        C_rs = (Cov_Results.Min_cov_latlon >= 1);
         for c = 1:2
             for k = 1:data.Ni
                 fig = figure; hold on; grid on
@@ -203,33 +203,33 @@ switch data.SimType
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
         colorbar
         
-%     case 'a'
-%         
-%         figure1 = figure();
-%         sgtitle(strcat('Min coverage per latitude - f(SMA); N sats: ',num2str(walker(1)), ', Inc: ', num2str(rad2deg(inclin)),', N orbits: ',num2str(N_orbits)))
-%         LAT = linspace(lat(1), lat(2), disc(2));
-%         
-%         for j = 1:length(bw)
-%             fix_bw = squeeze(Min_cov_lat(j,:,:));
-%             subplot(3,2,j); sss = pcolor(sma, LAT, fix_bw' ); hold on
-%             sss.FaceColor = 'Interp';
-%             sss.EdgeColor = 'k';
-%             for cont = 1:length(LAT)
-%                 for cont2 = 1:length(sma)
-%                     if fix_bw(cont2,cont)>=Treshold
-%                         plot(sma(cont2), LAT(cont), 'r.','Markersize',10)
-%                     end
-%                 end
-%             end
-%             
-%             xlabel('SMA [km]'), ylabel('LAT [deg]')
-%             title(strcat('BW = ',num2str(bw(j)), ' deg')), colorbar
-%         end
-%         
-%         annotation(figure1,'textbox',...
-%             [0.072875 0.925329428989751 0.14353125 0.0453879941434846],...
-%             'String',{strcat('red dots: N sats visible >= ', num2str(Treshold))},...
-%             'FitBoxToText','off');
+    case "plot_belli"
+        
+        figure1 = figure();
+        sgtitle(strcat('Min coverage per latitude - f(SMA); N sats: ', num2str(data.Nsat), ', Inc: ',...
+            num2str(floor(rad2deg(data.inc))),', N orbits: ', num2str(data.N_orbits)))
+        
+        for j = 1:data.Nb
+            fix_bw = squeeze(Cov_Results.Min_cov_lat(j, :, :));
+            subplot(3,2,j); sss = pcolor(data.sma, data.lat, fix_bw' ); hold on
+            sss.FaceColor = 'Interp';
+            sss.EdgeColor = 'k';
+            for cont = 1:length(data.lat)
+                for cont2 = 1:data.Na
+                    if fix_bw(cont2, cont) >= data.trashold
+                        plot(data.sma(cont2), data.lat(cont), 'r.','Markersize',10)
+                    end
+                end
+            end
+            
+            xlabel('SMA [km]'), ylabel('LAT [deg]')
+            title(strcat('BW = ',num2str(data.bw(j)), ' deg')), colorbar
+        end
+        
+        annotation(figure1,'textbox',...
+            [0.07 0.9 0.14 0.05], ...
+            'String', {strcat('red dots: N sats visible >= ', num2str(data.trashold))},...
+            'FitBoxToText', 'off');
 
 
 %%

@@ -5,9 +5,9 @@ data.walk_phas = 2;
 
 
 data.Nsat = [18];
-data.bw = 40;              % beamwidth [deg]
+data.bw = [40, 60];              % beamwidth [deg]
 data.inc = deg2rad(25);
-data.sma = 10500;
+data.sma = [10500, 11500];
 
 
 data.Nw = length(data.Nsat);
@@ -16,7 +16,7 @@ data.Ni = length(data.inc);
 data.Na = length(data.sma);
 
 data.trashold = 4; 
-data.perturb = true;
+data.perturb = false;
 
 % Parameters
 lon = [-180, 180];          
@@ -42,10 +42,11 @@ data.theta_Airy_0 = 0;             % Mars principal meridian
 %% plot selection
 
 % data.SimType = "Dani";
-data.SimType = "FPCP";
+% data.SimType = "FPCP";
 % data.SimType = 'none';
 % data.SimType = "percent_cov";
 % data.SimType = "max_time_gap";
 % data.SimType = "mean_time_gap";
+data.SimType = "plot_belli";
 
 clearvars -except data
