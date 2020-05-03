@@ -14,7 +14,6 @@ parameters.tmax = date2mjd2000([2021, 1, 10, 0, 0, 0]);
 parameters.opt = odeset('RelTol',1e-10, 'AbsTol',1e-10,'Events', @event_cont_thrust);
 %parameters.delta_v_req = ...
 
-% [T, Y] = gauss_cont_thrust_model(X0, parameters);
 if parameters.isInterp == 1
         mu = astroConstants(4);
         
