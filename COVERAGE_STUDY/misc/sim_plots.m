@@ -1,20 +1,16 @@
-function sim_plots(SimType, wlk, inc, bw, sma, Min_cov_lat, lon, lat, N_min)
+function sim_plots(data, Cov_Results)
 
 % bw, sma, incl, Nsat
 
-Ni = length(inc);
-Na = length(sma);
-Nb = length(bw);
-
-switch SimType
+switch data.SimType
     case "Dani"
         System = ["NS", "RS"];
-        Incl_string = string(round(inc*180/pi));
+        Incl_string = string(round(data.inc*180/pi));
         
-        C_ns = (Min_cov_lat >= 4);
-        C_rs = (Min_cov_lat >= 1);
+        C_ns = (Cov_Results.Min_cov_lat >= 4);
+        C_rs = (Cov_Results.Min_cov_lat >= 1);
         for c = 1:2
-            for k = 1:Ni
+            for k = 1:data.Ni
                 fig = figure; hold on; grid on
                 if c == 1
                     C = C_ns;
@@ -23,17 +19,17 @@ switch SimType
                 end
                 
                 C_ith = squeeze(C(:, :, k, :));
-                for i = 1:Nb
-                    for j = 1:Na
+                for i = 1:data.Nb
+                    for j = 1:data.Na
                         C_sat = C_ith(i, j, :);
                         if C_sat(1) == 1
-                            h1 = plot(sma(j), bw(i), 'og', 'MarkerSize', 14, 'MarkerFaceColor', 'g');
+                            h1 = plot(data.sma(j), data.bw(i), 'og', 'MarkerSize', 14, 'MarkerFaceColor', 'g');
                         elseif C_sat(1) == 0 && C_sat(2) == 1
-                            h2 = plot(sma(j), bw(i), 'oy', 'MarkerSize', 14, 'MarkerFaceColor', 'y');
+                            h2 = plot(data.sma(j), data.bw(i), 'oy', 'MarkerSize', 14, 'MarkerFaceColor', 'y');
                         elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 1
-                            h3 = plot(sma(j), bw(i), 'o', 'Color', [255, 191, 0]/255, 'MarkerSize', 14, 'MarkerFaceColor', [255, 191, 0]/255);
+                            h3 = plot(data.sma(j), data.bw(i), 'o', 'Color', [255, 191, 0]/255, 'MarkerSize', 14, 'MarkerFaceColor', [255, 191, 0]/255);
                         elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 0
-                            h4 = plot(sma(j), bw(i), 'or', 'MarkerSize', 14, 'MarkerFaceColor', 'r');
+                            h4 = plot(data.sma(j), data.bw(i), 'or', 'MarkerSize', 14, 'MarkerFaceColor', 'r');
                         end
                     end
                 end
@@ -52,7 +48,7 @@ switch SimType
             
         end
 
-    case 'FPCP'
+    case "FPCP"
         
         figure; grid off; hold on
         
@@ -68,7 +64,7 @@ switch SimType
         axis([-180 180,-90,90])
         xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
         
-        sss = pcolor(lon, lat, N_min'); hold on
+        sss = pcolor(data.lon, data.lat, Cov_Results.N_min'); hold on
         sss.FaceColor = 'Interp';
         sss.EdgeColor = 'interp';
         sss.FaceAlpha = 0.4;
@@ -87,7 +83,122 @@ switch SimType
         
         title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
         
-        yline(0)
+        xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
+        ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+        colorbar
+        
+    case "percent_cov"
+        figure; grid off; hold on
+        
+        %mars texture reading
+        texture = imread('Mars.jpg');
+        x = [-180 180]; y = [-90 90];
+        texture = flipud(texture);
+        set(gca, 'YDir', 'reverse')
+        
+        colormap default
+        image(x, y, texture), hold on,
+        view(0,-90);
+        axis([-180 180,-90,90])
+        xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+        
+        sss = pcolor(data.lon, data.lat, Cov_Results.percent_cov'); hold on
+        sss.FaceColor = 'Interp';
+        sss.EdgeColor = 'interp';
+        sss.FaceAlpha = 0.4;
+        
+        Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
+            'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
+        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3, -167];
+        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1, -81];
+        Text_lon = [3, 3, 3, -12, 3, 3, -40, 3, 3]; Text_lon = Text_lon + Rov_lon;
+        Text_lat = [-3, -3, -3, -3, -3, -3, 5, -3, 3]; Text_lat = Text_lat + Rov_lat;
+        
+        for i = 1:length(Rovers)
+            plot(Rov_lon(i), Rov_lat(i), 'wo', 'MarkerFace', 'r')        % Skipper (Mars-Penguin)
+            text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
+        end
+        
+        title('Max coverage gap', 'interpreter', 'latex', 'FontSize', 20)
+        
+        xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
+        ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+        colorbar
+        
+        case "max_time_gap"
+            
+        figure; grid off; hold on
+        
+        %mars texture reading
+        texture = imread('Mars.jpg');
+        x = [-180 180]; y = [-90 90];
+        texture = flipud(texture);
+        set(gca, 'YDir', 'reverse')
+        
+        colormap default
+        image(x, y, texture), hold on,
+        view(0,-90);
+        axis([-180 180,-90,90])
+        xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+        
+        sss = pcolor(data.lon, data.lat, Cov_Results.max_cov_gap'); hold on
+        sss.FaceColor = 'Interp';
+        sss.EdgeColor = 'interp';
+        sss.FaceAlpha = 0.4;
+        
+        Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
+            'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
+        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3, -167];
+        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1, -81];
+        Text_lon = [3, 3, 3, -12, 3, 3, -40, 3, 3]; Text_lon = Text_lon + Rov_lon;
+        Text_lat = [-3, -3, -3, -3, -3, -3, 5, -3, 3]; Text_lat = Text_lat + Rov_lat;
+        
+        for i = 1:length(Rovers)
+            plot(Rov_lon(i), Rov_lat(i), 'wo', 'MarkerFace', 'r')        % Skipper (Mars-Penguin)
+            text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
+        end
+        
+        title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+        
+        xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
+        ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+        colorbar
+        
+        case "mean_time_gap"
+            
+        figure; grid off; hold on
+        
+        %mars texture reading
+        texture = imread('Mars.jpg');
+        x = [-180 180]; y = [-90 90];
+        texture = flipud(texture);
+        set(gca, 'YDir', 'reverse')
+        
+        colormap default
+        image(x, y, texture), hold on,
+        view(0,-90);
+        axis([-180 180,-90,90])
+        xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+        
+        sss = pcolor(data.lon, data.lat, Cov_Results.mean_cov_gap'); hold on
+        sss.FaceColor = 'Interp';
+        sss.EdgeColor = 'interp';
+        sss.FaceAlpha = 0.4;
+        
+        Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
+            'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
+        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3, -167];
+        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1, -81];
+        Text_lon = [3, 3, 3, -12, 3, 3, -40, 3, 3]; Text_lon = Text_lon + Rov_lon;
+        Text_lat = [-3, -3, -3, -3, -3, -3, 5, -3, 3]; Text_lat = Text_lat + Rov_lat;
+        
+        for i = 1:length(Rovers)
+            plot(Rov_lon(i), Rov_lat(i), 'wo', 'MarkerFace', 'r')        % Skipper (Mars-Penguin)
+            text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
+        end
+        
+        title('Mean coverage gap', 'interpreter', 'latex', 'FontSize', 20)
+        
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
         colorbar
@@ -120,78 +231,6 @@ switch SimType
 %             'String',{strcat('red dots: N sats visible >= ', num2str(Treshold))},...
 %             'FitBoxToText','off');
 
-%% percent_cov, max_cov_gap, mean_cov_gap
-
-% figure('Name', 'percent coverage')
-% image(x, y, texture), hold on,
-% view(0,-90);
-% axis([-180 180,-90,90])
-% xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-% sss1 = pcolor(lon, lat, percent_cov'); hold on
-% sss1.FaceColor = 'Interp';
-% sss1.EdgeColor = 'interp';
-% sss1.FaceAlpha = 0.7;
-% for i=1:length(lon)
-%     for j=1:length(lat)
-%         plot(lon(i),lat(j),'r+'), hold on
-%     end
-% end
-% title('Percent coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
-% hold on
-% yline(0)
-% xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
-% ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-% colorbar
-
-%% 
-% figure('Name','max coverage map')
-% 
-% image(x, y, texture), hold on,
-% view(0,-90);
-% axis([-180 180,-90,90])
-% xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-% 
-% sss = pcolor(lon, lat, max_cov_gap'); hold on
-% sss.FaceColor = 'Interp';
-% sss.EdgeColor = 'interp';
-% sss.FaceAlpha = 0.7;
-% 
-% for i=1:length(lon)
-%     for j=1:length(lat)
-%         plot(lon(i),lat(j),'r+'), hold on
-%     end
-% end
-% title('Maximum coverage gap', 'interpreter', 'latex', 'FontSize', 20)
-% hold on
-% yline(0)
-% xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
-% ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-% colorbar
-
-%% 
-% figure('Name','Mean coverage gap')
-% 
-% image(x, y, texture), hold on,
-% view(0,-90);
-% axis([-180 180,-90,90])
-% xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-% 
-% sss = pcolor(lon, lat, mean_cov_gap'); hold on
-% sss.FaceColor = 'Interp';
-% sss.EdgeColor = 'interp';
-% sss.FaceAlpha = 0.7;
-% 
-% for i=1:length(lon)
-%     for j=1:length(lat)
-%         plot(lon(i),lat(j),'r+'), hold on
-%     end
-% end
-% title('Minimum satellites coverage on surface with 40 deg beamwidth', 'interpreter', 'latex', 'FontSize', 20)
-% hold on
-% yline(0)
-% xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
-% ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-% colorbar
 
 %%
 % figure

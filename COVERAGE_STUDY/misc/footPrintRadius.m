@@ -1,4 +1,4 @@
-function [theta, h_sat, h_user] = footPrintRadius(gamma, Y, altitude)
+function [theta, h_sat, h_user] = footPrintRadius(gamma, Y, data)
 %gamma: bw/2 [deg]
 %Y: position state [km]
 %altitude: [km] 
@@ -10,8 +10,8 @@ theta = zeros(n,1);
 
 % Conversion
 for kk = 1 : n
-    if altitude ~= 0
-        h_user = R_eq + altitude;
+    if data.alt ~= 0
+        h_user = data.R_eq + data.alt;
     else
         [h_sat, h_user] = MCI2altitude(Y(kk,:));
     end

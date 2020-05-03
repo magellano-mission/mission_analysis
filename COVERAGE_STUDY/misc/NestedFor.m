@@ -1,19 +1,26 @@
-function [Min_cov_lat, time_map, N_min, N_mean] = NestedFor(wlk_vec, inclinations, bw, semi_major_axes, lon, lat, timesteps, N_orbits, alt, para, perturb)
+function [Cov_Results, time_map] = NestedFor(data)
 
-Min_cov_lat = zeros(length(bw), length(semi_major_axes),length(inclinations),length(wlk_vec));
-for wlk_sat = 1:length(wlk_vec)
-    walker = [wlk_vec(wlk_sat), 3, 2];
-    for inc = 1:length(inclinations)
-        INC = inclinations(inc);
-        for beam = 1:length(bw)
-            curr_beam = bw(beam);       % inclination [deg]
-                for smax = 1:length(semi_major_axes)
-                    SMA = semi_major_axes(smax);              % semi-major axis [km]
-                    [YYY, T, THETA, ~, h_user] = const_orbits(walker, curr_beam, SMA, INC, timesteps, N_orbits, alt, perturb);
-                    time_map = time_mapping(walker, YYY, T, THETA, h_user, lon, lat, para);
-                    [N_min, N_mean, cov_lon, cov_mars] = getMinCoverage(lon, lat, time_map);
-                    Min_cov_lat(beam, smax, inc, wlk_sat) = cov_mars;
+Min_cov_lat = zeros(data.Nb, data.Na, data.Ni, data.Nw);
+
+for w = 1:data.Nw
+    curr.walker = [data.Nsat(w), data.Norb, data.walk_phas];
+    
+    for i = 1:data.Ni
+        curr.inc = data.inc(i);
+        
+        for b = 1:data.Nb
+            curr.beam = data.bw(b);       % inclination [deg]
+            
+                for s = 1:data.Na
+                    curr.sma = data.sma(s);              % semi-major axis [km]
+                    
+                    [YYY, T, THETA, ~, h_user] = const_orbits(curr, data);
+                    time_map = time_mapping(curr, YYY, T, THETA, h_user, data);
+                    [Cov_Results] = getMinCoverage(time_map, data, T);
+                    Min_cov_lat(b, s, i, w) = Cov_Results.cov_mars;
                 end
         end
     end
 end
+
+Cov_Results.Min_cov_lat = Min_cov_lat;

@@ -1,20 +1,19 @@
-function [T, Y] = trajectory(X0, tspan, mi, opt, a, perturb)
+function [T, Y] = trajectory(X0, tspan, data, opt, curr)
 
-NT = length(tspan);
-Y = zeros(NT, 3);
-if perturb
+Y = zeros(data.NT, 3);
+if data.perturb
     [~, X] = ode113(@gauss, tspan, X0, opt);
 
-    for kk = 1 : NT
-        [rr, ~] = kep2car(X(kk,:), mi);
+    for kk = 1 : data.NT
+        [rr, ~] = kep2car(X(kk,:), data.mi);
         Y(kk,:) = rr';
     end
 else
     th0 = X0(6);
-    n = sqrt(mi/a^3);
-    for kk = 1:NT
+    n = sqrt(data.mi/curr.sma^3);             % angular velocity
+    for kk = 1:data.NT
         X0(6) = th0 + n*(tspan(kk) - tspan(1));
-        Y(kk, :) = kep2car(X0, mi);
+        Y(kk, :) = kep2car(X0, data.mi);
     end
     
 end

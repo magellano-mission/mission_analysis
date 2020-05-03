@@ -1,6 +1,6 @@
-function check_errors(SimType, wlk_vec, inclinations, bw, semi_major_axes)
+function check_errors(data)
 
 
-if SimType == "FPCP" && (length(wlk_vec) ~= 1 || length(inclinations) ~= 1 || length(bw) ~= 1 || length(semi_major_axes) ~= 1)
+if data.SimType == "FPCP" && (data.Nw ~= 1 || data.Ni ~= 1 || data.Nb ~= 1 || data.Na ~= 1)
     error('SimType FPCP not compatible with non-scalar parameters, check data.m');
 end
