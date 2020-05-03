@@ -1,11 +1,12 @@
-function N = coverageNumber(lat, lon, t, Y, theta, h, para)
+function N = coverageNumber(lat, lon, t, Y, theta, h)
 %lat, lon of the target
 %t 
 %Y state vector
 %theta: footprint area angle @ center [deg]
 
+Y = squeeze(Y);                   % satellite position vector at instant t
 Y = Y/norm(Y);
-r = lla2MCI(lat, lon, t, h, para);      % target position vector 
+r = lla2MCI(lat, lon, t, h);      % target position vector 
 
 % Check if target central angle is lower than maximum Mars central angle
 if acos(dot(r,Y)) < (theta)

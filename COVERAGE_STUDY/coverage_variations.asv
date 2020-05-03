@@ -1,33 +1,20 @@
 % Coverage: Figures of Merit
-close all; clear; clc
 
-%% Adding to path
-addpath(genpath(fileparts(pwd)))
+%HP:
+%circular orbits
+%all constellation parameters fixed 
+%
+%timestep constant in all integrations
+%groundtrack based approach
+%conical shaped beam
 
-%% Figure Initialization
-set(0,'DefaultFigureUnits', 'normalized');
-set(0,'DefaultFigurePosition',[0 0 1 1]);
-set(0,'DefaultTextFontSize',18);
-set(0,'DefaultAxesFontSize',18);
-set(0,'DefaultAxesXGrid','on')
-set(0,'DefaultAxesYGrid','on')
-set(0,'defaultLegendInterpreter','latex');
-set(0,'defaultAxesTickLabelInterpreter','latex');
+%FoM: TO BE ADDED
+% Percent coverage
+% maximum gap
+% mean gap
+% time average gap
+% mean response gap
 
-<<<<<<< HEAD
-%%
-run('data.m')
-
-%% check
-check_errors(SimType, wlk_vec, inclinations, bw, semi_major_axes)
-
-%% Sim
-[Min_cov_lat, time_map, N_min, N_mean] = NestedFor(wlk_vec, inclinations, bw, semi_major_axes, lon, lat, timesteps, N_orbits, alt, para);
-save('matriciozza.mat', 'Min_cov_lat')
-
-%% plot
-sim_plots(SimType, wlk_vec, inclinations, bw, semi_major_axes, Min_cov_lat, lon, lat, N_min);
-=======
 % K_A = 2*pi;
 % lambda0 = acos(rM/(norm(Y)));
 % IAA = K_A*(1-cos(lambda0));
@@ -53,8 +40,7 @@ timesteps = 1000;
 N_orbits = 3;               % number of orbits
 
 %orbital periods computation
-%inclinations = 25:10:75;
-inclin = deg2rad(25);
+inclinations = 25:10:75;
 semi_major_axes = 6500:1000:15500;
 Treshold = 4; 
 %%
@@ -77,24 +63,24 @@ toc
 
 %% PLOT of performances
 figure1 = figure();
-sgtitle(strcat('Min coverage per latitude - f(SMA); N sats: ',num2str(walker(1)), ', Inc: ', num2str(rad2deg(inclin)),', N orbits: ',num2str(N_orbits)))
+sgtitle(strcat('Min coverage per latitude - f(SMA); N sats:',num2str(walker(1)), ', Bw:', num2str(bw),', N orbits:',num2str(N_orbits)))
 LAT = linspace(lat(1), lat(2), disc(2));
 
 for j =1:length(bw)
-fix_bw = squeeze(Min_cov_lat(j,:,:));
-subplot(3,2,j); sss = pcolor(semi_major_axes, LAT, fix_bw' ); hold on
+fix_inc = squeeze(Min_cov_lat(j,:,:));
+subplot(3,2,j); sss = pcolor(semi_major_axes, LAT, fix_inc' ); hold on
 sss.FaceColor = 'Interp';
 sss.EdgeColor = 'k';
 for cont = 1:length(LAT)
     for cont2 = 1:length(semi_major_axes)
-        if fix_bw(cont2,cont)>=Treshold
+        if fix_inc(cont2,cont)>=Treshold
              plot(semi_major_axes(cont2), LAT(cont), 'r.','Markersize',10)
         end
     end
 end
 
 xlabel('SMA [km]'), ylabel('LAT [deg]')
-title(strcat('BW = ',num2str(bw(j)), ' deg')), colorbar
+title(strcat('i = ',num2str(inclinations(j)), ' deg')), colorbar
 end
 
 annotation(figure1,'textbox',...
@@ -102,4 +88,3 @@ annotation(figure1,'textbox',...
     'String',{strcat('red dots: N sats visible >= ', num2str(Treshold))},...
     'FitBoxToText','off');
 
->>>>>>> parent of e2edd09... abbiamo fatto casino (ma in meglio)
