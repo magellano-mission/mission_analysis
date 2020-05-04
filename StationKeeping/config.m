@@ -18,9 +18,9 @@ data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                   % altitude at which evaluate the coverage ( ground level = 0)  
 
 % variations
-data.adot = -1e-6;
+data.adot = 0;
 data.edot = 0;
-data.idot = 0;
+data.idot = 1e-7;
 
 data.N_orbits = 100;            % number of orbits
 data.mi = astroConstants(14);            % Mars planetary constant

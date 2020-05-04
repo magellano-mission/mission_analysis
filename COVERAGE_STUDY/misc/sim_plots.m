@@ -34,11 +34,11 @@ switch data.SimType
                     end
                 end
                 
-                if exist('h3', 'var')
-                    legend([h1, h2, h3, h4], {'min 15 sat', 'min 18 sat', 'min 21 sat', 'no cov'}, 'Location', 'Northeast')
-                else
-                    legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Northeast')
-                end
+%                 if exist('h3', 'var')                     
+%                     legend([h1, h2, h3, h4], {'min 15 sat', 'min 18 sat', 'min 21 sat', 'no cov'}, 'Location', 'Northeast')
+%                 else
+%                     legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Northeast')
+%                 end
                 Title = strcat(System(c), " coverage, i = ", Incl_string(k) );
                 xlabel('sma [km]'), ylabel('beam-width [deg]'), title(Title)
                 title_save = strcat(System(c), "_coverage_i=", Incl_string(k) );
@@ -256,6 +256,17 @@ switch data.SimType
         timevarying.EdgeColor = 'none';
         timevarying.FaceAlpha = 0.2;
 
+        Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
+            'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
+        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3, -167];
+        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1, -81];
+        Text_lon = [-30, 3, 3, -21, 3, -33, -67, 3, 3]; Text_lon = Text_lon + Rov_lon;
+        Text_lat = [-3, -3, -3, -3, 3, -3, 3, -3, 3]; Text_lat = Text_lat + Rov_lat;
+        
+        for i = 1:length(Rovers)
+            plot(Rov_lon(i), Rov_lat(i), 'wo', 'MarkerFace', 'r')        % Skipper (Mars-Penguin)
+            text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
+        end
         
         v = VideoWriter('Satellite_Coverage', 'MPEG-4');
         v.FrameRate = 60;
@@ -270,6 +281,8 @@ switch data.SimType
         
         close(v);
         close('Satellite_Coverage')
+        
+        
         
 %% Constellation plot & groundtrack
 % figure
