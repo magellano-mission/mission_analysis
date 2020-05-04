@@ -14,7 +14,7 @@ parameters.isPerturbed = 0;                                % perturbation switch
 parameters.t_BO = 30*60;                                   % burnout time (chemical thrust)
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
 parameters.Isp = 280;                                      % specific impulse [s]
-parameters.M0 = 1000;                                      % Total Mass of the s/c [kg]
+parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
 parameters.c_r = 0.5;
 parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
@@ -36,7 +36,6 @@ X0_hyp = zeros(7,1);
 [rr0, vv0] = kep2car2(kep_hyp, mu);
 X0_hyp(1:3) = rr0;
 X0_hyp(4:6) = vv0;
-% X0_hyp(4:6) = -X0_hyp(4:6); % to be fixed 
 
 parameters.delta_v_req =  norm(dv_req);  %definition of desired delta_v
 parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400;
@@ -59,7 +58,7 @@ plot3(YY(1,1), YY(1,2), YY(1,3), 'ro','DisplayName','SOI injection'), hold on
 %% thrust activation
 parameters.t0sym = parameters.tmax;
 parameters.tmax = parameters.t0sym + parameters.t_BO/86400;
-parameters.T = [-500; 0; 0];                % thrust [N] (constant for the moment)
+parameters.T = [-2900; 0; 0];                % thrust [N] (constant for the moment)
 
 [T, Y] = cart_cont_thrust_model(YY(end,:), parameters);
 
@@ -97,9 +96,9 @@ end
 %% Thrust de-activated
 parameters.t0sym = parameters.tmax;
 
-T_orb = 2*pi*sqrt(mu/YY_kep(end,1)^3);
+T_orb = 2*pi*sqrt(YY_kep(end,1)^3/mu);
 parameters.tmax = parameters.t0sym + T_orb/86400;
-parameters.T = [0; 0; 0];                % thrust [N] (constant for the moment)
+parameters.T = [0; 0; 0];            
 
 [T, Y_arr] = cart_cont_thrust_model(YY(end,:), parameters);
 
@@ -107,3 +106,14 @@ TT = [TT; T];
 figure(1)
 plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
 legend()
+
+N_firings = 1;
+
+annotation(figure1,'textbox',...
+    [0.075 0.65 0.15 0.3],...
+    'String',{'Desired Orbit Kep:','','Effective Orbit Kep:', ...
+    'Engine Specifics:', ...
+     strcat('Isp',num2str(parameters.Isp), 's'), ...
+     stracat('T',num2str(parameters.T),' N')...
+    'N:firings:',num2str(N_firings)},...
+    'FitBoxToText','off');
