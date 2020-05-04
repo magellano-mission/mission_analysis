@@ -1,4 +1,4 @@
-function [T_tot,states_tot, parout_tot, events] = model_continuous_thrust(X0, parameters)
+function [T_tot,states_tot, parout_tot, events] = model_continuous_thrust_gauss(X0, parameters)
         isTactive = 1;
         T_tot = []; states_tot = []; parout_tot = []; events = [];
         T = parameters.t0sym*86400;

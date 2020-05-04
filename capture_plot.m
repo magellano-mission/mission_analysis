@@ -1,4 +1,4 @@
-function [dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = capture_plot(kep_cap_desired, delta,rM, mu, Thrust , N_firings, parameters)
+function [TT, YY, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = capture_plot(kep_cap_desired, delta,rM, mu, Thrust , N_firings, parameters)
     %Plot of asymptotes and hyperbolic path in occurrence of the flyby
     %   INPUT
     %   - delta: deflection angle (free parameters JUST TO RUN SIMULATIONS NOW)
