@@ -253,7 +253,7 @@ switch data.SimType
         timevarying = pcolor(data.lon, data.lat, time_map(:, :, 1)');
         colorbar
         timevarying.FaceColor = 'Interp';
-        timevarying.EdgeColor = 'interp';
+        timevarying.EdgeColor = 'none';
         timevarying.FaceAlpha = 0.2;
 
         
