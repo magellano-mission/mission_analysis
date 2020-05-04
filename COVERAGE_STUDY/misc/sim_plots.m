@@ -237,7 +237,7 @@ switch data.SimType
 
     case "Time_varying"
         
-        figure
+        figure('Name', 'Satellite_Coverage')
 
         %mars texture reading
         texture = imread('Mars.jpg');
@@ -250,23 +250,27 @@ switch data.SimType
         view(0,-90);
         axis([-180 180,-90,90])
         xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-        timevarying = pcolor(data.lon, data.lat, time_map(:,:,1)');
+        timevarying = pcolor(data.lon, data.lat, time_map(:, :, 1)');
         colorbar
         timevarying.FaceColor = 'Interp';
         timevarying.EdgeColor = 'interp';
         timevarying.FaceAlpha = 0.2;
-        % timevarying = plot(lonSS(1), latSS(1),'x');
 
-        for jjjj = 1:timesteps
-            %     timevarying.XData = lonSS(jjjj); hold on
-            %     timevarying.YData = latSS(jjjj); hold on
-            %     xlim([data.lon(1) data.lon(end)])
-            %     ylim([data.lat(1) data.lat(end)])
-            timevarying.CData =  time_map(:,:,jjjj)';
+        
+        v = VideoWriter('Satellite_Coverage', 'MPEG-4');
+        v.FrameRate = 60;
+        open(v);
+        
+        for j = 1:data.NT
+            timevarying.CData =  time_map(:, :, j)';
             drawnow
-            pause(0.07)
+            frame = getframe(gcf);
+            writeVideo(v, frame);
         end
-
+        
+        close(v);
+        close('Satellite_Coverage')
+        
 %% Constellation plot & groundtrack
 % figure
 % 

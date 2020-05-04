@@ -6,6 +6,10 @@ Nb = data.Nb;
 Na = data.Na;
 Ni = data.Ni;
 
+if data.Nsat/data.Norb ~= floor(data.Nsat/data.Norb)
+    error('The number of satellites has to be a multiple of the number of walker planes, check data.m');
+end
+
 if S == "FPCP" && (Ni*Nw*Na*Nb ~= 1)
     error('SimType FPCP not compatible with non-scalar parameters, check data.m');
 end

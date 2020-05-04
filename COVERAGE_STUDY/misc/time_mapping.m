@@ -10,7 +10,7 @@ n_lat = length(data.lat);
 
 time_map = zeros(n_lon, n_lat, data.NT);
 for jj = 1 : data.NT
-    instant_states = squeeze(YYY(:, jj, :));               % 2D matrix (dimension squeezed later)
+    instant_states = YYY(:, :, jj);
     instant_map = zeros(n_lon, n_lat);           % how many sats can view a certain point in a certain istant of time
     for lo = 1 : n_lon
         lon = data.lon(lo);
@@ -21,7 +21,7 @@ for jj = 1 : data.NT
                 for kk = 1 : n_sat
                     %for each timestep, checking if point P is inside footprint
                     kkk = coverageNumber(lon, lat, T(jj), instant_states((ii-1)*n_sat + kk, :),...
-                        THETA((ii-1)*n_sat + kk,jj), h_user((ii-1)*n_sat + kk,jj), data);
+                        THETA((ii-1)*n_sat + kk, jj), h_user((ii-1)*n_sat + kk, jj), data);
                     instant_map(lo, la) = kkk + instant_map(lo, la);
                 end
             end

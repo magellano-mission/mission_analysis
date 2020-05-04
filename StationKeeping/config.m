@@ -1,11 +1,11 @@
 
 %% Simulation Setup
 data.walker = [15, 3, 2];
-data.bw = 30;              % beamwidth [deg]
+data.bw = 40;              % beamwidth [deg]
 data.inc = deg2rad(25);
 data.sma = 10500;
 
-data.trashold = 1; 
+data.trashold = 4; 
 
 % Parameters
 lon = [-180, 180];
@@ -18,11 +18,11 @@ data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                   % altitude at which evaluate the coverage ( ground level = 0)  
 
 % variations
-data.adot = 0;
-data.edot = 1e-7;
+data.adot = -1e-6;
+data.edot = 0;
 data.idot = 0;
 
-data.N_orbits = 10;            % number of orbits
+data.N_orbits = 100;            % number of orbits
 data.mi = astroConstants(14);            % Mars planetary constant
 data.T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 data.NT = 10000; 

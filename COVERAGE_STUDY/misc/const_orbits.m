@@ -15,7 +15,7 @@ gamma = deg2rad(curr.beam/2);                   % satellite FoV
 opt = odeset('AbsTol', 1e-12, 'RelTol', 1e-13);
 
 % Orbits computation
-YYY = zeros(TT, data.NT, 3);      % states matrix (3D)
+YYY = zeros(TT, 3, data.NT);      % states matrix (3D)
 THETA = zeros(TT, data.NT);        % matrix containing Earth central angles
 h_sat = zeros(TT, data.NT);            % surface altitude of the geodetic point
 h_user = zeros(TT, data.NT);  
@@ -26,7 +26,7 @@ h_user = zeros(TT, data.NT);
          X0(4) = (ii - 1) * 2 * pi / Nplane;
          [T, Y] = trajectory(X0, tspan, data, opt, curr);
          [theta, h_sat((ii-1)*n_sat + kk, :), h_user((ii-1)*n_sat + kk, :)] = footPrintRadius(gamma, Y, data);
-         YYY((ii-1)*n_sat + kk, :, :) = Y;
+         YYY((ii-1)*n_sat + kk, :, :) = Y';
          THETA((ii-1)*n_sat + kk, :) = theta;
      end
  end
