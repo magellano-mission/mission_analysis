@@ -2,7 +2,7 @@
 close all; clear; clc
 
 %% Adding to path
-addpath(genpath(fileparts(pwd)))
+%addpath(genpath(fileparts(pwd)))
 
 %% Figure Initialization
 set(0,'DefaultFigureUnits', 'normalized');
@@ -26,4 +26,4 @@ tic
 toc
 
 %% plot
-sim_plots(data, Cov_Results);
+sim_plots(data, Cov_Results, time_map);

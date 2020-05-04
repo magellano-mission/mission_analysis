@@ -1,4 +1,4 @@
-function sim_plots(data, Cov_Results)
+function sim_plots(data, Cov_Results, time_map)
 
 % bw, sma, incl, Nsat
 
@@ -235,32 +235,38 @@ switch data.SimType
             'String', {strcat('red dots: N sats visible >= ', num2str(data.trashold))},...
             'FitBoxToText', 'off');
 
+    case "Time_varying"
+        
+        figure
 
-%%
-% figure
-% axis equal
-% 
-% image(x, y, texture), hold on,
-% view(0,-90);
-% axis([-180 180,-90,90])
-% xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
-% timevarying = pcolor(lon, lat, time_map(:,:,1)');
-% colorbar
-% timevarying.FaceColor = 'Interp';
-% timevarying.EdgeColor = 'interp';
-% timevarying.FaceAlpha = 0.2;
-% % timevarying = plot(lonSS(1), latSS(1),'x');
-% 
-% for jjjj = 1:timesteps
-%     %     timevarying.XData = lonSS(jjjj); hold on
-%     %     timevarying.YData = latSS(jjjj); hold on
-%     %     xlim([lon(1) lon(2)])
-%     %     ylim([lat(1) lat(2)])
-%     timevarying.CData =  time_map(:,:,jjjj)';
-%     drawnow
-%     pause(0.07)
-% end
-% 
+        %mars texture reading
+        texture = imread('Mars.jpg');
+        x = [-180 180]; y = [-90 90];
+        texture = flipud(texture);
+        set(gca, 'YDir', 'reverse')
+        %axis equal
+
+        image(x, y, texture), hold on,
+        view(0,-90);
+        axis([-180 180,-90,90])
+        xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
+        timevarying = pcolor(data.lon, data.lat, time_map(:,:,1)');
+        colorbar
+        timevarying.FaceColor = 'Interp';
+        timevarying.EdgeColor = 'interp';
+        timevarying.FaceAlpha = 0.2;
+        % timevarying = plot(lonSS(1), latSS(1),'x');
+
+        for jjjj = 1:timesteps
+            %     timevarying.XData = lonSS(jjjj); hold on
+            %     timevarying.YData = latSS(jjjj); hold on
+            %     xlim([data.lon(1) data.lon(end)])
+            %     ylim([data.lat(1) data.lat(end)])
+            timevarying.CData =  time_map(:,:,jjjj)';
+            drawnow
+            pause(0.07)
+        end
+
 %% Constellation plot & groundtrack
 % figure
 % 

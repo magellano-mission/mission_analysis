@@ -1,10 +1,9 @@
-
 %% Simulation Setup
 data.Norb = 3;                  %wl
 data.walk_phas = 2;
 
 
-data.Nsat = 15;
+data.Nsat = 1;
 data.bw = 30;              % beamwidth [deg]
 data.inc = deg2rad(25);
 data.sma = 10500;
@@ -20,7 +19,7 @@ data.perturb = false;
 
 % Parameters
 lon = [-180, 180];          
-lat = [-30, 30];
+lat = [-90, 90];
 disc = [50 50];             % discretization grid
 data.lon = linspace(lon(1), lon(2), disc(1));
 data.lat = linspace(lat(1), lat(2), disc(2));
@@ -42,13 +41,14 @@ data.theta_Airy_0 = 0;             % Mars principal meridian
 %% plot selection
 
 % data.SimType = "Dani";
-data.SimType = "FPCP"; 
-    data.SubType = "mean"; 
-    %data.subType = "min"; 
+ data.SimType = "FPCP"; 
+     data.SubType = "mean"; 
+%    data.SubType = "min"; 
 % data.SimType = 'none';
 % data.SimType = "percent_cov";
 % data.SimType = "max_time_gap";
 % data.SimType = "mean_time_gap";
 % data.SimType = "plot_belli";
+%data.SimType =  "Time_varying";
 
 clearvars -except data
