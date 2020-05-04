@@ -4,7 +4,7 @@ close all, clear all, clc
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.t_BO = 3000000;                                 % burnout time (chemical thrust)
 parameters.T = [-10; 0; 0];                                % thrust [N] (constant for the moment)
-parameters.Is = 200;                                       % specific impulse [s]
+parameters.Isp = 200;                                       % specific impulse [s]
 parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
 parameters.c_r = 0.5;
 parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
