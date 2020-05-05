@@ -20,7 +20,7 @@ if parameters.isInterp == 1
         mu = astroConstants(4);
         
         X0 = zeros(7,1);
-        X0(1:6) = uplanet(parameters.t0sym, 4);
+        X0(1:6) = uplanet(parameters.t0sym, 3);
         [X0(1:3), X0(4:6)] = kep2car2(X0(1:6),mu);
     
         [T, states, parout] = cart_cont_thrust_model(X0, parameters);
