@@ -1,4 +1,4 @@
-function [TT, YY, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = capture_plot(kep_cap_desired, delta,rM, mu, Thrust , N_firings, parameters)
+function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = capture_plot(kep_cap_desired, delta,rM, mu, Thrust , N_firings, parameters)
     %Plot of asymptotes and hyperbolic path in occurrence of the flyby
     %   INPUT
     %   - delta: deflection angle (free parameters JUST TO RUN SIMULATIONS NOW)
@@ -104,45 +104,47 @@ function [TT, YY, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = capture
     plot3(r_desired(1,1), r_desired(2,1), r_desired(3,1), 'o','DisplayName','Hyperbola Pericenter'), hold on
     
     X0_hyp = zeros(7,1);
-[rr0, vv0] = kep2car2(kep_hyp_arr, mu);
-X0_hyp(1:3) = rr0;
-X0_hyp(4:6) = vv0;
+    [rr0, vv0] = kep2car2(kep_hyp_arr, mu);
+    X0_hyp(1:3) = rr0;
+    X0_hyp(4:6) = vv0;
 
-parameters.delta_v_req =  norm(dv_req)*1000;  %definition of desired delta_v
-parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400;
-X0_hyp(4:6) = -X0_hyp(4:6);
-X0_hyp = [X0_hyp; 0];      
-%
-[~, Y] = cart_cont_thrust_model(X0_hyp, parameters);
+    parameters.delta_v_req =  norm(dv_req)*1000;  %definition of desired delta_v
+    parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400;
+    X0_hyp(4:6) = -X0_hyp(4:6);
+    X0_hyp = [X0_hyp; 0];      
+    %
+    [~, Y] = cart_cont_thrust_model(X0_hyp, parameters);
 
-%initial hyperbola plot
-plot3(Y(:,1), Y(:,2), Y(:,3), ':','DisplayName','Uncontrolled Hyperbolic flight'), hold on
+    %initial hyperbola plot
+    plot3(Y(:,1), Y(:,2), Y(:,3), ':','DisplayName','Uncontrolled Hyperbolic flight'), hold on
 
-parameters.tmax = parameters.t0sym +  (dt_hyp - delta_t_before_p)/86400;                                
-[T, Y] = cart_cont_thrust_model(X0_hyp, parameters);
-TT = T;
-YY = Y;
+    parameters.tmax = parameters.t0sym +  (dt_hyp - delta_t_before_p)/86400;                                
+    [T, Y, P] = cart_cont_thrust_model(X0_hyp, parameters);
+    
+    TT = T;
+    YY = Y;
+    parout = P;
+    
+    plot3(YY(:,1), YY(:,2), YY(:,3),'DisplayName','Effective Hyperbolic flight'), hold on
+    plot3(YY(1,1), YY(1,2), YY(1,3), 'ro','DisplayName','SOI injection'), hold on
 
-plot3(YY(:,1), YY(:,2), YY(:,3),'DisplayName','Effective Hyperbolic flight'), hold on
-plot3(YY(1,1), YY(1,2), YY(1,3), 'ro','DisplayName','SOI injection'), hold on
+    % thrust activation
+    parameters.t0sym = parameters.tmax;
+    parameters.tmax = parameters.t0sym + parameters.t_BO/86400;
+    parameters.T = Thrust;              % thrust [N] (constant for the moment)
 
-% thrust activation
-parameters.t0sym = parameters.tmax;
-parameters.tmax = parameters.t0sym + parameters.t_BO/86400;
-parameters.T = Thrust;              % thrust [N] (constant for the moment)
+    T0_firing = parameters.t0sym*86400;
+    Tend_firing = parameters.tmax*86400;
 
-T0_firing = parameters.t0sym*86400;
-Tend_firing = parameters.tmax*86400;
+    [T, Y, P] = cart_cont_thrust_model(YY(end,:), parameters);
 
-[T, Y] = cart_cont_thrust_model(YY(end,:), parameters);
-
-plot3(Y(:,1), Y(:,2), Y(:,3), 'r','DisplayName',strcat('Firing (T = ', num2str(norm(parameters.T)), 'N, tBO = ', num2str(norm(parameters.t_BO)),'s)')), hold on
-plot3(Y(1,1), Y(1,2), Y(1,3), 'o', 'MarkerSize',15,'DisplayName','Firing start'), hold on
-plot3(Y(end,1), Y(end,2), Y(end,3), 'ro', 'MarkerSize',15,'DisplayName','Firing end'), hold on
+    plot3(Y(:,1), Y(:,2), Y(:,3), 'r','DisplayName',strcat('Firing (T = ', num2str(norm(parameters.T)), 'N, tBO = ', num2str(norm(parameters.t_BO)),'s)')), hold on
+    plot3(Y(1,1), Y(1,2), Y(1,3), 'o', 'MarkerSize',15,'DisplayName','Firing start'), hold on
+    plot3(Y(end,1), Y(end,2), Y(end,3), 'ro', 'MarkerSize',15,'DisplayName','Firing end'), hold on
 
 YY = [YY; Y];
 TT = [TT; T];
-
+parout = [parout; P];
 
 % Thrust de-activated
 
@@ -153,10 +155,11 @@ parameters.t0sym = parameters.tmax;
 parameters.tmax = parameters.t0sym + T_orb/86400;
 parameters.T = [0; 0; 0];            
 
-[T, Y_arr] = cart_cont_thrust_model(YY(end,:), parameters);
+[T, Y_arr, P] = cart_cont_thrust_model(YY(end,:), parameters);
 
 YY = [YY; Y_arr];
 TT = [TT; T];
+parout = [parout; P];
 
 figure1 = figure(1);
 plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
@@ -192,30 +195,30 @@ annotation(figure1,'textbox',...
     'FitBoxToText','on');
 
 
-%delta v
-figure()
-delta_v_eff = parameters.Isp * 9.81 * log(parameters.M0./(parameters.M0 - YY(:,7)));
-plot(TT, delta_v_eff), hold on, title('Delta v profile'), ylabel('Delta v [m/s]'), xlabel('t [s]')
-yline(parameters.delta_v_req,'b-'), hold on,
-xline(T0_firing,'r'), hold on, xline(Tend_firing,'r'), hold off
-legend('Delta_v(t)', 'Required Impulsive Delta v', strcat('t_BO:', num2str(parameters.t_BO) ,' s'))
-%keplerian parameters
-figure()
-sgtitle('Keplerian Parameters variation')
-ttx{1} = 'a'; ttx{2} = 'e';
-ttx{3} = 'i'; ttx{4} = 'OM'; 
-ttx{5} = 'om'; ttx{6} = 'th';
+    %delta v
+    figure()
+    delta_v_eff = parameters.Isp * 9.81 * log(parameters.M0./(parameters.M0 - YY(:,7)));
+    plot(TT, delta_v_eff), hold on, title('Delta v profile'), ylabel('Delta v [m/s]'), xlabel('t [s]')
+    yline(parameters.delta_v_req,'b-'), hold on,
+    xline(T0_firing,'r'), hold on, xline(Tend_firing,'r'), hold off
+    legend('Delta_v(t)', 'Required Impulsive Delta v', strcat('t_BO:', num2str(parameters.t_BO) ,' s'))
+    %keplerian parameters
+    figure()
+    sgtitle('Keplerian Parameters variation')
+    ttx{1} = 'a'; ttx{2} = 'e';
+    ttx{3} = 'i'; ttx{4} = 'OM'; 
+    ttx{5} = 'om'; ttx{6} = 'th';
 
-YY_kep = YY;
-for kk = 1:length(TT)
-    YY_kep(kk,1:6) = car2kep(YY(kk,1:3), YY(kk,4:6), mu);
-end
-YY_kep(:,6) = real(YY_kep(:,6));
-for kk = 1:6
-    YY_kep(end,kk)
-    subplot(2,3,kk), plot(TT, YY_kep(:,kk));
-    title (ttx{kk})
-end
+    YY_kep = YY;
+    for kk = 1:length(TT)
+        YY_kep(kk,1:6) = car2kep(YY(kk,1:3), YY(kk,4:6), mu);
+    end
+    YY_kep(:,6) = real(YY_kep(:,6));
+    for kk = 1:6
+        YY_kep(end,kk)
+        subplot(2,3,kk), plot(TT, YY_kep(:,kk));
+        title (ttx{kk})
+    end
 end
 
 % Function used to get a correction on the theta for the hyperbola arc to

@@ -1,4 +1,4 @@
-function [T, Y, parout] = cart_cont_thrust_model(X0, parameters)
+function [T, Y, parout, t_e, y_e, i_e] = cart_cont_thrust_model(X0, parameters)
  function [dxdt, parout] = cart_cont_thrust(t_seconds, x, parameters)
 
     %parameteres :
@@ -16,10 +16,11 @@ function [T, Y, parout] = cart_cont_thrust_model(X0, parameters)
         J2 = 0.00196; %Mars J2
     end
     
+    in_eclipse = 0;
     
     %States definition
-    rr = x(1:3);
-    vv = x(4:6);
+    rr = x(1:3); if size(rr,1) < size(rr,2) rr = rr'; end
+    vv = x(4:6); if size(vv,1) < size(vv,2) vv = vv'; end
     %Damped prop mass (>0)
     Mprop = x(7);
     
@@ -31,7 +32,7 @@ function [T, Y, parout] = cart_cont_thrust_model(X0, parameters)
     
     % Thrust Vector (add burnout time - callback and eclipses)
     M = M0 - Mprop;
-    a_thrust = Thrust/M/1000;
+    a_thrust = ((in_eclipse == 0) && (parameters.isEP == 0)) * Thrust/M/1000;
 
     %DISTURBANCES
     if parameters.isPerturbed
@@ -156,7 +157,16 @@ function [T, Y, parout] = cart_cont_thrust_model(X0, parameters)
 
 tlast = 0;                              % integration time
 Itot = 0;                           % integral over the time of Vout
-[T, Y] = ode15s(@cart_cont_thrust,[parameters.t0sym parameters.tmax]*86400, X0, parameters.opt, parameters);
-% [~, parout] = cart_cont_thrust(T, Y, parameters);
+
+if parameters.event == 1
+    [T, Y, t_e, y_e, i_e] = ode15s(@cart_cont_thrust,[parameters.t0sym parameters.tmax]*86400, X0, parameters.opt, parameters);
+else
+    [T, Y] = ode15s(@cart_cont_thrust,[parameters.t0sym parameters.tmax]*86400, X0, parameters.opt, parameters);
+end
+parout = [];
+for kkk=1:length(T)
+    [~, P] = cart_cont_thrust(T(kkk), Y(kkk,:), parameters);
+    parout = [parout; P];
+end
 
 end
