@@ -8,6 +8,12 @@
 
 close all, clear, clc
 
+
+%these are all the parameters that we are using, changing among the code:
+%t_BO
+%thrust
+%t0sym tmax
+
 parameters.isInterp = 0;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.isPerturbed = 0;                                % perturbation switch 0 ,too slow :(

@@ -22,10 +22,10 @@ for i = 1 : length(t_in)
         tfin = t_fin(j);
                      
         [k_E, ~] = uplanet(tin, 3);
-        [r_E, v_E] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+        [r_E, v_E] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
         
         [k_M, ~] = uplanet(tfin, 4);
-        [r_M, v_M] = kep2car2(k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6), mu_s);
+        [r_M, v_M] = kep2car2([k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6)], mu_s);
                 
         [~ , ~ ,~, ~, VI, VF, ~, ] = lambertMR(r_E, r_M, (tfin- tin)*24*3600 , mu_s);
         

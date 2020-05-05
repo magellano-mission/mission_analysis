@@ -30,10 +30,10 @@ EM_SP = (E_P*M_P) / abs(E_P-M_P);
 
 %% Deltav min for the IT, Delta V at the departure and arrival hyp
 [k_E, ~] = uplanet(Earth_time, 3);
-[r_E, v_E] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+[r_E, v_E] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
         
 [k_M, ~] = uplanet(Mars_time, 4);
-[r_M, v_M] = kep2car2(k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6), mu_s);
+[r_M, v_M] = kep2car2([k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6)], mu_s);
                 
 [~, ~ ,~, ~, VI, VF, ~, ~] = lambertMR(r_E, r_M, (Mars_time- Earth_time)*24*3600 , mu_s);
         

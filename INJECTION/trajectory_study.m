@@ -1,9 +1,10 @@
 %% CONTINUOS THRUST
 close all, clear all, clc
-
+%GAUSS INTEGRATOR REQUIRES SOME MODIFICATIONS
+parameters.isPerturbed = 0;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.t_BO = 3000000;                                 % burnout time (chemical thrust)
-parameters.T = [-10; 0; 0];                                % thrust [N] (constant for the moment)
+parameters.T = [100; 0; 0];                                % thrust [N] (constant for the moment)
 parameters.Isp = 200;                                       % specific impulse [s]
 parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
 parameters.c_r = 0.5;
@@ -11,18 +12,18 @@ parameters.Across_sun = 10;                                % Cross area related 
 parameters.isInterp = 0;
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 parameters.tmax = date2mjd2000([2021, 1, 10, 0, 0, 0]);
-parameters.opt = odeset('RelTol',1e-10, 'AbsTol',1e-10,'Events', @event_cont_thrust);
-%parameters.delta_v_req = ...
+parameters.event = 0;
+parameters.opt = odeset('RelTol',1e-10, 'AbsTol',1e-10) ; %'Event', @event_cont_thrust);
+%parameters.delta_v_req = 
 
 if parameters.isInterp == 1
         mu = astroConstants(4);
         
         X0 = zeros(7,1);
         X0(1:6) = uplanet(parameters.t0sym, 4);
-        X0(3) = deg2rad(5);
-        X0(2) = 0.1;
-
-        [T, states, parout] = gauss_cont_thrust_model(X0, parameters);
+        [X0(1:3), X0(4:6)] = kep2car2(X0(1:6),mu);
+    
+        [T, states, parout] = cart_cont_thrust_model(X0, parameters);
         R_E = zeros(3,length(T));
         R_M = R_E;
         kep_E = zeros(length(T),6);
@@ -59,7 +60,7 @@ if parameters.isInterp == 1
         subplot(3,3,[7 8 9]), plot(T,states(:,7)); title('propellant mass')
 
         figure()
-        I = imread('Sun.jpg');                            % Mars image
+         I = imread('Sun.jpg');                            % Mars image
         RI = imref2d(size(I));
         RI.XWorldLimits = [-180 180];                       % Mars image x sizes
         RI.YWorldLimits = [-90 90];                         % Mars image y sizes
@@ -69,7 +70,6 @@ if parameters.isInterp == 1
         hold on
         set(planet,'FaceColor','texturemap','Cdata',I)
         axis equal
-        set(gca,'Color','black')
         plot3(R_E(1,:), R_E(2,:), R_E(3,:)), hold on
         plot3(R_M(1,:), R_M(2,:), R_M(3,:),'r'), hold on
 

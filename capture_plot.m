@@ -109,6 +109,7 @@ function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] =
     X0_hyp(4:6) = vv0;
 
     parameters.delta_v_req =  norm(dv_req)*1000;  %definition of desired delta_v
+    
     parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400;
     X0_hyp(4:6) = -X0_hyp(4:6);
     X0_hyp = [X0_hyp; 0];      

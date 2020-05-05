@@ -1,10 +1,10 @@
 function [EAA] = SAA_fun_tran(Earth_time, Mars_time)
 
 [k_E, mu_s] = uplanet(Earth_time, 3);
-[r_E, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+[r_E, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
         
 [k_M, ~] = uplanet(Mars_time, 4);
-[r_M, ~] = kep2car2(k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6), mu_s);
+[r_M, ~] = kep2car2([k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6)], mu_s);
            
 [~, ~, ~, ~, VI, ~, ~, ~] = lambertMR(r_E, r_M, (Mars_time - Earth_time)*24*3600 , mu_s);
 
@@ -22,7 +22,7 @@ for i = 1:length(t_IT)
     
     tE = t_IT(i);  
     [k_E, ~] = uplanet(tE, 3); 
-    [r, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);    
+    [r, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);    
     rr_pl(:, i) = r;
     EAA(i,1) =  acos(dot(y1(i,1:3),rr_pl(:,i)) / (norm(rr_pl(:,i))*norm(y1(i,1:3))));
     

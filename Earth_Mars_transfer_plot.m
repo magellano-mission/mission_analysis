@@ -10,7 +10,7 @@ for i = 1:length(t_E)
     
     tE = t_E(i);
     [k_E, ~] = uplanet(tE/24/3600, 3);
-    [r_E, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+    [r_E, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
     rr_E(:, i) = r_E;
     
 end
@@ -25,7 +25,7 @@ for i = 1:length(t_M)
     
     tM = t_M(i);
     [k_M, ~] = uplanet(tM/24/3600, 4);    
-    [r_M, ~] = kep2car2(k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6), mu_s);    
+    [r_M, ~] = kep2car2([k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6)], mu_s);    
     rr_M(:, i) = r_M;
     
 end
@@ -34,10 +34,10 @@ end
 %--------------------------------------------------------------------------
 
 [k_E, ~] = uplanet(Earth_time, 3);
-[r_E, v_E] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+[r_E, v_E] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
         
 [k_M, ~] = uplanet(Mars_time, 4);
-[r_M, v_M] = kep2car2(k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6), mu_s);
+[r_M, v_M] = kep2car2([k_M(1), k_M(2), k_M(3), k_M(4), k_M(5), k_M(6)], mu_s);
            
 [~, ~, e, ~, VI, VF, ~, ~] = lambertMR(r_E, r_M, (Mars_time - Earth_time)*24*3600 , mu_s);
 
