@@ -15,7 +15,7 @@ set(0,'defaultLegendInterpreter', 'latex');
 set(0,'defaultAxesTickLabelInterpreter', 'latex');
 
 %%
-run('config.m')
+run('config_box.m')
 
 %% Sim
 tic

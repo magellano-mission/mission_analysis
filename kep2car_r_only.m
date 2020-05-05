@@ -1,4 +1,4 @@
-function  [r, v] = kep2car(OrbPar)
+function  r = kep2car_r_only(OrbPar)
 %{
 geo2kep.m - This function returns the radius and the velocity in a certain
             position on the orbit knowing the orbital parameters of the orbit 
@@ -26,9 +26,6 @@ OUTPUTS:
     
 CALLED FUNCTIONS:  -  body2perif_rot.m
 
-AUTHORS: D'andrea Biagio | Frulla Piergiorgio | Inno Adriano Filippo
-
----------------------------------------------------------------------------------------------------
 %}
 
 % taking the input variables
