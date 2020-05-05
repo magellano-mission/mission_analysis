@@ -1,7 +1,7 @@
 function [TT, YY, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] = hyp2PO(kep_cap_desired, delta,rM, mu, Thrust , parameters)
     %Hyperbolic path in occurrence of the flyby
     %   INPUT
-    %   - delta: deflection angle (free parameters JUST TO RUN SIMULATIONS NOW)
+    %   - delta: deflection angle (free parameter JUST TO RUN SIMULATIONS NOW)
     %   - rM [km] planet position wrt SUN
     %   - kep_cap keplerian parameters of the desired parking orbit
     %OUTPUT

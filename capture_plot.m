@@ -68,21 +68,21 @@ function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] =
     hold all
 
     r = rSOI;
-%     xc = 0;
-%     yc = 0;
+    xc = 0;
+    yc = 0;
 
-%     theta = linspace(0,2*pi);
-%     x = r*cos(theta) + xc;
-%     y = r*sin(theta) + yc;
+    theta = linspace(0,2*pi);
+    x = r*cos(theta) + xc;
+    y = r*sin(theta) + yc;
 
-%     plot(x,y)
-%     plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'DisplayName','SOI'), hold on
+    plot(x,y)
+    plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'DisplayName','SOI'), hold on
     
-    [X, Y, Z] = ellipsoid(0, 0, 0, r, r, r, 100);    % spheric centered Mars
-    planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName','SOI');
-    hold on
-    set(planet,'FaceColor','b')
-    set(planet,'FaceAlpha',0.1)
+%     [X, Y, Z] = ellipsoid(0, 0, 0, r, r, r, 100);    % spheric centered Mars
+%     planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName','SOI');
+%     hold on
+%     set(planet,'FaceColor','b')
+%     set(planet,'FaceAlpha',0.1)
 
     I = imread('Mars.jpg');                            % Mars image
     RI = imref2d(size(I));
