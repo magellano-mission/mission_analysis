@@ -1,4 +1,4 @@
-function Ptot = getSatellitePower(x)
+function [Ptot] = getSatellitePower(x)
 % P:                power needed for satellite transmitter [W]
 %
 %   x:  [1x3]       [SMA (km), G_user (dB), bw (deg)]
@@ -11,7 +11,8 @@ function Ptot = getSatellitePower(x)
 %   data_rate_user: user uplink data-rate [bps]
 %   N:              number of users [ ]
 
- f = 401e6;             % UHF
+ %f = 401e6;             % UHF
+ f = 8.5e9;              % X-band 
  mods_sat = 1;
  data_rate_sat = 1e6;
 
@@ -31,7 +32,7 @@ lambda = c / f;     %[m]
 % Path loss
 RM = 3389.5;                                  %[m]
 h = SMA - RM;
-losses = 20 * log10(4 * pi * h / lambda);          %[dB]
+losses = 20 * log10(4 * pi * h*1e3 / lambda);          %[dB]
 design_margin = 3;                                  %[dB]
 
 % Noise power data

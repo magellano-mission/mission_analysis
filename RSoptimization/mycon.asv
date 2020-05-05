@@ -1,15 +1,15 @@
 function [c, ceq] = mycon(x)
 
 %%%%%%% constraints %%%%%%%%
- P_user_max = 30;
- LatRange = 25;
+ P_user_max = 15;
+ LatRange = 30;
  
  %%%%%% data %%%%%%%%
  mods_user = 1;
  data_rate_user = 4e6;
- N = 1;  
- %f = 401e6;
- f = 8.5e9; 
+ N = 1;
+ f = 
+ f = 401e6;
  lambda = 3e8/f;
  RM = 3389.5; 
  T_eq = 250;         %[K]
