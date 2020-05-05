@@ -1,6 +1,11 @@
 
 
-Files = ["Phobos24_26.txt", "Phobos26_28.txt", "Phobos28_30.txt", "Phobos30_32.txt", "Phobos32_34.txt"];
+Years = string(24:34);
+Ny = length(Years);
+Years = reshape(repmat(Years, [3, 1]), [1, 33]);
+FilePerYear = string(1:3);
+EndFileName = strcat(Years, "_", repmat(FilePerYear, [1, Ny]));
+Files = strcat("Phobos_", EndFileName, ".txt");
 N = length(Files);
 
 Ephs = [];
@@ -9,6 +14,8 @@ for i = 1: N
     
     T0 = Time(end);
     [M, T] = txt2matrix(Files(i));
+    M(end, :) = [];
+    T(end) = [];
     T = T + T0;
     Ephs = [Ephs; M];
     Time = [Time, T];
