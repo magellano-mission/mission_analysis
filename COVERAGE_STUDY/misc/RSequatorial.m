@@ -23,9 +23,9 @@ for i = 1:Nb
 end
 
 Rdeg = R*180/pi;
-LatRange = 30;
+LatRange = 15;
 
-feasible_map = Rdeg >= LatRange;
+feasible_map = Rdeg >= sqrt(2)*LatRange;
 
 
 % inf_map = not(feasible_map);
@@ -44,4 +44,4 @@ surf(bw, SMa, Ptot', 'EdgeColor', 'none')
 xlabel('bw [deg]'), ylabel('sma [km]'), zlabel('Ptot')
 title('equatorial RS')
 
-clearvars -except amin bmin Nsatmin Pmin P_per_sat
+clearvars -except amin bmin Nsatmin Pmin P_per_sat LatRange
