@@ -141,7 +141,7 @@ function [T, Y, parout, t_e, y_e, i_e] = cart_cont_thrust_model(X0, parameters)
     dxdt(7) =  norm(Thrust)/Isp/9.81;
     
     delta_v = Isp* 9.81 .* log(M0/ (M0 - x(7)));
-%     Itot = Itot + trapz([tlast t_seconds],[norm(Thrust) norm(Thrust)]);
+    Itot = Itot + trapz([tlast t_seconds],[norm(Thrust) norm(Thrust)]);
     parout = [M Itot delta_v];
 
  end
