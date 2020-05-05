@@ -31,31 +31,14 @@ function [value,isterminal,direction] = event_cont_thrust(t_seconds, x, paramete
 
     %SOI definition
     rSOI = rP_norm * (muP/muS)^(2/5);
-    
-%     %eclipses: 
-%     if isEP
-%         isterminal(2) = 1;
-%         
-%         %eclipse check
-%         if 
-%             eclipse = 1;
-%         else
-%             eclipse = 0;
-%         end
-%     else
-%         isterminal(2) = 0;
-%         eclipse = 1;
-%     end
-    
+       
     delta_v_actual = parameters.Isp * 9.81* log(parameters.M0/(parameters.M0 - x(7))); %[m/s]
-    eclipse = 1;
     %checks
     value = [rSOI - r_sc_norm; ...
-             eclipse; ...
              (t_seconds - t0sym) - t_BO; ...
              delta_v_actual - parameters.delta_v_req]; 
          
     %isterminal defied previously
-    direction = [0; 0; 0; 0];
+    direction = [0; 0; 0];
 end
 
