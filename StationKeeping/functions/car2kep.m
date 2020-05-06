@@ -47,6 +47,7 @@ if nn(2)<0
     OM = 2*pi - OM;
 end
 
+
 %Calcolo dell'anomalia del pericentro.
 om = acos(dot(nn,ee)/(n*e));
 if ee(3)<0
@@ -59,6 +60,11 @@ th = acos(dot(ee,rr)/(e*r));
 if vr < 0
     th = 2*pi - th;
 end
+
+
+
+
+
 
 K = [a, e, i, OM, om, th];
 

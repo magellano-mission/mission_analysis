@@ -1,4 +1,4 @@
-function [rr, vv]=kep2car(stat,mu)
+function [rr, vv]=kep2car(stat, mu)
 % [rr,vv] = kep2car(a,e,i,Om,om,th,mu) 
 % Computation of the cartesian position and velocity vectors starting from
 % keplerian parameters.
@@ -11,10 +11,6 @@ function [rr, vv]=kep2car(stat,mu)
 % vv    : [1x3]  velocity vector
 %
 % 
-
-if nargin==1
-   mu=3.98600433*1e5; % mu Earth
-end
 
 %Extracting parameters from stat
 a=stat(1); e=stat(2);

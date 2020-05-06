@@ -37,10 +37,12 @@ INPUTS:
                   
 %}
 
-R_pl = data.R_pl;                          % earth radius
+R_pl = data.R_pl;                          % planet radius
 J2 = data.J2;                              % J2 perturbation constant
+J3 = data.J3;                              % J2 perturbation constant
+J4 = data.J4;                              % J2 perturbation constant
 mi = data.mi;                              % earth gravitational constant
-w = data.w;                                %
+w = data.wM;                                
 r = norm(R);
 
 

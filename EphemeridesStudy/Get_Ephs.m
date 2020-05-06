@@ -1,5 +1,3 @@
-
-
 Years = string(24:34);
 Ny = length(Years);
 Years = reshape(repmat(Years, [3, 1]), [1, 33]);
@@ -25,6 +23,9 @@ end
 Time(1) = [];
 AU = 149597870.7;
 Ephs(:, 1) = Ephs(:, 1)*AU;
+Ephs(:, 6) = Ephs(:, 6)*pi/180;
+Ephs(:, 6) = unwrap(Ephs(:, 6));
+Ephs(:, 6) = Ephs(:, 6)*180/pi;
 
 save('PhobosEphs.mat', 'Ephs', 'Time');
 

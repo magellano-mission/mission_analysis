@@ -73,9 +73,6 @@ text.text7 = str2num(char(text.text7));
 % Vector containing the time span 
 time = (text.text1(:,1)'-text.text1(1,1))*86400;
 
-% Display format output
-format shortEng
-
 % Conversion from table to matrix
 matrix = table2array(text);
 

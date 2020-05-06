@@ -9,9 +9,6 @@ switch Moon
     
 end
 
-
-% data.Eph_T0 = mjd2000([2024 - 01 -01])
-
 time = data.Ephs_time;
 
 DayRelative = mjd2000 - data.Eph_T0;

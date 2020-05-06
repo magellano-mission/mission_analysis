@@ -52,14 +52,12 @@ AUTHORS: D'andrea Biagio | Frulla Piergiorgio | Inno Adriano Filippo
 CR = data.CR;                           % reflection coefficient
 Acs = data.Acs;                         % lateral aerea
 m_sat = data.m_sat;                     % satellite mass
-InitData = data.initialDate;            % initial date
 R_pl = data.R_pl;                       % planet radius
 P0 = 4.5*1e-6;                          % solar radiation pressure coefficient
 AU = 1.496*1e8;                         % astronomic unit
 AOverM = Acs/m_sat;                     % Am parameter
 
-InitDay = date2mjd2000(InitData);       % initial day
-DayActual = InitDay + t/86400;
+DayActual = data.InitDay + t/86400;
 
 [r_S] = - uplanet(DayActual, 4);        % retriving the sun position vector wrt the planet
 light = los(R_orbit, r_S, R_pl);        % checking the sight of ligth
