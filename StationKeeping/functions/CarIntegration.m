@@ -39,7 +39,7 @@ end
 
 %% Moon Perturbation
 if data.switchers.Moon
-    a_Phobos = MoonPerturb(DayActual, R, mi_moon, 'Phobos');
+    a_Phobos = MoonPerturb(DayActual, R, data, 'Phobos');
 %     a_Deimos = MoonPerturb(DayActual, R, mi_moon, 'Deimos');
 else
     a_Phobos = [0; 0; 0];
@@ -60,10 +60,10 @@ dY = dY';
 [kep] = car2kep(R, V, mi);
 parout{1} = kep(1);
 parout{2} = kep(2);
-parout{3} = kep(3);
-parout{4} = kep(4);
-parout{5} = kep(5);
-parout{6} = kep(6);
+parout{3} = kep(3)*180/pi;
+parout{4} = kep(4)*180/pi;
+parout{5} = kep(5)*180/pi;
+parout{6} = kep(6)*180/pi;
 
 
 end
