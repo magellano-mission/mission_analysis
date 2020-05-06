@@ -28,6 +28,10 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);  
 
 %%%%%%  PHASES
 % LEOP (lastly defined)
+% Departure hyp
+
+
+
 %% Interplanetary arc and TCM study
 
 % Preliminary Porkchop Plot
@@ -95,25 +99,28 @@ X0(1:3) = r_E; X0(4:6) = VI;
 
 %plot
 R_E = zeros(length(T_interp),3);
-R_M = R_E;
+R_M = R_E; R_J = R_M;
 kep_E = zeros(length(T_interp),6);
-kep_M = kep_E;
+kep_M = kep_E; kep_J = kep_M;
 kep_interp = kep_E;
 
 for jj = 1:length(T_interp)
     kep_E(jj,:) = uplanet(T_interp(jj)/86400,3);
     kep_M(jj,:) = uplanet(T_interp(jj)/86400,4);
+    kep_J(jj,:) = uplanet(T_interp(jj)/86400,5);
     R_E(jj,:) = kep2car2(kep_E(jj,1:6), mu);
     R_M(jj,:) = kep2car2(kep_M(jj,1:6), mu);
+    R_J(jj,:) = kep2car2(kep_J(jj,1:6), mu);
     kep_interp(jj,:) = car2kep(Y_interp(jj,1:3), Y_interp(jj,4:6), mu);
 end
 
 %@cartesian r/f (unperturbed)
 parameters.isPerturbed = 0;
 [T_interp_unp, Y_interp_unp, parout_interp_unp] = cart_cont_thrust_model(X0, parameters);
+kep_interp_unp = zeros(length(T_interp_unp), 6);
 for i=1:length(T_interp_unp)
-    kep_interp_unp = car2kep(Y_interp_unp(i,1:3), Y_interp_unp(i,4:6), mu);
-    kep_interp_unp(4:6) = rad2deg(kep_interp_unp(4:6));
+    kep_interp_unp(i,:) = car2kep(Y_interp_unp(i,1:3), Y_interp_unp(i,4:6), mu);
+    kep_interp_unp(i,4:6) = rad2deg(kep_interp_unp(i,4:6));
 end
 
 figure()
@@ -121,10 +128,12 @@ hold all,
 sgtitle('Keplerian parameters: Unperturbed vs Perturbed model')
 txtkep{1} = 'a [km]'; txtkep{2} = 'e [-]'; txtkep{3} = 'i [deg]';
 txtkep{4} = 'RAAN [deg]'; txtkep{5} = 'AP [deg]'; txtkep{6} = 'theta [deg]';
+
 for i = 1:6
+%     kep_interp_unp1 = interp1(T_interp_unp, kep_interp_unp(:,i)', T_interp ,'nearest');
     subplot(3,3,i), plot(T_interp_unp, kep_interp_unp(:,i),'r:'), hold on
-                    plot(T_interp, kep_interp(:,i),'b'),
-                    title(txtkep(i))
+    plot(T_interp, kep_interp(:,i) ,'b'), hold on
+    title(txtkep(i))
 end
 legend('Unperturbed','Perturbed')
 subplot(3,3,[7 8 9]), plot(T_interp,Y_interp(:,7),'b'); title('Expelled propellant mass')
@@ -133,20 +142,30 @@ subplot(3,3,[7 8 9]), plot(T_interp,Y_interp(:,7),'b'); title('Expelled propella
 figure_interp = figure;
 I = imread('Sun.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
-rSun = almanac('Sun','Radius','kilometers','sphere');
+rSun = 20*almanac('Sun','Radius','kilometers','sphere');
 [X, Y, Z] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
-planet = surf(X, Y, -Z,'Edgecolor', 'none'); hold on
+planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
 plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b','DisplayName','Earth trajectory'), hold on
 plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r','DisplayName','Mars trajectory'), hold on
+plot3(R_J(:,1), R_J(:,2), R_J(:,3),'r','DisplayName','Jupiter trajectory'), hold on
 
-plot3(Y_interp_unp(1,:),Y_interp_unp(2,:),Y_interp_unp(3,:),'y:', 'DisplayName','Unperturbed'), hold on
-plot3(Y_interp(1,:), Y_interp(2,:), Y_interp(3,:),'y', 'DisplayName','Perturbed'), hold on
-plot3(Y_interp(1,1), Y_interp(2,1), Y_interp(3,1),'bo', 'DisplayName','Injection'), hold on
+plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r:', 'DisplayName','Unperturbed'), hold on
+plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3),'g', 'DisplayName','Perturbed'), hold on
+plot3(Y_interp(1,1), Y_interp(1,2), Y_interp(1,3),'go', 'DisplayName','Injection'), hold on,
+plot3(Y_interp(end,1), Y_interp(end,2), Y_interp(end,3),'ro', 'DisplayName','Capture'), hold on,
+
+view([0 0 90])
 % set(gcf, 'color', 'k')
 % set(gca, 'color', 'k','visible','off'), 
-legend()
+legend('Color','white')
+
+annotation(figure_interp,'textbox',...
+    [0.75 0.15 0.2 0.45],...
+    'String',{'Departure Date:', '','Arrival Date:', '','TOF:'},...
+    'FitBoxToText','off');
+
 hold off 
 % 
 % figure()
@@ -154,7 +173,6 @@ hold off
 
 %% MOI and injection  
 %Preliminary computations 
-% Departure hyp
 Ra_PO_dep = 315 + astroConstants(23);
 Rp_PO_dep = 117 + astroConstants(23);
 
@@ -170,6 +188,7 @@ v_p_hyp = sqrt( ( v_inf_dep^2 ) + ( 2*astroConstants(13)/Rp_PO_dep ));
 deltav_PO_a = v_a_hyp - v_a_PO;
 deltav_PO_p = v_p_hyp - v_p_PO;
 
+
 % Arrival hyp
 Rp_PO_arrival = 11500:1000:15000;
 v_PO_arr = sqrt( astroConstants(14)./Rp_PO_arrival );
@@ -178,3 +197,94 @@ v_p_arr_hyp = sqrt( ( v_inf_arrival^2 ) + ( 2*astroConstants(14)./Rp_PO_arrival 
 deltav_PO_arr = v_p_arr_hyp - v_PO_arr;
 
 
+
+
+%% B-plane
+% figure('Name','B-plane')
+% mu = astroConstants(14);
+% BBB = [];
+% for rp_desired = 8500:1000:15000
+% for i_cap = 1:360
+%     i_cap = deg2rad(i_cap);
+% 
+%     [e_cap, dv_min, delta_opt] = hyp_opt(rp_desired, (VF' - v_M), mu);
+% 
+%     kep_cap_desired = [rp_desired/(1-e_cap) e_cap i_cap 0 0 0];
+% 
+%     muS = astroConstants(4);
+%     %Discretization of hyperbola
+%     n_iter = 1000;
+% 
+%     delta = asin(1/(1 + rp_desired*norm(VF'-v_M)/mu ));
+% 
+%     %Computation of the hyperbola
+%     e_m = 1/sin(delta/2);
+%     h_m = sqrt(mu*rp_desired*(1+e_m));
+%     a_m =((h_m^2)/mu)/(e_m^2-1);
+%     theta_inf = acos(1/e_m);
+%     nrM = norm(r_M); 
+%     %SOI definition
+%     rSOI = nrM * (mu/muS)^(2/5);
+% 
+%     correc_m_f = @(alpha) correc_SOI_f(rSOI,alpha,-a_m,e_m,theta_inf,mu);
+%     correc_m = fminsearch(correc_m_f,0);
+%     ltheta_m = linspace(0,theta_inf+correc_m,n_iter);
+%     lt_m = zeros(1,n_iter);
+%     %TOF computation
+%     for i = 1:n_iter
+%         %eccentric anomalies
+%         f_m = 2*atanh(sqrt((e_m-1)/(e_m+1))*tan(ltheta_m(i)/2));
+%         m_m = e_m*sinh(f_m) - f_m;
+%         lt_m(i) = m_m*(h_m^3/mu^2)/((e_m^2-1)^(3/2));
+%     end
+%     %Computation of TOF
+%     dt_hyp = abs(lt_m(1) - lt_m(n_iter)); % [s]
+% 
+%     %Hyperbolas plot
+%     l_pos_Vect_m = zeros(3,n_iter);
+% 
+%     kep_hyp_arr = kep_cap_desired;
+%     kep_hyp_arr(1) = -a_m;
+%     kep_hyp_arr(2) = e_m;
+% 
+%     [~, v_ell] = kep2car2(kep_cap_desired, mu);
+%     [~, v_hyp] = kep2car2(kep_hyp_arr, mu);
+%     dv_req = v_ell - v_hyp; %just a check
+% 
+%     for i = 1:n_iter
+%         kep_hyp_arr(6) = ltheta_m(i);
+%         [r_m,~]= kep2car2(kep_hyp_arr,mu);
+%         l_pos_Vect_m(:,i) = r_m;
+%     end
+% 
+%     X0_hyp = zeros(6,1);
+%     [rr_inf, vv_inf] = kep2car2(kep_hyp_arr, mu);
+%     X0_hyp(1:3) = rr_inf;
+%     X0_hyp(4:6) = -vv_inf;   
+% 
+%     [BB, B, theta, STR] = B_plane(kep_hyp_arr, X0_hyp(1:3), X0_hyp(4:6), mu);
+% 
+%     BBB = [BBB, BB];
+%     end
+% 
+%     quiver3(0, 0, 0, STR(1,1), STR(2,1), STR(3,1), norm(BB)), hold on
+%     quiver3(0, 0, 0, STR(1,2), STR(2,2), STR(3,2), norm(BB)), hold on
+%     quiver3(0, 0, 0, STR(1,3), STR(2,3), STR(3,3), norm(BB)), hold on
+% 
+%     plot3(BBB(1,:), BBB(2,:), BBB(3,:)), hold on
+% 
+%     I = imread('Mars.jpg'); RI = imref2d(size(I));
+%     RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
+%     rMars = almanac('Mars','Radius','kilometers','sphere');
+%     [X, Y, Z] = ellipsoid(0, 0, 0, rMars, rMars, rMars, 100); % spheric centered Mars
+%     planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
+%     set(planet,'FaceColor','texturemap','Cdata',I), axis equal
+% 
+%     legend('S', 'T', 'R')
+%     % Function used to get a correction on the theta for the hyperbola arc to
+%     % reach the Sphere of Influence
+% end
+function val = correc_SOI_f(rSOI,alpha,a,e,theta,muM)
+    [r,~]= kep2car2([a,e,0,0,0,theta+alpha],muM);
+    val = (norm(r)-rSOI)^2;
+end

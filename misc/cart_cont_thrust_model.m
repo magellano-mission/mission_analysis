@@ -108,6 +108,20 @@ function [T, Y, parout, t_e, y_e, i_e] = cart_cont_thrust_model(X0, parameters)
         % Moon gravitational acceleration
         a_Jupiter = mu_J .* (rr_rel_J/r_rel_J^3 - rr_J/r_J^3);   
         
+        % MARS
+        mu_M = astroConstants(14);
+        kep_M = uplanet(t_seconds/86400,5);
+        [rr_M, ~] = kep2car2(kep_M, mu);
+        r_M = norm(rr_J); %[km]
+
+        % Retrieving relative position moon / spacecraft
+        rr_rel_M = rr_M - rr;
+        r_rel_M = norm(rr_rel_M);
+
+        % Moon gravitational acceleration
+        a_Mars = mu_M .* (rr_rel_M/r_rel_M^3 - rr_M/r_M^3);   
+        
+        
         % EARTH
         mu_E = astroConstants(13);
         kep_E = uplanet(t_seconds/86400, 5);
@@ -124,7 +138,7 @@ function [T, Y, parout, t_e, y_e, i_e] = cart_cont_thrust_model(X0, parameters)
         %SRP 
         a_SRP = solarPressure(rr, M, parameters);
         
-        a_tot = a_Jupiter + a_Earth + a_SRP;
+        a_tot = a_Jupiter + a_Mars + a_Earth + a_SRP;
     end
     else
         a_tot = zeros(3,1);

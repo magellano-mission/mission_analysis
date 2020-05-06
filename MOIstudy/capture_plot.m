@@ -44,8 +44,7 @@ function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] =
     end
 
     %Computation of TOF
-    dt_hyp = abs(lt_m(1) - lt_m(n_iter));
-%     dt_hyp = (dt_m)/3600;
+    dt_hyp = abs(lt_m(1) - lt_m(n_iter)); % [s]
 
     %Hyperbolas plot
     l_pos_Vect_m = zeros(3,n_iter);
@@ -109,7 +108,12 @@ function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] =
     X0_hyp(4:6) = vv0;
 
     parameters.delta_v_req =  norm(dv_req)*1000;  %definition of desired delta_v
-    
+%     parameters.mP_req = parameters.M0 *(exp(parameters.delta_v_req/(9.81*parameters.delta_v_req)) - 1)/ ...
+%                                         exp(parameters.delta_v_req/(9.81*parameters.delta_v_req));
+%    
+%     parameters.t_BO = parameters.mP_req/norm(Thrust)* parameters.Isp * 9.81;
+%     delta_t_before_p = parameters.t_BO/2; 
+
     parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400;
     X0_hyp(4:6) = -X0_hyp(4:6);
     X0_hyp = [X0_hyp; 0];      
@@ -143,30 +147,30 @@ function [TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_cap_arr] =
     plot3(Y(1,1), Y(1,2), Y(1,3), 'o', 'MarkerSize',15,'DisplayName','Firing start'), hold on
     plot3(Y(end,1), Y(end,2), Y(end,3), 'ro', 'MarkerSize',15,'DisplayName','Firing end'), hold on
 
-YY = [YY; Y];
-TT = [TT; T];
-parout = [parout; P];
+    YY = [YY; Y];
+    TT = [TT; T];
+    parout = [parout; P];
 
-% Thrust de-activated
+    % Thrust de-activated
 
-kep_cap_arr = car2kep(YY(end,1:3), YY(end,4:6), mu);
-T_orb = 2*pi*sqrt(kep_cap_arr(1)^3/mu);
+    kep_cap_arr = car2kep(YY(end,1:3), YY(end,4:6), mu);
+    T_orb = 2*pi*sqrt(kep_cap_arr(1)^3/mu);
 
-parameters.t0sym = parameters.tmax;
-parameters.tmax = parameters.t0sym + T_orb/86400;
-parameters.T = [0; 0; 0];            
+    parameters.t0sym = parameters.tmax;
+    parameters.tmax = parameters.t0sym + T_orb/86400;
+    parameters.T = [0; 0; 0];            
 
-[T, Y_arr, P] = cart_cont_thrust_model(YY(end,:), parameters);
+    [T, Y_arr, P] = cart_cont_thrust_model(YY(end,:), parameters);
 
-YY = [YY; Y_arr];
-TT = [TT; T];
-parout = [parout; P];
+    YY = [YY; Y_arr];
+    TT = [TT; T];
+    parout = [parout; P];
 
-figure1 = figure(1);
-plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
-legend()
+    figure1 = figure(1);
+    plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
+    legend()
 
-annotation(figure1,'textbox',...
+    annotation(figure1,'textbox',...
     [0.075 0.65 0.15 0.3],...
     'String', ...
     {'Desired Orbit Kep:', ...

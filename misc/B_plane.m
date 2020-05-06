@@ -1,4 +1,4 @@
-function [BB, B_, theta, STR] = B_plane(kep_hyp, rr,vv, mu)
+function [BB, B, theta, STR] = B_plane(kep_hyp, rr,vv, mu)
 %computation of B-plane
 r = norm(rr); %position at soi
 v = norm(vv); %v_inf
@@ -9,7 +9,7 @@ e = norm(ee);
 
 beta = acos(1/e);
 
-S_ = cos(beta)*ee/e + sin(beta)*cross(h_,(ee/e));
+S_ = vv/v;
 
 NN = [0;0;1];
 
