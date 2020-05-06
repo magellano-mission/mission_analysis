@@ -12,10 +12,6 @@ function [rr, vv]=kep2car(stat,mu)
 %
 % 
 
-if nargin==1
-   mu=3.98600433*1e5; % mu Earth
-end
-
 %Extracting parameters from stat
 a=stat(1); e=stat(2);
 i=stat(3); Om=stat(4); 
