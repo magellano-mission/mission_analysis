@@ -26,15 +26,15 @@ const = PropagatedOrbits(data);
 toc
 
 %% SK maneuver
-dv = SKmaneuver([const.a(end), const.e(end), const.i(end)], data);
+dv = SKmaneuver([const.Y(end, 1), const.Y(end, 2), const.Y(end, 3)], data);
 
 %% plots
 
-figure, plot(const.T, const.a), ylabel('a');
-figure, plot(const.T, const.e), ylabel('e');
-figure, plot(const.T, const.i), ylabel('i');
-figure, plot(const.T, const.RAAN), ylabel('RAAN');
-figure, plot(const.T, const.PA), ylabel('PA');
-figure, plot(const.T, const.th), ylabel('theta');
-figure, plot3(const.Y(:, 1), const.Y(:, 2), const.Y(:, 3))
+figure, plot(const.T, const.Y(:, 1)), ylabel('a');
+figure, plot(const.T, const.Y(:, 2)), ylabel('e');
+figure, plot(const.T, rad2deg(const.Y(:, 3))), ylabel('i');
+figure, plot(const.T, rad2deg(const.Y(:, 4))), ylabel('RAAN');
+figure, plot(const.T, rad2deg(const.Y(:, 5))), ylabel('PA');
+figure, plot(const.T, rad2deg(const.Y(:, 6))), ylabel('theta');
+% figure, plot3(const.Y(:, 1), const.Y(:, 2), const.Y(:, 3))
 

@@ -30,17 +30,18 @@ v_GNSS = sqrt(mi/a_GNSS);            % linear velocity of the GNSS constellation
 
 %% Orbital Parameters secular variation (J2 on GNNS orbit) 
 
-a_J2 = 8000:20:11000;
-
+a_J2 = 6400:20:11000;
+e_GNSS = 1e-5;
+i_GNSS = 1;
 K = -3*J2*sqrt(mi)*R^2./(2*a_J2.^(7/2)*(1-e_GNSS^2)^2);
 
 % variation per seconds in rad
 RAAN_dot = K*cosd(i_GNSS);
-% PA_dot = K*(5/2*(sind(i_GNSS))^2 - 2);
+PA_dot = K*(5/2*(sind(i_GNSS))^2 - 2);
 
 % variation per days in degrees
 RAAN_d = RAAN_dot*86400*365*180/pi;
-% PA_d = PA_dot*86400*365*180/pi;
+PA_d = PA_dot*86400*365*180/pi;
 
 % t = 0:365; 
 
@@ -48,9 +49,9 @@ figure; plot(a_J2, RAAN_d, 'LineWidth', 2);
 xlabel('a [km]'); ylabel(' \Delta \Omega [deg/year]'); 
 title('RAAN variation due to J2');
 
-% figure; plot(t, t*PA_d, 'LineWidth', 2);
-% xlabel('t [days]'); ylabel(' PA [deg]'); 
-% title('PA variation');
+figure; plot(a_J2, PA_d, 'LineWidth', 2);
+xlabel('a [km]'); ylabel(' PA [deg]'); 
+title('PA variation');
 
 %% Phasing Maneuvers
 % computing the cost of the maneuver wrt the phasing angle and number of revolutions

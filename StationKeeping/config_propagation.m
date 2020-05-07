@@ -7,6 +7,8 @@ data.walker = [1, 1, 1];
 data.inc = deg2rad(25);
 data.sma = 10500;
 
+data.X0_kep = [data.sma, 1e-2, data.inc, 359.999/180*pi, pi/3, 0];
+
 % data.trashold = 4; 
 
 % Parameters
@@ -22,15 +24,12 @@ data.sma = 10500;
 N_orbits = 100;                         % number of orbits
 data.mi = astroConstants(14);               % Mars planetary constant
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
-data.tend = 86400*10;
-
-% data.NT = 100000; 
-% data.tspan = linspace(0, N_orbits*T_orb, data.NT);
+data.tend = 86400*365;
 
 %% perturbation switchers
-data.switchers.Moon = false;
+data.switchers.Moon = true;
 data.switchers.grav = true;
-data.switchers.SRP = false;
+data.switchers.SRP = true;
 
 %% Mars model
 data.rM_eq = 3393.4;         % equatorial radius [km]
@@ -56,8 +55,21 @@ data.AOverM = Acs/data.m_sat;                       % Am parameter
 
 %% Ephemerides
 data.Eph_T0 = date2mjd2000([2024 01 01 0 0 0]);
-data.Ephs_Phobos = Ephs;
-data.Phobos_time = Time;
+Eph_time_mjd2000 = Time/86400 + data.Eph_T0;
+mjd2000_end = data.InitDay + data.tend/86400;
+
+if (mjd2000_end > Eph_time_mjd2000(end)) && data.switchers.Moon
+    error('simulation time is too long, not compatible with Moon Ephemerides')
+end
+
+ind_start = find(Eph_time_mjd2000 > data.InitDay);
+ind_start = ind_start(1) - 1;
+
+ind_end = find(Eph_time_mjd2000 > mjd2000_end);
+ind_end = ind_end(1) + 1;
+
+data.Ephs_Phobos = Ephs(ind_start:ind_end, :);
+data.Phobos_time_mjd2000 = Eph_time_mjd2000(ind_start:ind_end);
 
 Mphobos = 1.07e16; 
 Mdeim = 1.4762e15;
@@ -66,6 +78,6 @@ data.miPhob = Mphobos * G;
 data.miDeim = Mdeim * G;
 
 %% ode set
-data.opt = odeset('AbsTol', 1e-15, 'RelTol', 1e-13);
+data.opt = odeset('AbsTol', 1e-9, 'RelTol', 1e-7);
 
 clearvars -except data
