@@ -1,4 +1,4 @@
-%% INTERPLANETARY TRANSFER
+%% INTERPLANETARY TRANSFER AND TCM STUDY
 %Propagation of the service module journey from PO (?) to Mars PO
 %change the Thrust vector, M0, t_BO, Isp, (Mp0 is an output at the moment,
 %myabe it is better to understand the order of magnitudes involved)
@@ -12,7 +12,7 @@
 
 close all, clear, clc
 
-parameters.isInterp = 0;
+parameters.isInterp = 1;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.t_BO = 30*60;                                   % burnout time (chemical thrust)
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
@@ -26,13 +26,8 @@ parameters.dt_p = parameters.t_BO/2;                       %time distance from p
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   %,'Events', @event_cont_thrust);
 
-%%%%%%  PHASES
-% LEOP (lastly defined)
-% Departure hyp
 
-
-
-%% Interplanetary arc and TCM study
+%% Interplanetary arc - Lambert
 
 % Preliminary Porkchop Plot
 
@@ -70,7 +65,19 @@ Dv2_best = norm(VF' - v_M);
 
 [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
-%%
+%% Injection hyperbola 
+
+muE = astroConstants(13); 
+v_inf_plus = v_E - VI';
+rp_opt_parc = 2*muE/v_inf_plus^2;%TBC
+e_opt_parc = 0;
+a_opt_parc = rp_opt_parc/(1 - e_opt_parc);
+i_opt_parc = deg2rad(26.7);
+kep_parc = [a_opt_parc e_opt_parc i_opt_parc 0 0 0];%TBC
+
+
+
+%% Propagation of perturbed model
 %perturbed model (and later TCM maneuvers definition)
 %initialization
 
@@ -96,7 +103,7 @@ X0(1:3) = r_E; X0(4:6) = VI;
 
 %@cartesian r/f
 [T_interp, Y_interp, parout_interp] = cart_cont_thrust_model(X0, parameters);
-
+%%
 %plot
 R_E = zeros(length(T_interp),3);
 R_M = R_E; R_J = R_M;
@@ -183,16 +190,24 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);
 
 parNS = parameters;
 parNS2 = parameters;
+parNS3 = parameters;
 parRS = parameters;
 
-dv_instant = ceil(0.2*length(T_interp));
+dv_instant = ceil(0.8*length(T_interp));
 
 %capture delta_v
 [kepM, muS] = uplanet(parameters.t0sym, 4);
 rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
-kep_NS = [10500 0 deg2rad(25) 0 0 0];
+%first launch
+kep_NS = [9850 0 deg2rad(25) 0 0 0];
+kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
+%second launch
+kep_NS3 = [10500 0 deg2rad(25) 0 0 0]; 
+kep_RS = [6400 0 deg2rad(0) 0 0 0];
+
+%first launch
 %NS
 [ YM_NS, hyp_NS, kep_cap_NS] = ...
 capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
@@ -207,10 +222,9 @@ parNS.isInterp = 1;
 [~, Y_NS, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS, 0], parNS);
 
 %NS2
-kep_NS2 = [9500 1e-8 deg2rad(25) 0 0 0];
 parNS2.isInterp = 1;
 [ YM_NS2, hyp_NS2, kep_cap_NS2] = ...
-capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1:3, 1);
@@ -222,9 +236,21 @@ parNS2.tmax = Mars_time;
 parNS2.isInterp = 1;
 [~, Y_NS2, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS2, 0], parNS2);
 
-% RS
-kep_RS = [6400 0 deg2rad(0) 0 0 0];
+%second launch
+%NS
+[ YM_NS3, hyp_NS3, kep_cap_NS3] = ...
+capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+%definition of the last TCM
+YSOI_NS3 = rM + YM_NS3(1:3, 1);
+[a_NS3, p_NS3 ,e_NS3, err_NS3, VI_NS3, VF_NS3, tspar_NS3, th_NS3] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
+dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
 
+parNS3.t0sym = T_interp(dv_instant)/86400;
+parNS3.tmax = Mars_time;
+parNS3.isInterp = 1;
+[~, Y_NS3, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS3, 0], parNS3);
+
+% RS
 parRS.isInterp = 1;
 [ YM_RS, hyp_RS, kep_cap_RS] = ...
 capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
@@ -244,9 +270,10 @@ plot3(Y_NS(:,1), Y_NS(:,2), Y_NS(:,3), 'k', 'DisplayName','NS injection'); hold 
 plot3(Y_NS(1,1), Y_NS(1,2), Y_NS(1,3), 'ko', 'DisplayName','NS TCM');hold on
 plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS injection');hold on
 plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'ko', 'DisplayName','NS TCM');hold on
+plot3(Y_NS3(:,1), Y_NS3(:,2), Y_NS3(:,3), 'k', 'DisplayName','NS3 injection'); hold on
+plot3(Y_NS3(1,1), Y_NS3(1,2), Y_NS3(1,3), 'ko', 'DisplayName','NS3 TCM');hold on
 plot3(Y_RS(:,1), Y_RS(:,2), Y_RS(:,3), 'k', 'DisplayName','NS injection');hold on
 plot3(Y_RS(1,1), Y_RS(1,2), Y_RS(1,3), 'ko', 'DisplayName','NS TCM');hold on
-
 
 
 annotation(figure_interp,'textbox', ...
@@ -267,11 +294,18 @@ parameters.t0sym = Mars_time;
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12); 
 
+%first launch
 parNS = parameters;
 parNS2 = parameters;
+%second launch
+parNS3 = parameters;
 parRS = parameters;
-DV_NS = []; DV_NS2 = []; DV_RS = [];
+DV_NS = []; DV_NS2 = []; 
+DV_NS3 = []; DV_RS = [];
+
 perc_timing=0.01:0.01:0.99;
+
+%first launch
 for tt = 1:length(perc_timing)
 dv_instant = ceil(perc_timing(tt)*length(T_interp));
 
@@ -295,7 +329,7 @@ DV_NS = [DV_NS; norm(dv_NS), hyp_NS.dv_req, hyp_NS.dv_opt];
 %NS2
 parNS2.isInterp = 1;
 [ YM_NS2, ~, ~] = ...
-capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1:3, 1);
@@ -305,6 +339,51 @@ dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 [ ~, hyp_NS2, ~] = ...
 capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parNS2);
 DV_NS2 = [DV_NS2; norm(dv_NS2), hyp_NS2.dv_req, hyp_NS2.dv_opt];
+
+end
+
+tof_interp = (T_interp(end) - T_interp(1)); % [s]
+
+figure
+sgtitle('Launch 1: Single burn TCM and Capture Maneuver - Sensitivity to maneuver instant')
+subplot(3,1,1), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,1),'DisplayName', 'TCM NS'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,1),'DisplayName', 'TCM NS2'), hold on
+xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('TCM maneuver')
+legend()
+
+subplot(3,1,2), plot((1-perc_timing)*tof_interp/86400, DV_NS(:,2),'DisplayName', 'dv NS'), hold on
+plot((1-perc_timing)*tof_interp/86400, DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,3), 's','DisplayName', 'opt dv NS'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,3),'s','DisplayName', 'opt dv NS2'), hold on
+xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Capture delta v')
+legend()
+
+subplot(3,1,3), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,1) + DV_NS(:,2),'DisplayName', 'dv NS'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,1) + DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
+xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Total delta v')
+legend()
+
+%% second launch
+
+for tt = 1:length(perc_timing)
+dv_instant = ceil(perc_timing(tt)*length(T_interp));
+
+%capture delta_v
+[kepM, muS] = uplanet(parameters.t0sym, 4);
+rM = kep2car2(kepM, muS);
+mu = astroConstants(14);
+
+%NS3
+[ YM_NS3, ~, kep_cap_NS3] = ...
+capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+%definition of the last TCM
+YSOI_NS3 = rM + YM_NS3(1:3, 1);
+[~, ~ ,~, ~, VI_NS3, VF_NS3, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
+dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
+
+[ ~, hyp_NS3, ~] = ...
+capture_plot(kep_NS3, (VF_NS3' - v_M), rM, mu, Thrust0 , 1, parNS3);
+DV_NS3 = [DV_NS3; norm(dv_NS3), hyp_NS3.dv_req, hyp_NS3.dv_opt];
 
 % RS
 parRS.isInterp = 1;
@@ -322,22 +401,27 @@ capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parRS);
 DV_RS = [DV_RS; norm(dv_RS), hyp_RS.dv_req, hyp_RS.dv_opt];
 end
 
+tof_interp = (T_interp(end) - T_interp(1)); % [s]
+
 figure
-sgtitle('TCM and Capture - Sensitivity to maneuver instant')
-subplot(2,1,1), plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS(:,1),'DisplayName', 'TCM NS'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS2(:,1),'DisplayName', 'TCM NS2'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_RS(:,1),'DisplayName', 'TCM RS'), hold on
+sgtitle('Launch 2: Single burn TCM and Capture Maneuver - Sensitivity to maneuver instant')
+subplot(3,1,1), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS3(:,1),'DisplayName', 'TCM NS3'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_RS(:,1),'DisplayName', 'TCM RS'), hold on
 xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('TCM maneuver')
 legend()
 
-subplot(2,1,2), plot((1-perc_timing)*T_interp(end)/86400, DV_NS(:,2),'DisplayName', 'dv NS'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, DV_RS(:,2),'DisplayName', 'dv RS'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS(:,3), 's','DisplayName', 'opt dv NS'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS2(:,3),'s','DisplayName', 'opt dv NS2'), hold on
-plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_RS(:,3),'s','DisplayName', 'opt dv RS'), hold on
+subplot(3,1,2), plot((1-perc_timing)*tof_interp/86400, DV_NS3(:,2),'DisplayName', 'dv NS3'), hold on
+plot((1-perc_timing)*tof_interp/86400, DV_RS(:,2),'DisplayName', 'dv RS'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS3(:,3), 's','DisplayName', 'opt dv NS3'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_RS(:,3),'s','DisplayName', 'opt dv RS'), hold on
 xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Capture delta v')
 legend()
+
+subplot(3,1,3), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS3(:,1) + DV_NS3(:,2),'DisplayName', 'dv NS3'), hold on
+plot((1-perc_timing)*tof_interp/86400, 1000*DV_RS(:,1) + DV_RS(:,2),'DisplayName', 'dv RS'), hold on
+xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Total delta v')
+legend()
+
 %% MOI injection
 % B-plane
 % figure('Name','B-plane')
