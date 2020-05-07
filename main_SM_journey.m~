@@ -230,7 +230,7 @@ parRS.isInterp = 1;
 capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
 
 %definition of the last TCM
-YSOI_RS = rM + YM_RS(1:3, 1);
+YSOI_RS = rM + YM_NS2(1:3, 1);
 [a_RS, p_RS ,e_RS, err_RS, VI_RS, VF_RS, tspar_RS, th_RS] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_RS, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 
@@ -294,7 +294,7 @@ DV_NS = [DV_NS; norm(dv_NS), hyp_NS.dv_req, hyp_NS.dv_opt];
 
 %NS2
 parNS2.isInterp = 1;
-[ YM_NS2, ~, ~] = ...
+[ YM_NS2, hyp_NS2, ~] = ...
 capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
 
 %definition of the last TCM
@@ -303,41 +303,40 @@ YSOI_NS2 = rM + YM_NS2(1:3, 1);
 dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 
 [ ~, hyp_NS2, ~] = ...
-capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parNS2);
+capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parRS);
 DV_NS2 = [DV_NS2; norm(dv_NS2), hyp_NS2.dv_req, hyp_NS2.dv_opt];
 
 % RS
 parRS.isInterp = 1;
-[ YM_RS, ~, ~] = ...
+[ YM_RS, hyp_RS, ~] = ...
 capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
 
 %definition of the last TCM
-YSOI_RS = rM + YM_RS(1:3, 1);
+YSOI_RS = rM + YM_NS2(1:3, 1);
 [~, ~ ,~, ~, VI_RS, VF_RS, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_RS, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 
 [ ~, hyp_RS, ~] = ...
-capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parRS);
+capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parNS);
 
 DV_RS = [DV_RS; norm(dv_RS), hyp_RS.dv_req, hyp_RS.dv_opt];
 end
 
-figure
-sgtitle('TCM and Capture - Sensitivity to maneuver instant')
+figure 
+title('TCM maneuver')
 subplot(2,1,1), plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS(:,1),'DisplayName', 'TCM NS'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS2(:,1),'DisplayName', 'TCM NS2'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_RS(:,1),'DisplayName', 'TCM RS'), hold on
-xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('TCM maneuver')
-legend()
+xlabel('Time before arriving on Mars [days]'), legend()
 
+title('Capture delta v')
 subplot(2,1,2), plot((1-perc_timing)*T_interp(end)/86400, DV_NS(:,2),'DisplayName', 'dv NS'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, DV_RS(:,2),'DisplayName', 'dv RS'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS(:,3), 's','DisplayName', 'opt dv NS'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_NS2(:,3),'s','DisplayName', 'opt dv NS2'), hold on
 plot((1-perc_timing)*T_interp(end)/86400, 1000*DV_RS(:,3),'s','DisplayName', 'opt dv RS'), hold on
-xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Capture delta v')
-legend()
+xlabel('Time before arriving on Mars [days]'), legend()
 %% MOI injection
 % B-plane
 % figure('Name','B-plane')
