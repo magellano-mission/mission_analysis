@@ -4,6 +4,9 @@ close all; clear; clc
 %% Adding to path
 addpath(genpath(fileparts(strcat(pwd, '/functions'))))
 
+%% loading phobos ephemerides
+load('PhobosEphs.mat')
+
 %% Figure Initialization
 set(0,'DefaultFigureUnits', 'normalized');
 set(0,'DefaultFigurePosition', [0 0 1 1]);
@@ -18,7 +21,12 @@ set(0,'defaultAxesTickLabelInterpreter', 'latex');
 run('config_propagation.m')
 
 %% sim
+tic
 const = PropagatedOrbits(data);
+toc
+
+%% SK maneuver
+dv = SKmaneuver([const.a(end), const.e(end), const.i(end)], data);
 
 %% plots
 

@@ -19,18 +19,17 @@ data.sma = 10500;
 % data.lat = linspace(lat(1), lat(2), disc(2));
 % data.alt = 0;                             % altitude at which evaluate the coverage ( ground level = 0)  
 
-N_orbits = 1;                         % number of orbits
+N_orbits = 100;                         % number of orbits
 data.mi = astroConstants(14);               % Mars planetary constant
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+data.tend = 86400*10;
 
-
-
-data.NT = 10000; 
-data.tspan = linspace(0, N_orbits*T_orb, data.NT);
+% data.NT = 100000; 
+% data.tspan = linspace(0, N_orbits*T_orb, data.NT);
 
 %% perturbation switchers
 data.switchers.Moon = false;
-data.switchers.grav = false;
+data.switchers.grav = true;
 data.switchers.SRP = false;
 
 %% Mars model
@@ -57,6 +56,14 @@ data.AOverM = Acs/data.m_sat;                       % Am parameter
 
 %% Ephemerides
 data.Eph_T0 = date2mjd2000([2024 01 01 0 0 0]);
+data.Ephs_Phobos = Ephs;
+data.Phobos_time = Time;
+
+Mphobos = 1.07e16; 
+Mdeim = 1.4762e15;
+G = astroConstants(1);
+data.miPhob = Mphobos * G;
+data.miDeim = Mdeim * G;
 
 %% ode set
 data.opt = odeset('AbsTol', 1e-15, 'RelTol', 1e-13);

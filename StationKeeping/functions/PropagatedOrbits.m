@@ -7,7 +7,7 @@ function const = PropagatedOrbits(data)
 % n_sat = TT/Nplane;                              % satellites per plane
 
 % Setup 
-X0_kep = [data.sma, 1e-3, data.inc, pi/3, pi/3, pi/3];      % initial condition
+X0_kep = [data.sma, 1e-3, data.inc, 359.999/180*pi, pi/3, pi/3];      % initial condition
 
 % Orbits computation
 % Y = zeros(TT, data.NT, 6);                      % states matrix (3D)
@@ -19,9 +19,9 @@ X0_kep = [data.sma, 1e-3, data.inc, pi/3, pi/3, pi/3];      % initial condition
 %          X0_kep(4) = (ii - 1) * 2 * pi / Nplane;
          [R, V]  = kep2car(X0_kep, data.mi); 
          X0 = [R; V];
-         [T, Ysat] = ode113(@CarIntegration, [0, data.tspan(end)], X0, data.opt, data);
+         [T, Ysat] = ode113(@CarIntegration, [0, data.tend], X0, data.opt, data);
          for t = 1:length(Ysat(:, 1))
-             [~, parout] = CarIntegration(data.tspan(t), Ysat(t, :), data);
+             [~, parout] = CarIntegration(T(t), Ysat(t, :), data);
              a(t) = parout{1};
              e(t) = parout{2};
              i(t) = parout{3};

@@ -49,21 +49,20 @@ AUTHORS: D'andrea Biagio | Frulla Piergiorgio | Inno Adriano Filippo
 ---------------------------------------------------------------------------------------------------
 %}
 
-CR = data.CR;                           % reflection coefficient
-Acs = data.Acs;                         % lateral aerea
-m_sat = data.m_sat;                     % satellite mass
-R_pl = data.R_pl;                       % planet radius
-P0 = 4.5*1e-6;                          % solar radiation pressure coefficient
-AU = 1.496*1e8;                         % astronomic unit
-AOverM = Acs/m_sat;                     % Am parameter
+CR = data.CR;                               % reflection coefficient
+R_pl = data.R_pl;                           % planet radius
+P0 = data.P0;                               % solar radiation pressure coefficient
+AU = data.AU;                               % astronomic unit
+AOverM = data.AOverM;                       % Am parameter
 
 DayActual = data.InitDay + t/86400;
 
-[r_S] = - uplanet(DayActual, 4);        % retriving the sun position vector wrt the planet
-light = los(R_orbit, r_S, R_pl);        % checking the sight of ligth
+KepS = uplanet(DayActual, 4);
+rM2S = - kep2car_r_only(KepS);              % retriving the sun position vector wrt the planet
+light = los(R_orbit, rM2S, R_pl);            % checking the sight of ligth
 
 if light
-    rSun2Sc = R_orbit - r_S;
+    rSun2Sc = R_orbit - rM2S;
     a_srp = P0 * AU^2 / ((norm(rSun2Sc))^2) * CR * AOverM;
     a_SRP = a_srp * rSun2Sc / norm(rSun2Sc) / 1e3; % convert to km/s^2
 else

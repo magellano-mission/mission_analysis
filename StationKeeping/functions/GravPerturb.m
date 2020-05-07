@@ -1,39 +1,13 @@
 function [a_J2, a_J3, a_J4] = GravPerturb(t, R, data)
 %{
-J2Perturb.m - This function returns the perturbing acceleration due to
-              the effects of athmospherical drag.
+GravPerturb.m - This function returns the perturbing acceleration due to
+              the effects of Planet oblatness.
 
 INPUTS:
     t       [1]  the time passed since the beginning of the simulation; [s]
     R     [3x1]  the position vector of the spacecraft in the geocentric
                  reference frame; [km]
-    data [17x1]-structure with these ordered variables:
-                    - CR           [1]   the solar radiation pressure
-                                         coefficient;
-                    - Acs          [1]   the cross section of the spacecraft; [m^2]
-                    - initialDate  [1x6] the date of the beginning of the
-                                         simulation; [yyyy/mm/dd/hh/mm/ss]
-                    - R_pl         [1]   the mean radius of the Earth; [km]
-                    - mi           [1]   the gravitational constant of the
-                                         Earth; [km^3/s^2]
-                    - a0           [1]   semimajor axis of the given orbit; [km]
-                    - e0           [1]   the eccentricity of the given
-                                         orbit;
-                    - i0           [1]   the inclination of the given orbit; [deg]
-                    - m_sat        [1]   the mass of the spacecraft; [kg]
-                    - J2           [1]   the value of the J2 perturbation
-                                         parameter;
-                    - beta         [1]   the ballistic coefficient;
-                    - T            [1]   the period of the given orbit; [s]
-                    - T_mult       [1]   the period of the repeating
-                                         ground-track orbit; [s]
-                    - a_mult       [1]   the semimajor axis of the
-                                         repeating ground-track orbit; [s]
-                    - tmax_unp     [1]   the last time of simulation for the 
-                                         unperturbed orbit; [s]
-                    - tmax_pert    [1]   the last time of simulation for the 
-                                         perturbed orbit; [s]
-                    - option       [1]   options for the ODE equation.
+ 
                   
 %}
 

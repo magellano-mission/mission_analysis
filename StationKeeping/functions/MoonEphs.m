@@ -9,7 +9,7 @@ switch Moon
     
 end
 
-time = data.Ephs_time;
+time = data.Phobos_time;
 
 DayRelative = mjd2000 - data.Eph_T0;
 
