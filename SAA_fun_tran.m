@@ -48,7 +48,7 @@ figure(2)
 plot(t_IT,rad2deg(SAA),'Linewidth', 2, 'DisplayName', 'Transfer arc', 'Color', 'r')
 xlabel(' Time [day]')
 ylabel('Angle [deg]')
-title('  Sun-s/c-\underline v angle ')
+title('  Sun-s/c-v angle ')
 grid on; grid minor;
 
 end
