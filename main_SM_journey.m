@@ -65,17 +65,17 @@ Dv2_best = norm(VF' - v_M);
 
 [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
-%% Injection hyperbola 
+%% Trans-Mars injection hyperbola 
 
 muE = astroConstants(13); 
-v_inf_plus = v_E - VI';
-rp_opt_parc = 2*muE/v_inf_plus^2;%TBC
+v_inf_plus = v_E - VI;
+rp_opt_parc = 2*muE/norm(v_inf_plus)^2;%TBC
 e_opt_parc = 0;
 a_opt_parc = rp_opt_parc/(1 - e_opt_parc);
 i_opt_parc = deg2rad(26.7);
 kep_parc = [a_opt_parc e_opt_parc i_opt_parc 0 0 0];%TBC
 
-
+% [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
 
 %% Propagation of perturbed model
 %perturbed model (and later TCM maneuvers definition)
@@ -103,7 +103,7 @@ X0(1:3) = r_E; X0(4:6) = VI;
 
 %@cartesian r/f
 [T_interp, Y_interp, parout_interp] = cart_cont_thrust_model(X0, parameters);
-%%
+
 %plot
 R_E = zeros(length(T_interp),3);
 R_M = R_E; R_J = R_M;
@@ -209,8 +209,10 @@ kep_RS = [6400 0 deg2rad(0) 0 0 0];
 
 %first launch
 %NS
-[ YM_NS, hyp_NS, kep_cap_NS] = ...
-capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
+% [ YM_NS, hyp_NS, kep_cap_NS] = ...
+% capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
+[ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
+
 %definition of the last TCM
 YSOI_NS = rM + YM_NS(1:3, 1);
 [a_NS, p_NS ,e_NS, err_NS, VI_NS, VF_NS, tspar_NS, th_NS] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
@@ -223,8 +225,9 @@ parNS.isInterp = 1;
 
 %NS2
 parNS2.isInterp = 1;
-[ YM_NS2, hyp_NS2, kep_cap_NS2] = ...
-capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+% [ YM_NS2, hyp_NS2, kep_cap_NS2] = ...
+% capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+[ YM_NS2, hyp_NS2, kep_cap_NS2] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, [], 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1:3, 1);
@@ -238,8 +241,10 @@ parNS2.isInterp = 1;
 
 %second launch
 %NS
-[ YM_NS3, hyp_NS3, kep_cap_NS3] = ...
-capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+% [ YM_NS3, hyp_NS3, kep_cap_NS3] = ...
+% capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+[ YM_NS3, hyp_NS3, kep_cap_NS3] = PO2hyp(kep_NS3, (VF' - v_M), rM, mu, parNS3, [], 1, 'capture');
+
 %definition of the last TCM
 YSOI_NS3 = rM + YM_NS3(1:3, 1);
 [a_NS3, p_NS3 ,e_NS3, err_NS3, VI_NS3, VF_NS3, tspar_NS3, th_NS3] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
@@ -252,8 +257,9 @@ parNS3.isInterp = 1;
 
 % RS
 parRS.isInterp = 1;
-[ YM_RS, hyp_RS, kep_cap_RS] = ...
-capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
+% [ YM_RS, hyp_RS, kep_cap_RS] = ...
+% capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
+[ YM_RS, hyp_RS, kep_cap_RS] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, [], 1, 'capture');
 
 %definition of the last TCM
 YSOI_RS = rM + YM_RS(1:3, 1);
@@ -315,29 +321,36 @@ rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
 %NS
-[ YM_NS, ~, kep_cap_NS] = ...
-capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
+% [ YM_NS, ~, kep_cap_NS] = ...
+% capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
+[ YM_NS, ~, kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
+
 %definition of the last TCM
 YSOI_NS = rM + YM_NS(1:3, 1);
 [~, ~ ,~, ~, VI_NS, VF_NS, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS = VI_NS - Y_interp(dv_instant, 4:6);
 
-[ ~, hyp_NS, ~] = ...
-capture_plot(kep_NS, (VF_NS' - v_M), rM, mu, Thrust0 , 1, parNS);
+% [ ~, hyp_NS, ~] = ...
+% capture_plot(kep_NS, (VF_NS' - v_M), rM, mu, Thrust0 , 1, parNS);
+[ ~, hyp_NS, ~] = PO2hyp(kep_NS, (VF_NS' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
+
 DV_NS = [DV_NS; norm(dv_NS), hyp_NS.dv_req, hyp_NS.dv_opt];
 
 %NS2
 parNS2.isInterp = 1;
-[ YM_NS2, ~, ~] = ...
-capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+% [ YM_NS2, ~, ~] = ...
+% capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
+[ YM_NS2, ~, ~] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1:3, 1);
 [~, ~ ,~, ~, VI_NS2, VF_NS2, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 
-[ ~, hyp_NS2, ~] = ...
-capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parNS2);
+% [ ~, hyp_NS2, ~] = ...
+% capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parNS2);
+[ ~, hyp_NS2, ~] = PO2hyp(kep_NS2, (VF_NS2' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
+
 DV_NS2 = [DV_NS2; norm(dv_NS2), hyp_NS2.dv_req, hyp_NS2.dv_opt];
 
 end
@@ -374,29 +387,35 @@ rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
 %NS3
-[ YM_NS3, ~, kep_cap_NS3] = ...
-capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+% [ YM_NS3, ~, kep_cap_NS3] = ...
+% capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
+[ YM_NS3, ~, kep_cap_NS3] = PO2hyp(kep_NS3, (VF' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
+
 %definition of the last TCM
 YSOI_NS3 = rM + YM_NS3(1:3, 1);
 [~, ~ ,~, ~, VI_NS3, VF_NS3, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
 
-[ ~, hyp_NS3, ~] = ...
-capture_plot(kep_NS3, (VF_NS3' - v_M), rM, mu, Thrust0 , 1, parNS3);
+% [ ~, hyp_NS3, ~] = ...
+% capture_plot(kep_NS3, (VF_NS3' - v_M), rM, mu, Thrust0 , 1, parNS3);
+[ ~, hyp_NS3, ~] = PO2hyp(kep_NS3, (VF_NS3' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
+
 DV_NS3 = [DV_NS3; norm(dv_NS3), hyp_NS3.dv_req, hyp_NS3.dv_opt];
 
 % RS
 parRS.isInterp = 1;
-[ YM_RS, ~, ~] = ...
-capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
+% [ YM_RS, ~, ~] = ...
+% capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
+[ YM_RS, ~, ~] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_RS = rM + YM_RS(1:3, 1);
 [~, ~ ,~, ~, VI_RS, VF_RS, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_RS, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 
-[ ~, hyp_RS, ~] = ...
-capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parRS);
+% [ ~, hyp_RS, ~] = ...
+% capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parRS);
+[ ~, hyp_RS, ~] = PO2hyp(kep_RS, (VF_RS' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
 
 DV_RS = [DV_RS; norm(dv_RS), hyp_RS.dv_req, hyp_RS.dv_opt];
 end

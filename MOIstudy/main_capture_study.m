@@ -8,37 +8,35 @@
 
 close all, clear, clc
 
-
-%these are all the parameters that we are using, changing among the code:
-%t_BO
-%thrust
-%t0sym tmax
-
 parameters.isInterp = 0;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
-parameters.isPerturbed = 0;                                % perturbation switch 0 ,too slow :(
-parameters.t_BO = 30*60;   %computed inside                                % burnout time (chemical thrust)
+parameters.isPerturbed = 0;                                % 
+
+% parameters.dt_p = parameters.t_BO/2;  %defined inside                      %time distance from pericenter at which firing occurs [s]
+% parameters.t_BO = 30*60;   %computed inside              % burnout time (chemical thrust)
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
-Thrust0 = [-3200; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
-parameters.Isp = 280;                                      % specific impulse [s]
-parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
+parameters.perc_tBO_before_p = 0.5;
+Thrust0 = [-10000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.Isp = 380;                                      % specific impulse [s]
+
+parameters.M0 = 6000;                                       % Total Mass of the s/c [kg]
 parameters.c_r = 0.5;
 parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
-parameters.dt_p = parameters.t_BO/2;  %defined inside                      %time distance from pericenter at which firing occurs [s]
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   %,'Events', @event_cont_thrust);
 
+
 %capture delta_v
-kep_cap_desired = [15000 0.1 deg2rad(15) 0 0 0];
+kep_cap_desired = [10000 0.1 deg2rad(7) 0 0 0];
 delta = deg2rad(45);
 [kepM, muS] = uplanet(parameters.t0sym, 4);
 rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
+VF =    [20.1823   -7.8639   -0.3019]; %SM heliocentric velocity
+v_M =   [22.5170   -8.8545   -0.7398]; %mars heliocentric velocity
 
-N_firings = 1; %multiple firings not yet implemented
-[TT, YY, parout, dt_hyp, dv_req, theta_inf, kep_hyp_arr, kep_capture] = capture_plot(kep_cap_desired, delta,rM, mu, Thrust0, N_firings, parameters);
-%the idea is to start the burn at (t_pericenter - t_BO/2) to emulate at
-%most an impulsive maneuver at pericenter
+[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_cap_desired, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+
 

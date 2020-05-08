@@ -84,7 +84,14 @@ function [ output_pos, hyp_arrival , kep_hyp_arr] = PO2hyp(kep_cap_desired, vv_i
     end
     output_pos = l_pos_Vect_m;
 
-if ~plot_flag %plot of geometrical orbits
+    hyp_arrival.kep_hyp_arr = kep_hyp_arr;
+    hyp_arrival.dv_req =  norm(dv_req)*1000;  %definition of desired delta_v
+    parameters.mP_req = parameters.M0 *(exp(hyp_arrival.dv_req/(9.81*parameters.Isp)) - 1)/ ...
+                                        exp(hyp_arrival.dv_req/(9.81*parameters.Isp));
+
+%   preliminary computation of required propellant
+    parameters.t_BO = parameters.mP_req/norm(Thrust)* parameters.Isp * 9.81; %computation of rectangular profile Thrust 
+if plot_flag %plot of geometrical orbits
     figure
     hold all
 
@@ -96,8 +103,8 @@ if ~plot_flag %plot of geometrical orbits
     x = r*cos(theta) + xc;
     y = r*sin(theta) + yc;
 %   no definition among z axis yet :(
-    plot(x,y)
-    plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'DisplayName','SOI'), hold on
+    plot(x,y, 'DisplayName','SOI boundary')
+%     plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'k','DisplayName','Analytical  Hyperbola'), hold on
     
     [X, tot_hyperbola, Z] = ellipsoid(0, 0, 0, r, r, r, 100);    % spheric centered Mars
     planet = surf(X, tot_hyperbola, -Z,'Edgecolor', 'none','DisplayName','SOI');
@@ -132,13 +139,7 @@ if plot_flag == 2
     [rr0, vv0] = kep2car2(kep_hyp_arr, mu);
     X0_hyp(1:3) = rr0;
     X0_hyp(4:6) = vv0;
-    hyp_arrival.kep_hyp_arr = kep_hyp_arr;
-    hyp_arrival.dv_req =  norm(dv_req)*1000;  %definition of desired delta_v
-    parameters.mP_req = parameters.M0 *(exp(hyp_arrival.dv_req/(9.81*parameters.Isp)) - 1)/ ...
-                                        exp(hyp_arrival.dv_req/(9.81*parameters.Isp));
 
-%   preliminary computation of required propellant
-    parameters.t_BO = parameters.mP_req/norm(Thrust)* parameters.Isp * 9.81; %computation of rectangular profile Thrust 
     delta_t_before_p = parameters.perc_tBO_before_p * parameters.t_BO; %how much time before reaching the pericenter occurs the burn
 
 %   integration of complete hyperbola
@@ -166,8 +167,8 @@ if plot_flag == 2
     parameters.tmax = parameters.t0sym + parameters.t_BO/86400;     %[MJD200]
     parameters.T = Thrust;              % thrust [N] (constant profile for the moment)
 
-%     T0_firing = parameters.t0sym*86400;                             %[s]
-%     Tend_firing = parameters.tmax*86400;                            %[s]
+    T0_firing = parameters.t0sym*86400;                             %[s]
+    Tend_firing = parameters.tmax*86400;                            %[s]
 
     [T_thrust, Y_thrust, P_thrust] = cart_cont_thrust_model(YY(end,:), parameters);
 
@@ -231,7 +232,7 @@ if plot_flag == 2
 %   delta v
     figure()
     delta_v_eff = parameters.Isp * 9.81 * log(parameters.M0./(parameters.M0 - YY(:,7)));
-    plot(TT, delta_v_eff), hold on, title('Delta v history'), ylabel('Delta v [m/s]'), xlabel('t [s]')
+    plot(TT, delta_v_eff, 's'), hold on, title('Delta v history'), ylabel('Delta v [m/s]'), xlabel('t [s]')
     yline(hyp_arrival.dv_req ,'b-'), hold on,
     xline(T0_firing,'r'), hold on, xline(Tend_firing,'r'), hold off
     legend('Delta_v(t)', 'Required Impulsive Delta v', strcat('t_BO:', num2str(parameters.t_BO) ,' s'))
@@ -253,8 +254,8 @@ if plot_flag == 2
         subplot(2,3,kk), plot(TT, YY_kep(:,kk));
         title (ttx{kk})
     end
+    output_pos = YY;
     end
-output_pos = YY;
 end
 end
 % Function used to get a correction on the theta for the hyperbola arc to
