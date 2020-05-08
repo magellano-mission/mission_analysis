@@ -1,6 +1,6 @@
 %% Simulation Setup
 data.Norb = 3;                  %wl
-data.walk_phas = 2;
+data.walk_phas = 1;
 
 
 data.Nsat = 15;
@@ -19,16 +19,16 @@ data.perturb = false;
 
 % Parameters
 lon = [-180, 180];          
-lat = [-40, 40];
-disc = [20, 20];             % discretization grid
+lat = [-90, 90];
+disc = [60, 30];             % discretization grid
 data.lon = linspace(lon(1), lon(2), disc(1));
 data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                  % altitude at which evaluate the coverage ( ground level = 0)              
-data.N_orbits = 2;             % number of orbits
+data.N_orbits = 20;             % number of orbits
 
 %% Ellipsoid model
 data.mi = astroConstants(14);            % Mars planetary constant
-data.NT = 700; 
+data.NT = 10000; 
 
 data.rM_eq = 3393.4;         % equatorial radius [km]
 rM_pol = 3375.7;             % polar radius [km]
@@ -41,14 +41,15 @@ data.theta_Airy_0 = 0;             % Mars principal meridian
 %% plot selection
 
 % data.SimType = "Dani";
-data.SimType = "FPCP"; 
+% data.SimType = "FPCP"; 
 %      data.SubType = "mean"; 
-     data.SubType = "min"; 
+%      data.SubType = "min"; 
 % data.SimType = 'none';
 % data.SimType = "percent_cov";
 % data.SimType = "max_time_gap";
 % data.SimType = "mean_time_gap";
 % data.SimType = "plot_belli";
-%  data.SimType =  "Time_varying";
+% data.SimType =  "Time_varying";
+data.SimType = "GDOP";
 
 clearvars -except data
