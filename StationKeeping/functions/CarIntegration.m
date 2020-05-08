@@ -49,7 +49,6 @@ end
 %% total perturbation
 a_p = a_SRP + a_J2 + a_J3 + a_J4 + a_Phobos; % + a_Deimos;
 
-
 % State derivatives
 dY(1:3) = V;
 dY(4:6) = - mi/norm(R)^3.*R + a_p;

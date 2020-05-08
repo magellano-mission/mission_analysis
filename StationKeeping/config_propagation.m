@@ -1,7 +1,7 @@
 
 %% Simulation Setup
-InitData = [2025 01 01 0 0 0 ];                  % initial date
-data.InitDay = date2mjd2000(InitData);                   % initial day
+InitData = [2025 01 01 0 0 0 ];                         % initial date
+data.InitDay = date2mjd2000(InitData);                  % initial day
 data.walker = [1, 1, 1];
 % data.bw = 40;              % beamwidth [deg]
 data.inc = deg2rad(25);

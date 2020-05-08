@@ -29,23 +29,31 @@ function [ output_pos, hyp_arrival , kep_hyp_arr] = PO2hyp(kep_cap_desired, vv_i
     e_hyp = 1 + rp*norm(vv_inf)^2/mu;
     h_hyp = sqrt(mu*rp*(1+e_hyp));
     a_hyp =((h_hyp^2)/mu)/(e_hyp^2-1);
-
+    
     theta_inf = acos(1/e_hyp);
-
-    if strcmp(flag_maneuver, 'arrival')
-        theta_inf = 2*pi - theta_inf;
-    end
-
-    hyp_arrival.theta_inf = theta_inf;
-    hyp_arrival.imp_par = abs(a_hyp) * sqrt(e_hyp^2 - 1);
-
+  
+    kep_cap_desired(6) = 0;
+    kep_hyp_arr = kep_cap_desired;
+    kep_hyp_arr(1) = -a_hyp;
+    kep_hyp_arr(2) = e_hyp;
+    
     %SOI definition
     nrM = norm(rM); 
     rSOI = nrM * (mu/muS)^(2/5);
-
-    correc_hyp_f = @(alpha) correc_SOI_f(rSOI,alpha,a_hyp,e_hyp,theta_inf,mu);
-    correc_hyp = fminsearch(correc_hyp_f,0);
-    ltheta_hyp = linspace(0,theta_inf+correc_hyp,n_iter);
+    
+    correc_hyp_f = @(alpha) correc_SOI_f(rSOI,alpha, kep_hyp_arr, theta_inf, mu);
+    
+    if strcmp(flag_maneuver, 'arrival')
+        theta_inf = 2*pi - theta_inf;
+        correc_hyp = fminsearch(correc_hyp_f,0);  
+        ltheta_hyp = linspace(theta_inf+correc_hyp, 2*pi,n_iter);
+    else
+        correc_hyp = fminsearch(correc_hyp_f,0);  
+        ltheta_hyp = linspace(0,theta_inf+correc_hyp,n_iter);
+    end
+    
+    hyp_arrival.theta_inf = theta_inf;
+    hyp_arrival.imp_par = abs(a_hyp) * sqrt(e_hyp^2 - 1);
 
     lt_hyp = zeros(1,n_iter);
 
@@ -64,10 +72,6 @@ function [ output_pos, hyp_arrival , kep_hyp_arr] = PO2hyp(kep_cap_desired, vv_i
     %Hyperbolas plot
     l_pos_Vect_m = zeros(3,n_iter);
 
-    kep_hyp_arr = kep_cap_desired;
-    kep_hyp_arr(1) = -a_hyp;
-    kep_hyp_arr(2) = e_hyp;
-
     [~, v_ell] = kep2car2(kep_cap_desired, mu);
     [~, v_hyp] = kep2car2(kep_hyp_arr, mu);
     dv_req = v_ell - v_hyp;
@@ -82,8 +86,9 @@ function [ output_pos, hyp_arrival , kep_hyp_arr] = PO2hyp(kep_cap_desired, vv_i
         [r_m,~]= kep2car2(kep_hyp_arr,mu);
         l_pos_Vect_m(:,i) = r_m;
     end
-    output_pos = l_pos_Vect_m;
-
+    output_pos = l_pos_Vect_m';
+    
+    kep_hyp_arr(6) = ltheta_hyp(1);
     hyp_arrival.kep_hyp_arr = kep_hyp_arr;
     hyp_arrival.dv_req =  norm(dv_req)*1000;  %definition of desired delta_v
     parameters.mP_req = parameters.M0 *(exp(hyp_arrival.dv_req/(9.81*parameters.Isp)) - 1)/ ...
@@ -93,24 +98,21 @@ function [ output_pos, hyp_arrival , kep_hyp_arr] = PO2hyp(kep_cap_desired, vv_i
     parameters.t_BO = parameters.mP_req/norm(Thrust)* parameters.Isp * 9.81; %computation of rectangular profile Thrust 
 if plot_flag %plot of geometrical orbits
     figure
-    hold all
-
-    r = rSOI;
     xc = 0;
     yc = 0;
 
     theta = linspace(0,2*pi);
-    x = r*cos(theta) + xc;
-    y = r*sin(theta) + yc;
+    x = rSOI*cos(theta) + xc;
+    y = rSOI*sin(theta) + yc;
 %   no definition among z axis yet :(
-    plot(x,y, 'DisplayName','SOI boundary')
-%     plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'k','DisplayName','Analytical  Hyperbola'), hold on
-    
-    [X, tot_hyperbola, Z] = ellipsoid(0, 0, 0, r, r, r, 100);    % spheric centered Mars
-    planet = surf(X, tot_hyperbola, -Z,'Edgecolor', 'none','DisplayName','SOI');
-    hold on
-    set(planet,'FaceColor','b')
-    set(planet,'FaceAlpha',0.1)
+%     plot(x,y, 'DisplayName','SOI boundary'), 
+%     plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),':','DisplayName','Analytical  Hyperbola'), hold on
+%     
+%     [X, Y, Z] = ellipsoid(0, 0, 0, rSOI, rSOI, rSOI, 100);    % spheric centered Mars
+%     planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName','SOI');
+%     hold on
+%     set(planet,'FaceColor','b')
+%     set(planet,'FaceAlpha',0.1)
     
 %   Mars plot
     I = imread('Mars.jpg');                            % Mars image
@@ -118,8 +120,8 @@ if plot_flag %plot of geometrical orbits
     RI.XWorldLimits = [-180 180];                       % Mars image x sizes
     RI.YWorldLimits = [-90 90];                         % Mars image y sizes
     rM = almanac('Mars','Radius','kilometers','sphere');
-    [X, tot_hyperbola, Z] = ellipsoid(0, 0, 0, rM, rM, rM, 100);    % spheric centered Mars
-    planet = surf(X, tot_hyperbola, -Z,'Edgecolor', 'none','displayname','Mars');
+    [X, Y, Z] = ellipsoid(0, 0, 0, rM, rM, rM, 100);    % spheric centered Mars
+    planet = surf(X, Y, -Z,'Edgecolor', 'none','displayname','Mars');
     hold on
     set(planet,'FaceColor','texturemap','Cdata',I)
     axis equal
@@ -149,7 +151,7 @@ if plot_flag == 2
     [~, tot_hyperbola] = cart_cont_thrust_model(X0_hyp, parameters);
 
 %   complete  hyperbola plot
-    plot3(tot_hyperbola(:,1), tot_hyperbola(:,2), tot_hyperbola(:,3), ':','DisplayName','Uncontrolled Hyperbolic flight'), hold on
+    plot3(tot_hyperbola(:,1), tot_hyperbola(:,2), tot_hyperbola(:,3), 'k*','DisplayName','Uncontrolled Hyperbolic flight'), hold on
 
 %   no-brake path integration
     parameters.tmax = parameters.t0sym +  (dt_hyp - delta_t_before_p)/86400;                                
@@ -160,7 +162,7 @@ if plot_flag == 2
     parout = P_no_control;
      
     plot3(YY(:,1), YY(:,2), YY(:,3),'DisplayName','Effective Hyperbolic flight'), hold on
-    plot3(YY(1,1), YY(1,2), YY(1,3), 'ro','DisplayName','SOI injection'), hold on
+    plot3(YY(1,1), YY(1,2), YY(1,3), 'r*','DisplayName','SOI injection'), hold on
 
 %     thrust activation
     parameters.t0sym = parameters.tmax;                             %[MJD200]
@@ -186,8 +188,11 @@ if plot_flag == 2
 
     parameters.t0sym = parameters.tmax;
     parameters.tmax = parameters.t0sym + T_orb/86400;
-    parameters.T = [0; 0; 0];            
-
+    parameters.T = [0; 0; 0];  
+    kepprova = zeros(length(Y_thrust),6);
+    for jj = 1:length(Y_thrust)
+        kepprova(jj,:) = car2kep(Y_thrust(jj,1:3), Y_thrust(jj,4:6), mu);
+    end
     [T_arr, Y_arr, P_arr] = cart_cont_thrust_model(YY(end,:), parameters);
 
     YY = [YY; Y_arr];
@@ -195,8 +200,9 @@ if plot_flag == 2
     parout = [parout; P_arr];
 
 %   plot of capture orbit result
-    figure1 = figure(1);
+    figure1 = gcf;
     plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
+    xlim([-11000 11000]), ylim([-11000 11000]), zlim([-11000 11000])
     legend()
 
     annotation(figure1,'textbox',...
@@ -260,8 +266,10 @@ end
 end
 % Function used to get a correction on the theta for the hyperbola arc to
 % reach the Sphere of Influence
-function val = correc_SOI_f(rSOI,alpha,a,e,theta,muM)
-    [r,~]= kep2car2([a,e,0,0,0,theta+alpha],muM);
+function val = correc_SOI_f(rSOI,alpha,kep,theta_inf,muM)
+    kep2 = kep;
+    kep2(6) = theta_inf+alpha;
+    [r,~]= kep2car2(kep2,muM);
     val = (norm(r)-rSOI)^2;
 end
 
