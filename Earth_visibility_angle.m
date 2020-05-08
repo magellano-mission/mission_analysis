@@ -39,6 +39,6 @@ plot(t_E_EAA,rad2deg(EAA_),'Linewidth', 2, 'DisplayName', 'Transfer arc', 'Color
 grid on; grid minor;
 xlabel('Time[day]');
 ylabel('Angle [deg]');
-title('Earth-s/c-\underline v ')
+title('Earth-s/c-v ')
 
 end
