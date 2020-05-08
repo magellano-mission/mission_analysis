@@ -8,7 +8,7 @@ body2perif_rot.m - This function returns the rotation matrix from the
 INPUTS:
     i  [1]  the Inclination of the orbit [rad]
     RAAN   [1]  the Right Ascension of the Ascending Node of the orbit [rad]
-    PA     [1]  the Anopaly of the Pericentre of the orbit [rad]
+    PA     [1]  the Anomaly of the Pericentre of the orbit [rad]
   
 OUTPUTS:
     R    [3x3]  the rotation matrix       
