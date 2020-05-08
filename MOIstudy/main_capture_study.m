@@ -28,7 +28,7 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);  
 
 
 %capture delta_v
-kep_cap_desired = [10000 0.1 deg2rad(7) 0 0 0];
+kep_cap_desired = [10000 0.1 deg2rad(90) 0 0 0];
 delta = deg2rad(45);
 [kepM, muS] = uplanet(parameters.t0sym, 4);
 rM = kep2car2(kepM, muS);
