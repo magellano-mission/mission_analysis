@@ -33,21 +33,21 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);  
 
 [~, mu_s] = uplanet(0, 1);
 
-in_date_min = [2022 1 1 0 0 0];
-fin_date_min = [2022 1 1 0 0 0];
+in_date_min = [2028 1 1 0 0 0];
+fin_date_min = [2028 1 1 0 0 0];
 
 [k_E, ~] = uplanet(date2mjd2000(in_date_min), 3);
 [k_M, ~] = uplanet(date2mjd2000(in_date_min), 4);
 
 E_P = 2*pi*sqrt(k_E(1)^3/mu_s);
 M_P = 2*pi*sqrt(k_M(1)^3/mu_s);
-n_per = 5;
+n_per = 2;
 
 % Synodic periods
 EM_SP = (E_P*M_P) / abs(E_P-M_P);
 
 [minDVI,Earth_time, Mars_time]=porkchop(in_date_min,fin_date_min,EM_SP,n_per);
-
+%%
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 parameters.tmax = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 

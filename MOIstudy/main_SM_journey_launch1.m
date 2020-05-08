@@ -106,17 +106,19 @@ X0(1:3) = r_E; X0(4:6) = VI;
 
 %plot
 R_E = zeros(length(T_interp),3);
-R_M = R_E; R_J = R_M;
+R_M = R_E; R_J = R_M; R_V = R_M;
 kep_E = zeros(length(T_interp),6);
-kep_M = kep_E; kep_J = kep_M;
+kep_M = kep_E; kep_J = kep_M;  kep_V = kep_M;
 kep_interp = kep_E;
 
 for jj = 1:length(T_interp)
     kep_E(jj,:) = uplanet(T_interp(jj)/86400,3);
     kep_M(jj,:) = uplanet(T_interp(jj)/86400,4);
+    kep_V(jj,:) = uplanet(T_interp(jj)/86400,2);
     kep_J(jj,:) = uplanet(T_interp(jj)/86400,5);
     R_E(jj,:) = kep2car2(kep_E(jj,1:6), mu);
     R_M(jj,:) = kep2car2(kep_M(jj,1:6), mu);
+    R_V(jj,:) = kep2car2(kep_V(jj,1:6), mu);
     R_J(jj,:) = kep2car2(kep_J(jj,1:6), mu);
     kep_interp(jj,:) = car2kep(Y_interp(jj,1:3), Y_interp(jj,4:6), mu);
 end
@@ -156,7 +158,8 @@ set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
 plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b','DisplayName','Earth trajectory'), hold on
 plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r','DisplayName','Mars trajectory'), hold on
-plot3(R_J(:,1), R_J(:,2), R_J(:,3),'r','DisplayName','Jupiter trajectory'), hold on
+plot3(R_V(:,1), R_V(:,2), R_V(:,3),'c','DisplayName','Venus trajectory'), hold on
+plot3(R_J(:,1), R_J(:,2), R_J(:,3),'m','DisplayName','Jupiter trajectory'), hold on
 
 plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r:', 'DisplayName','Unperturbed'), hold on
 plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3),'g', 'DisplayName','Perturbed'), hold on
@@ -246,8 +249,7 @@ annotation(figure_interp,'textbox', ...
     [0.75 0.15 0.2 0.45], ...
     'String',{'TCM:', ...
     'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', 'Capture: ',num2str(norm(hyp_NS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS.dv_opt)),' m/s)') , ...
-    'NS2:', strcat('TCM:', num2str(1000*norm(dv_NS2)),' m/s', 'Capture: ',num2str(norm(hyp_NS2.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS2.dv_opt)),' m/s)'), ...
-    'RS:', strcat('TCM:', num2str(1000*norm(dv_RS)),' m/s', 'Capture: ',num2str(norm(hyp_RS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_RS.dv_opt)),' m/s)')}, ...
+    'NS2:', strcat('TCM:', num2str(1000*norm(dv_NS2)),' m/s', 'Capture: ',num2str(norm(hyp_NS2.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS2.dv_opt)),' m/s)')}, ...
     'FitBoxToText','off');
 
 %% TCM sensitivity study
