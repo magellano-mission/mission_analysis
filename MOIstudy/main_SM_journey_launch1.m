@@ -41,7 +41,7 @@ fin_date_min = [2022 1 1 0 0 0];
 
 E_P = 2*pi*sqrt(k_E(1)^3/mu_s);
 M_P = 2*pi*sqrt(k_M(1)^3/mu_s);
-n_per = 5;
+n_per = 2;
 
 % Synodic periods
 EM_SP = (E_P*M_P) / abs(E_P-M_P);
@@ -65,8 +65,16 @@ Dv2_best = norm(VF' - v_M);
 
 [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
-% %% Trans-Mars injection hyperbola 
+%% Trans-Mars injection hyperbola 
+% https://www.nasa.gov/mission_pages/MRO/spacecraft/launch-cont.html
+
+% First engine firing: The Centaur engine fires for the first time shortly 
+% after separation from the Stage I booster to boost the spacecraft into a PO of about 185 kilometers altitude
+% A "parking orbit" is the name used for the Earth orbit in which the spacecraft and Centaur coast between burns. 
+% % The parking orbit is needed to allow the Centaur to be in the right position relative to both Earth and Mars for each of its two burns. 
+% % The duration of the first burn is about nine-and-a-half minutes.
 % 
+% h_PO = 185;
 % muE = astroConstants(13); 
 % v_inf_plus = v_E - VI;
 % rp_opt_parc = 2*muE/norm(v_inf_plus)^2;%TBC
@@ -74,8 +82,8 @@ Dv2_best = norm(VF' - v_M);
 % a_opt_parc = rp_opt_parc/(1 - e_opt_parc);
 % i_opt_parc = deg2rad(26.7);
 % kep_parc = [a_opt_parc e_opt_parc i_opt_parc 0 0 0];%TBC
-
-% [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
+% 
+% [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'departure');
 
 %% Propagation of perturbed model
 %perturbed model (and later TCM maneuvers definition)
@@ -212,7 +220,7 @@ kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
 [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS = rM + YM_NS(1:3, 1);
+YSOI_NS = rM + YM_NS(1, 1:3)';
 [a_NS, p_NS ,e_NS, err_NS, VI_NS, VF_NS, tspar_NS, th_NS] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS = VI_NS - Y_interp(dv_instant, 4:6);
 
@@ -228,7 +236,7 @@ parNS2.isInterp = 1;
 [ YM_NS2, hyp_NS2, kep_cap_NS2] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, [], 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS2 = rM + YM_NS2(1:3, 1);
+YSOI_NS2 = rM + YM_NS2(1, 1:3)';
 [a_NS2, p_NS2 ,e_NS2, err_NS2, VI_NS2, VF_NS2, tspar_NS2, th_NS2] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 
@@ -285,7 +293,7 @@ mu = astroConstants(14);
 [ YM_NS, ~, kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS = rM + YM_NS(1:3, 1);
+YSOI_NS = rM + YM_NS(1, 1:3)';
 [~, ~ ,~, ~, VI_NS, VF_NS, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS = VI_NS - Y_interp(dv_instant, 4:6);
 
@@ -302,7 +310,7 @@ parNS2.isInterp = 1;
 [ YM_NS2, ~, ~] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS2 = rM + YM_NS2(1:3, 1);
+YSOI_NS2 = rM + YM_NS2(1, 1:3)';
 [~, ~ ,~, ~, VI_NS2, VF_NS2, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 

@@ -33,8 +33,8 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);  
 
 [~, mu_s] = uplanet(0, 1);
 
-in_date_min = [2028 1 1 0 0 0];
-fin_date_min = [2028 1 1 0 0 0];
+in_date_min = [2026 1 1 0 0 0];
+fin_date_min = [2026 1 1 0 0 0];
 
 [k_E, ~] = uplanet(date2mjd2000(in_date_min), 3);
 [k_M, ~] = uplanet(date2mjd2000(in_date_min), 4);
@@ -106,17 +106,19 @@ X0(1:3) = r_E; X0(4:6) = VI;
 
 %plot
 R_E = zeros(length(T_interp),3);
-R_M = R_E; R_J = R_M;
+R_M = R_E; R_J = R_M; R_V = R_M;
 kep_E = zeros(length(T_interp),6);
-kep_M = kep_E; kep_J = kep_M;
+kep_M = kep_E; kep_J = kep_M;  kep_V = kep_M;
 kep_interp = kep_E;
 
 for jj = 1:length(T_interp)
     kep_E(jj,:) = uplanet(T_interp(jj)/86400,3);
     kep_M(jj,:) = uplanet(T_interp(jj)/86400,4);
+    kep_V(jj,:) = uplanet(T_interp(jj)/86400,2);
     kep_J(jj,:) = uplanet(T_interp(jj)/86400,5);
     R_E(jj,:) = kep2car2(kep_E(jj,1:6), mu);
     R_M(jj,:) = kep2car2(kep_M(jj,1:6), mu);
+    R_V(jj,:) = kep2car2(kep_V(jj,1:6), mu);
     R_J(jj,:) = kep2car2(kep_J(jj,1:6), mu);
     kep_interp(jj,:) = car2kep(Y_interp(jj,1:3), Y_interp(jj,4:6), mu);
 end
@@ -156,7 +158,8 @@ set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
 plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b','DisplayName','Earth trajectory'), hold on
 plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r','DisplayName','Mars trajectory'), hold on
-plot3(R_J(:,1), R_J(:,2), R_J(:,3),'r','DisplayName','Jupiter trajectory'), hold on
+plot3(R_V(:,1), R_V(:,2), R_V(:,3),'c','DisplayName','Venus trajectory'), hold on
+plot3(R_J(:,1), R_J(:,2), R_J(:,3),'m','DisplayName','Jupiter trajectory'), hold on
 
 plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r:', 'DisplayName','Unperturbed'), hold on
 plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3),'g', 'DisplayName','Perturbed'), hold on
@@ -209,7 +212,7 @@ kep_RS = [6400 0 deg2rad(0) 0 0 0];
 [ YM_NS3, hyp_NS3, kep_cap_NS3] = PO2hyp(kep_NS3, (VF' - v_M), rM, mu, parNS3, [], 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS3 = rM + YM_NS3(1:3, 1);
+YSOI_NS3 = rM + YM_NS3(1, 1:3)';
 [a_NS3, p_NS3 ,e_NS3, err_NS3, VI_NS3, VF_NS3, tspar_NS3, th_NS3] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
 
@@ -225,7 +228,7 @@ parRS.isInterp = 1;
 [ YM_RS, hyp_RS, kep_cap_RS] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, [], 1, 'capture');
 
 %definition of the last TCM
-YSOI_RS = rM + YM_RS(1:3, 1);
+YSOI_RS = rM + YM_RS(1, 1:3)';
 [a_RS, p_RS ,e_RS, err_RS, VI_RS, VF_RS, tspar_RS, th_RS] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_RS, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 
@@ -280,7 +283,7 @@ mu = astroConstants(14);
 [ YM_NS3, ~, kep_cap_NS3] = PO2hyp(kep_NS3, (VF' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS3 = rM + YM_NS3(1:3, 1);
+YSOI_NS3 = rM + YM_NS3(1, 1:3)';
 [~, ~ ,~, ~, VI_NS3, VF_NS3, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS3, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
 dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
 
@@ -297,7 +300,7 @@ parRS.isInterp = 1;
 [ YM_RS, ~, ~] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
 
 %definition of the last TCM
-YSOI_RS = rM + YM_RS(1:3, 1);
+YSOI_RS = rM + YM_RS(1, 1:3)';
 [~, ~ ,~, ~, VI_RS, VF_RS, ~, ~] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_RS, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 

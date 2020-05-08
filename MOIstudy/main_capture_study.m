@@ -20,23 +20,48 @@ Thrust0 = [-10000; 0; 0];                                   % thrust [N] (@TNH) 
 parameters.Isp = 380;                                      % specific impulse [s]
 
 parameters.M0 = 6000;                                       % Total Mass of the s/c [kg]
-parameters.c_r = 0.5;
-parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
-parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
+% parameters.c_r = 0.5;
+% parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
+  
 parameters.event = 0;
-parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   %,'Events', @event_cont_thrust);
+parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   
 
-
-%capture delta_v
-kep_cap_desired = [10000 0.1 deg2rad(90) 0 0 0];
-delta = deg2rad(45);
-[kepM, muS] = uplanet(parameters.t0sym, 4);
-rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
-VF =    [20.1823   -7.8639   -0.3019]; %SM heliocentric velocity
-v_M =   [22.5170   -8.8545   -0.7398]; %mars heliocentric velocity
+%capture delta_v
+% kep_cap_desired = [10000 0.1 deg2rad(90) 0 0 0];
 
-[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_cap_desired, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+
+%% first launch (2024)
+parameters.t0sym = 9.361401106238969e+03;  %MJD2000
+
+[kepM, muS] = uplanet(parameters.t0sym, 4);
+rM = kep2car2(kepM, muS);
+
+VF =    [12.799958274752937 -16.478235594522850   0.335452507074074]; %SM heliocentric velocity
+v_M =   [13.837765883347817 -18.403996797073731  -0.725009406810734]; %mars heliocentric velocity
+
+kep_NS = [9850 0 deg2rad(25) 0 0 0];
+kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
+
+[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_NS, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+%%
+[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_NS2, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+
+%% second launch (2026)
+parameters.t0sym = 1.010485462521553e+04;  %MJD200
+
+[kepM, muS] = uplanet(parameters.t0sym, 4);
+rM = kep2car2(kepM, muS);
+
+VF =    [19.599339413692434  -8.951498304070178  -0.215260206190249]; %SM heliocentric velocity
+v_M =   [21.963857541381959  -9.885170051123481  -0.747631467874832]; %mars heliocentric velocity
+
+kep_NS3 = [10500 0 deg2rad(25) 0 0 0]; 
+kep_RS = [6400 0 deg2rad(1e-8) 0 0 0];
+
+[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_NS3, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+%%
+[YY_capture, hyp_capture , kep_capture] = PO2hyp(kep_RS, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
 
 
