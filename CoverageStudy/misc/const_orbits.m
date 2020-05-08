@@ -1,7 +1,7 @@
 function [YYY, T, THETA, h_sat, h_user] = const_orbits(curr, data)
 
 TT = curr.walker(1);                     % total number of satellites
-Nplane = curr.walker(2);                 % number of planes
+Nplane = curr.walker(2);                      % number of planes
 F = curr.walker(3);                      % relative spacing between satellites in adjacent planes
 
 n_sat = TT/Nplane;                       % satellites per plane
@@ -15,9 +15,9 @@ gamma = deg2rad(curr.beam/2);                   % satellite FoV
 opt = odeset('AbsTol', 1e-12, 'RelTol', 1e-13);
 
 % Orbits computation
-YYY = zeros(TT, 3, data.NT);       % states matrix (3D)
+YYY = zeros(TT, 3, data.NT);      % states matrix (3D)
 THETA = zeros(TT, data.NT);        % matrix containing Earth central angles
-h_sat = zeros(TT, data.NT);        % surface altitude of the geodetic point
+h_sat = zeros(TT, data.NT);            % surface altitude of the geodetic point
 h_user = zeros(TT, data.NT);  
 
  for ii = 1 : Nplane
