@@ -179,11 +179,27 @@ view([0 0 90])
 % set(gca, 'color', 'k','visible','off'), 
 legend('Color','white')
 
+for i=1:10:length(T_interp)
+    rrr = [R_E(i,1:3); Y_interp(i,1:3)];
+    plot3(rrr(:,1), rrr(:,2), rrr(:,3), 'k','HandleVisibility','off'), hold on,
+end
+
 % hold off 
 % 
 % figure()
 % plot(T_interp, parameters.M0 - Y_interp(:,7)); title('s/c mass')
-
+dist = zeros(length(T_interp),1);
+ang = dist;
+for i=1:length(dist)
+    dist(i) = norm(Y_interp(i,1:3) - R_E(i,1:3));
+    ang(i) = acosd(dot((Y_interp(i,1:3) - R_E(i,1:3))/norm((Y_interp(i,1:3) - R_E(i,1:3))), -R_E(i,1:3)/norm(R_E(i,1:3))));
+end
+figure()
+subplot(2,1,1), plot(T_interp, dist), xlabel('Mission Time [days]'), 
+xlabel('Mission Time [days]'), ylabel('km'), title('Distance'), grid minor
+subplot(2,1,2), plot(T_interp, ang), 
+xlabel('Mission Time [days]'), ylabel('deg'), title('Angle Sun-Earth-s/c')
+grid minor
 %% TCM -> CAPTURE STUDY (4 SM)
 %these are all the parameters that we are using, changing among the code:
 %t_BO
