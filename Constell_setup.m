@@ -21,18 +21,16 @@ set(0,'defaultAxesTickLabelInterpreter','latex');
 a_GNSS = 10500;
 e_GNSS = 0;
 i_GNSS = 25;
-mi = 42828.3;                   % mars gravity constant [km^2/s^3]
-J2 = 1.955e-3;                  % mars J2 gravity coefficient
-V = 1.6318e11;                  % mars volume [km^3]
-R = nthroot(3*V/(4*pi), 3);     % mars equivalent radius [km]
-n = sqrt(mi/a_GNSS^3);               % GNSS angular velocity [rad/s]
-v_GNSS = sqrt(mi/a_GNSS);            % linear velocity of the GNSS constellation [km/s]
+mi = 42828.3;                       % mars gravity constant [km^2/s^3]
+J2 = 1.955e-3;                      % mars J2 gravity coefficient
+V = 1.6318e11;                      % mars volume [km^3]
+R = nthroot(3*V/(4*pi), 3);         % mars equivalent radius [km]
+n = sqrt(mi/a_GNSS^3);              % GNSS angular velocity [rad/s]
+v_GNSS = sqrt(mi/a_GNSS);           % linear velocity of the GNSS constellation [km/s]
 
 %% Orbital Parameters secular variation (J2 on GNNS orbit) 
 
 a_J2 = 6400:20:11000;
-e_GNSS = 1e-5;
-i_GNSS = 1;
 K = -3*J2*sqrt(mi)*R^2./(2*a_J2.^(7/2)*(1-e_GNSS^2)^2);
 
 % variation per seconds in rad
@@ -91,7 +89,6 @@ rp_phas = 2*a_phas - ra_phas;
 e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
 v_phas = sqrt(mi/a_phas)*(1 - e_phas);
 dv_phas_NS = 2*abs(v_GNSS - v_phas)*1e3;
-
 
 %%%%%%%%% RS
 a_RS = 6400;

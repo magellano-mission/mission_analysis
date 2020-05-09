@@ -37,7 +37,7 @@ theta_sun = acosd(R_pl/rsun);
 % Determine whether a line from the sun to the satellite
 % intersects the earth:
 
-if theta_sat + theta_sun <= theta
+if theta_sat + theta_sun >= theta
     light_switch = true; 
 else
     light_switch = false; %no
