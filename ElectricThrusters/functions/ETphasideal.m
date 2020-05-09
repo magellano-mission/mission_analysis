@@ -1,4 +1,8 @@
-function t_l = MarsETphasideal(tend, r0, m, T, mi, dth_phas)
+function t_l = ETphasideal(tend, r0, m, T, mi, dth_phas)
+%{
+Work in progress function to get the ideal phasing time maneuver in order
+to set better the boundaries in the optimization.
+%}
 
 a = T/m;
 n0 = sqrt(mi/r0^3);

@@ -1,11 +1,15 @@
 function [lb, ub] = ETphasBoundaries(lb, ub, mi, r0, m, T, dth)
+%{
+Work in progress function to set better the boundaries of the optimization
+Accordingly to ETphasideal.m
+%}
 
 t = lb:100:ub;
 N = length(t);
 t_l = zeros(N, 1);
 
 for i = 1:N
-    t_l(i) = MarsETphasideal(t(i), r0, m, T, mi, dth);
+    t_l(i) = ETphasideal(t(i), r0, m, T, mi, dth);
 end
 
 plot(t, t_l);

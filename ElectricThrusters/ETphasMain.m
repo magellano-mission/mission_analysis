@@ -1,4 +1,4 @@
-% Station Keeping Box
+% ET phasing 
 close all; clear; clc
 
 %% Adding to path
@@ -15,14 +15,14 @@ set(0,'defaultLegendInterpreter', 'latex');
 set(0,'defaultAxesTickLabelInterpreter', 'latex');
 
 %% Importing Data
-run('ETconfig.m')
-
-lb = 5e5;
-ub = 2e6;
-
-T = -1e-3;
+run('ETphasConfig.m')                       %%% ADD YOUR DATA
 
 %% Boundary refinition
+lb = 5e5;                                   % define the boundaries
+ub = 2e6;
+
+T = -1e-3;                                  % [N] for clearness the Thrust is here
+
 % mi = astroConstants(14);
 % r0 = 10500;
 % m = 250;
@@ -31,5 +31,5 @@ T = -1e-3;
 % [lb, ub] = ETphasBoundaries(lb, ub, mi, r0, m, T, dth);
 
 %% optimization
-Ttot = EToptim(T, lb, ub, data); % total time of the phasing [days]
+Ttot = ETphasOptim(T, lb, ub, data);        % total time of the phasing [days]
 

@@ -1,5 +1,7 @@
-function dY = ETintegration(t, Y, data)
-
+function dY = ETIntegration(t, Y, data)
+%{
+ODE function to integrate the Thrusted electric arches
+%}
 
 M = data.M;                         % structural mass
 
@@ -34,7 +36,12 @@ h_hat = cross(R, V)/norm(cross(R, V));
 n_hat = cross(h_hat, t_hat);
 A = [t_hat, n_hat, h_hat];
 
-aT = [T/M*1e-3; 0; 0];                          % [km/s^2]
+if data.TangThrust
+    aT = [T/M*1e-3; 0; 0];                          % [km/s^2]
+else
+    aT = [0; 0; T/M*1e-3];
+end
+
 aT_tnh = A*aT;                                  % rotated thrust
 
 % Derivative of the states

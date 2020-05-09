@@ -1,4 +1,7 @@
 function dY = ThrustFreeInt(~, Y, data)
+%{
+ODE Function for the free dynamics
+%}
 
 % States
 R = Y(1:3);
