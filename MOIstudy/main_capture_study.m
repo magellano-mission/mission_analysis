@@ -16,10 +16,10 @@ parameters.isPerturbed = 0;                                %
 % parameters.t_BO = 30*60;   %computed inside              % burnout time (chemical thrust)
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
 parameters.perc_tBO_before_p = 0.5;
-Thrust0 = [-10000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
-parameters.Isp = 380;                                      % specific impulse [s]
+Thrust0 = [-4000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.Isp = 320;                                      % specific impulse [s]
 
-parameters.M0 = 6000;                                       % Total Mass of the s/c [kg]
+parameters.M0 = 7000;                                       % Total Mass of the s/c [kg]
 % parameters.c_r = 0.5;
 % parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
   
