@@ -29,24 +29,25 @@ else
     T = 0;
 end
 
-
-% Rotation Matrix
+% Rotation Matrix tnh
 t_hat = V/norm(V);
 h_hat = cross(R, V)/norm(cross(R, V));
 n_hat = cross(h_hat, t_hat);
 A = [t_hat, n_hat, h_hat];
 
-if data.TangThrust
-    aT = [T/M*1e-3; 0; 0];                          % [km/s^2]
-else
-    aT = [0; 0; T/M*1e-3];
+if data.ThrustDir == 1
+    aT_tnh = [T/M*1e-3; 0; 0];                          % [km/s^2]
+elseif data.ThrustDir == 2
+    aT_tnh = [0; T/M*1e-3; 0];
+elseif data.ThrustDir == 3
+    aT_tnh = [0; 0; T/M*1e-3];
 end
 
-aT_tnh = A*aT;                                  % rotated thrust
+aT_car = A*aT_tnh;                                  % from tnh to car
 
 % Derivative of the states
 dY(1:3) = V;
-dY(4:6) = - data.mi/norm(R)^3.*R + aT_tnh;
+dY(4:6) = - data.mi/norm(R)^3.*R + aT_car;
 
 dY = dY';
 
