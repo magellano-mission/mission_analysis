@@ -1,10 +1,10 @@
 function [EAA_] = Earth_visibility_angle(Earth_time, Mars_time)
 
 [k_E, mu_s] = uplanet(Earth_time, 3);
-[r_E, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+[r_E, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
         
 [k_E, ~] = uplanet(Mars_time, 4);
-[r_M, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);
+[r_M, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);
            
 [~, ~, ~, ~, VI, ~, ~, ~] = lambertMR(r_E, r_M, (Mars_time - Earth_time)*24*3600 , mu_s);
 
@@ -19,7 +19,7 @@ for i = 1:length(t_E_EAA)
     tE = t_E_EAA(i);
     
     [k_E, ~] = uplanet(tE, 3);    
-    [r, ~] = kep2car2(k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6), mu_s);    
+    [r, ~] = kep2car2([k_E(1), k_E(2), k_E(3), k_E(4), k_E(5), k_E(6)], mu_s);    
     rr_E_EAA(:, i) = r;
     
 end

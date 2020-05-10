@@ -34,8 +34,11 @@ R3_om=[cos(om) sin(om) 0
       -sin(om) cos(om) 0
           0       0    1];
 R=[R3_om*R1_i*R3_OM]';
-
-p=a*(1-e^2);
+if e<=1
+    p=a*(1-e^2);
+else
+    p=a*(e^2-1);
+end
 r=p/(1+e*cos(th));
 
 r_pf=r*[cos(th)

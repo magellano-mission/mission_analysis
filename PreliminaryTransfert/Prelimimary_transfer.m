@@ -40,21 +40,22 @@ EM_SP = (E_P*M_P) / abs(E_P-M_P);
 Dv1_best = norm(v_E - VI');
 Dv2_best = norm(VF' - v_M);
 
-[~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
+% [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
 % Departure hyp
 Ra_PO_dep = 315 + astroConstants(23);
-Rp_PO_dep = 117 + astroConstants(23);
+% Rp_PO_dep = 117 + astroConstants(23);
+Rp_PO_dep = (100:10:300) + astroConstants(23);
 
 a_PO = (Ra_PO_dep + Rp_PO_dep)/2;
-e_PO = (Ra_PO_dep - Rp_PO_dep)/(Ra_PO_dep + Rp_PO_dep);
-p_PO = a_PO *(1-e_PO^2);
+e_PO = (Ra_PO_dep - Rp_PO_dep)./(Ra_PO_dep + Rp_PO_dep);
+p_PO = a_PO .*(1-e_PO.^2);
 
-v_a_PO = sqrt( astroConstants(13)/p_PO )*(1-e_PO);
-v_p_PO = sqrt( astroConstants(13)/p_PO )*(1+e_PO);
+v_a_PO = sqrt( astroConstants(13)./p_PO ).*(1-e_PO);
+v_p_PO = sqrt( astroConstants(13)./p_PO ).*(1+e_PO);
 v_inf_dep = Dv1_best;
 v_a_hyp = sqrt( ( v_inf_dep^2 ) + ( 2*astroConstants(13)/Ra_PO_dep ));
-v_p_hyp = sqrt( ( v_inf_dep^2 ) + ( 2*astroConstants(13)/Rp_PO_dep ));
+v_p_hyp = sqrt( ( v_inf_dep^2 ) + ( 2*astroConstants(13)./Rp_PO_dep ));
 deltav_PO_a = v_a_hyp - v_a_PO;
 deltav_PO_p = v_p_hyp - v_p_PO;
 
@@ -64,6 +65,10 @@ v_PO_arr = sqrt( astroConstants(14)./Rp_PO_arrival );
 v_inf_arrival = Dv2_best;
 v_p_arr_hyp = sqrt( ( v_inf_arrival^2 ) + ( 2*astroConstants(14)./Rp_PO_arrival ));
 deltav_PO_arr = v_p_arr_hyp - v_PO_arr;
+
+figure()
+plot(Rp_PO_dep - astroConstants(23), deltav_PO_p,'.-','DisplayName','Pericenter altitude'), hold on
+plot(Rp_PO_dep - astroConstants(23), deltav_PO_p,'.-','DisplayName','Pericenter altitude')
 
 %% Sun aspect angle during IT and around planetary orbit
 
@@ -80,7 +85,7 @@ mu_M = astroConstants(14);
 
 % SAA in orbit around Earth;
 mu_E = astroConstants(13);
-[SAA_E] = SAA_fun(a_PO,0,0,0,0,0,Earth_time,mu_E,3);
+[SAA_E] = SAA_fun(a_PO(1),0,0,0,0,0,Earth_time,mu_E,3);
 
 
 

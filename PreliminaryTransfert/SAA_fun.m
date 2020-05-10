@@ -3,7 +3,7 @@ function [SAA_] = SAA_fun(a,e,i,om,OM,th,In_time,mu,n)
 % Orbital period for circular orbit
 T = 2*pi*sqrt( a^3 / mu );
 
-[r_0, v_0] = kep2car2(a, e, i, om, OM, th, mu);  
+[r_0, v_0] = kep2car2([a, e, i, om, OM, th], mu);  
 
 y01 = [r_0; v_0];
 
@@ -19,7 +19,7 @@ for i = 1:length(t_SAA)
     
     [k, mu_s] = uplanet(t/3600/24, n);
     
-    [r, ~] = kep2car2(k(1), k(2), k(3), k(4), k(5), k(6), mu_s); 
+    [r, ~] = kep2car2([k(1), k(2), k(3), k(4), k(5), k(6)], mu_s); 
     
     SAA_(i,1) =  acos(dot(y1(i,1:3),(r'+y1(i,1:3))) / (norm((r'+y1(i,1:3)))*norm(y1(i,1:3)))) ;
     

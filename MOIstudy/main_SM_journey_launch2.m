@@ -12,6 +12,7 @@
 
 close all, clear, clc
 
+parameters.isPerturbed = 0;
 parameters.isInterp = 1;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.t_BO = 30*60;                                   % burnout time (chemical thrust)
@@ -34,7 +35,7 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);  
 [~, mu_s] = uplanet(0, 1);
 
 in_date_min = [2026 1 1 0 0 0];
-fin_date_min = [2026 1 1 0 0 0];
+fin_date_min = [2027 1 1 0 0 0];
 
 [k_E, ~] = uplanet(date2mjd2000(in_date_min), 3);
 [k_M, ~] = uplanet(date2mjd2000(in_date_min), 4);
@@ -247,7 +248,7 @@ parNS3.isInterp = 1;
 parRS.isInterp = 1;
 % [ YM_RS, hyp_RS, kep_cap_RS] = ...
 % capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
-[ YM_RS, hyp_RS, kep_cap_RS] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, [], 1, 'capture');
+[ YM_RS, hyp_RS, kep_cap_RS] = hyp2PO(kep_RS, (VF' - v_M), rM, mu, parRS, [], 1, 'capture');
 
 %definition of the last TCM
 YSOI_RS = rM + YM_RS(1, 1:3)';
@@ -302,7 +303,7 @@ mu = astroConstants(14);
 %NS3
 % [ YM_NS3, ~, kep_cap_NS3] = ...
 % capture_plot(kep_NS3, (VF' - v_M), rM, mu, Thrust0 , 1, parNS3);
-[ YM_NS3, ~, kep_cap_NS3] = PO2hyp(kep_NS3, (VF' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
+[ YM_NS3, ~, kep_cap_NS3] = hyp2PO(kep_NS3, (VF' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS3 = rM + YM_NS3(1, 1:3)';
@@ -311,7 +312,7 @@ dv_NS3 = VI_NS3 - Y_interp(dv_instant, 4:6);
 
 % [ ~, hyp_NS3, ~] = ...
 % capture_plot(kep_NS3, (VF_NS3' - v_M), rM, mu, Thrust0 , 1, parNS3);
-[ ~, hyp_NS3, ~] = PO2hyp(kep_NS3, (VF_NS3' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
+[ ~, hyp_NS3, ~] = hyp2PO(kep_NS3, (VF_NS3' - v_M), rM, mu, parNS3, Thrust0, 1, 'capture');
 
 DV_NS3 = [DV_NS3; norm(dv_NS3), hyp_NS3.dv_req, hyp_NS3.dv_opt];
 
@@ -319,7 +320,7 @@ DV_NS3 = [DV_NS3; norm(dv_NS3), hyp_NS3.dv_req, hyp_NS3.dv_opt];
 parRS.isInterp = 1;
 % [ YM_RS, ~, ~] = ...
 % capture_plot(kep_RS, (VF' - v_M), rM, mu, Thrust0 , 1, parRS);
-[ YM_RS, ~, ~] = PO2hyp(kep_RS, (VF' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
+[ YM_RS, ~, ~] = hyp2PO(kep_RS, (VF' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_RS = rM + YM_RS(1, 1:3)';
@@ -328,7 +329,7 @@ dv_RS = VI_RS - Y_interp(dv_instant, 4:6);
 
 % [ ~, hyp_RS, ~] = ...
 % capture_plot(kep_RS, (VF_RS' - v_M), rM, mu, Thrust0 , 1, parRS);
-[ ~, hyp_RS, ~] = PO2hyp(kep_RS, (VF_RS' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
+[ ~, hyp_RS, ~] = hyp2PO(kep_RS, (VF_RS' - v_M), rM, mu, parRS, Thrust0, 1, 'capture');
 
 DV_RS = [DV_RS; norm(dv_RS), hyp_RS.dv_req, hyp_RS.dv_opt];
 end

@@ -24,6 +24,7 @@ v = norm(vv);
 
 %Calcolo dell'energia e del semiasse a.
 E = (v^2)/2 -mu/r;
+
 a = -mu/(2*E);
 
 %Calcolo dell'eccentricità.
@@ -60,6 +61,9 @@ if vr < 0
     th = 2*pi - th;
 end
 
+if e>1
+    a = abs(a);
+end
 K = [a, e, i, OM, om, th];
 
 end

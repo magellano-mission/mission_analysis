@@ -1,4 +1,4 @@
-function [ output_pos, hyp_arrival , kep_hyp_dep] = PO2hyp(kep_departure, vv_inf, rM, mu, parameters, Thrust, N_firings, flag_maneuver, plot_flag)
+function [ output_pos, hyp_arrival , kep_hyp_arr] = hyp2PO(kep_cap_desired, vv_inf, rM, mu, parameters, Thrust, N_firings, flag_maneuver, plot_flag)
 % function [TT, YY, parout, hyp_arrival , kep_hyp_arr, kep_cap_arr] = capture_plot(kep_cap_desired, vv_inf, rM, mu, Thrust , N_firings, parameters)
     %Plot of asymptotes and hyperbolic path in occurrence of the flyby
     %   INPUT
@@ -24,7 +24,7 @@ function [ output_pos, hyp_arrival , kep_hyp_dep] = PO2hyp(kep_departure, vv_inf
     n_iter = 1000;
     %Computation of the hyperbola
     
-    rp = kep_departure(1)*(1 - kep_departure(2));
+    rp = kep_cap_desired(1)*(1 - kep_cap_desired(2));
     e_hyp = 1 + rp*norm(vv_inf)^2/mu;
     h_hyp = sqrt(mu*rp*(1+e_hyp));
     a_hyp =((h_hyp^2)/mu)/(e_hyp^2-1);
@@ -40,20 +40,25 @@ function [ output_pos, hyp_arrival , kep_hyp_dep] = PO2hyp(kep_departure, vv_inf
     %Hyperbolas plot
     l_pos_Vect_m = zeros(3,n_iter);
     
-    kep_departure(6) = 0;
-    kep_hyp_dep = kep_departure;
-    kep_hyp_dep(1) = a_hyp; %>0
-    kep_hyp_dep(2) = e_hyp; %>1
+    kep_cap_desired(6) = 0;
+    kep_hyp_arr = kep_cap_desired;
+    kep_hyp_arr(1) = a_hyp; %>0
+    kep_hyp_arr(2) = e_hyp; %>1
     
     correc_hyp = acos((-a_hyp*(1-e_hyp^2)/rSOI - 1)/e_hyp);
 
 %     correc_hyp_f = @(alpha) correc_SOI_f(rSOI,alpha, kep_hyp_arr, theta_inf, mu);
 %     correc_hyp = fminsearch(correc_hyp_f,0); 
 
-
-    I = imread('Earth.jpg');                            
-    rP = almanac('Earth','Radius','kilometers','sphere');
-    ltheta_hyp = linspace(0,correc_hyp,n_iter);
+    if strcmp(flag_maneuver, 'arrival')
+        I = imread('Mars.jpg');                            % Mars image
+        rP = almanac('Mars','Radius','kilometers','sphere');
+        ltheta_hyp = linspace(-correc_hyp, 0,n_iter);
+    else
+        I = imread('Earth.jpg');                            % Mars image
+        rP = almanac('Earth','Radius','kilometers','sphere');
+        ltheta_hyp = linspace(0,correc_hyp,n_iter);
+    end 
     
     lt_hyp = zeros(1,n_iter);
     
@@ -69,25 +74,25 @@ function [ output_pos, hyp_arrival , kep_hyp_dep] = PO2hyp(kep_departure, vv_inf
     dt_hyp = abs(lt_hyp(1) - lt_hyp(n_iter)); % [s]
     hyp_arrival.dt_hyp = dt_hyp;
     
-    [r0_dep, v_ell] = kep2car2(kep_departure, mu);
-    [~, v_hyp] = kep2car2(kep_hyp_dep, mu);
-    dv_req = v_hyp - v_ell;
+    [~, v_ell] = kep2car2(kep_cap_desired, mu);
+    [~, v_hyp] = kep2car2(kep_hyp_arr, mu);
+    dv_req = v_ell - v_hyp;
 
-    %optimal parameters (only for capture!)
-    hyp_arrival.dv_opt = norm(vv_inf)*sqrt((1-kep_departure(2))/2);
-    hyp_arrival.rp_opt = 2 * (1-kep_departure(2))/(1+kep_departure(2)) * mu/norm(vv_inf)^2;
-    hyp_arrival.imp_par_opt = rp*sqrt(2/(1 - kep_departure(2)));
+    %optimal parameters
+    hyp_arrival.dv_opt = norm(vv_inf)*sqrt((1-kep_cap_desired(2))/2);
+    hyp_arrival.rp_opt = 2 * (1-kep_cap_desired(2))/(1+kep_cap_desired(2)) * mu/norm(vv_inf)^2;
+    hyp_arrival.imp_par_opt = rp*sqrt(2/(1 - kep_cap_desired(2)));
 
     for i = 1:n_iter
-        kep_hyp_dep(6) = ltheta_hyp(i);
-        [r_m,~]= kep2car2(kep_hyp_dep,mu);
+        kep_hyp_arr(6) = ltheta_hyp(i);
+        [r_m,~]= kep2car2(kep_hyp_arr,mu);
         l_pos_Vect_m(:,i) = r_m;
     end
     output_pos = l_pos_Vect_m';
     
-    kep_hyp_dep(6) = ltheta_hyp(1);
+    kep_hyp_arr(6) = ltheta_hyp(1);
 
-    hyp_arrival.kep_hyp_arr = kep_hyp_dep;
+    hyp_arrival.kep_hyp_arr = kep_hyp_arr;
     hyp_arrival.dv_req =  norm(dv_req)*1000;  %definition of desired delta_v
     parameters.mP_req = parameters.M0 *(exp(hyp_arrival.dv_req/(9.81*parameters.Isp)) - 1)/ ...
                                         exp(hyp_arrival.dv_req/(9.81*parameters.Isp));
@@ -105,7 +110,7 @@ if plot_flag %plot of geometrical orbits
 
 %   equatorial plane
     plot(x,y, 'DisplayName','SOI boundary'), 
-    plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),'DisplayName','Analytical  Hyperbola'), hold on
+    plot3(l_pos_Vect_m(1,:),l_pos_Vect_m(2,:), l_pos_Vect_m(3,:),':','DisplayName','Analytical  Hyperbola'), hold on
 %     
     [X, Y, Z] = ellipsoid(0, 0, 0, rSOI, rSOI, rSOI, 100);    % spheric centered Mars
     planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName','SOI');
@@ -124,44 +129,42 @@ if plot_flag %plot of geometrical orbits
     axis equal
     
 %   desired capture orbit plot
-    r_departure = zeros(3,360);
-    vvvv = r_departure;
+    r_desired = zeros(3,360);
     for jj = 1:360
-        kep_departure(6) = deg2rad(jj-1);
-        [r_departure(:,jj), vvvv(:,jj)] = kep2car2(kep_departure, mu);
+        kep_cap_desired(6) = deg2rad(jj);
+        r_desired(:,jj) = kep2car2(kep_cap_desired, mu);
     end
-    kep_departure(6) = 0;
-    plot3(r_departure(1,:), r_departure(2,:), r_departure(3,:),'g','DisplayName','Desired Arrival Orbit'), hold on
-    plot3(r_departure(1,1), r_departure(2,1), r_departure(3,1), 'o','DisplayName','PO Pericenter'), hold on
+    plot3(r_desired(1,:), r_desired(2,:), r_desired(3,:),'g','DisplayName','Desired Arrival Orbit'), hold on
+    plot3(r_desired(1,1), r_desired(2,1), r_desired(3,1), 'o','DisplayName','Hyperbola Pericenter'), hold on
 
-    if plot_flag == 2
+if plot_flag == 2
 %   integration of hyperbolic fligt
-    X0_PO = zeros(7,1);
-    X0_PO(1:3) = r0_dep;
-    X0_PO(4:6) = v_ell;
+    X0_hyp = zeros(7,1);
+    [rr0, vv0] = kep2car2(kep_hyp_arr, mu);
+    X0_hyp(1:3) = rr0;
+    X0_hyp(4:6) = vv0;
 
     delta_t_before_p = parameters.perc_tBO_before_p * parameters.t_BO; %how much time before reaching the pericenter occurs the burn
-    
-    T_orb = 2*pi*sqrt(kep_departure(1)^3/mu);
+
 %   integration of complete hyperbola
-    parameters.tmax = parameters.t0sym +  (T_orb)/86400; %[MJD2000]
+    parameters.tmax = parameters.t0sym +  (2*dt_hyp)/86400; %[MJD2000]
 %     X0_hyp(4:6) = -X0_hyp(4:6); 
-    parameters.T = zeros(3,1);  
-    [~, tot_departure] = cart_cont_thrust_model(X0_PO, parameters);
+      
+    [~, tot_hyperbola] = cart_cont_thrust_model(X0_hyp, parameters);
 
-%   complete PO plot
-    plot3(tot_departure(:,1), tot_departure(:,2), tot_departure(:,3), 'k','DisplayName','Uncontrolled flight @PO'), hold on
+%   complete  hyperbola plot
+    plot3(tot_hyperbola(:,1), tot_hyperbola(:,2), tot_hyperbola(:,3), 'k','DisplayName','Uncontrolled Hyperbolic flight'), hold on
 
-%   no-thrust path integration
-    parameters.tmax = parameters.t0sym +  (T_orb - delta_t_before_p)/86400;                                
-    [T_no_control, Y_no_control, P_no_control] = cart_cont_thrust_model(X0_PO, parameters);
+%   no-brake path integration
+    parameters.tmax = parameters.t0sym +  (dt_hyp - delta_t_before_p)/86400;                                
+    [T_no_control, Y_no_control, P_no_control] = cart_cont_thrust_model(X0_hyp, parameters);
     
     TT = T_no_control;
     YY = Y_no_control;
     parout = P_no_control;
      
-    plot3(YY(:,1), YY(:,2), YY(:,3), 'DisplayName','Coasting maneuver'), hold on
-    plot3(YY(1,1), YY(1,2), YY(1,3), 'r*','DisplayName','Departure'), hold on
+    plot3(YY(:,1), YY(:,2), YY(:,3),'DisplayName','Effective Hyperbolic flight'), hold on
+    plot3(YY(1,1), YY(1,2), YY(1,3), 'r*','DisplayName','SOI injection'), hold on
 
 %     thrust activation
     parameters.t0sym = parameters.tmax;                             %[MJD200]
@@ -175,30 +178,31 @@ if plot_flag %plot of geometrical orbits
 
     plot3(Y_thrust(:,1), Y_thrust(:,2), Y_thrust(:,3), 'r','DisplayName',strcat('Firing (T = ', num2str(norm(parameters.T)), 'N, tBO = ', num2str(norm(parameters.t_BO)),'s)')), hold on
     plot3(Y_thrust(1,1), Y_thrust(1,2), Y_thrust(1,3), 'o', 'MarkerSize',15,'DisplayName','Firing start'), hold on
-%     plot3(Y_thrust(end,1), Y_thrust(end,2), Y_thrust(end,3), 'ro', 'MarkerSize',15,'DisplayName','Firing end'), hold on
+    plot3(Y_thrust(end,1), Y_thrust(end,2), Y_thrust(end,3), 'ro', 'MarkerSize',15,'DisplayName','Firing end'), hold on
 
     YY = [YY; Y_thrust];
     TT = [TT; T_thrust];
     parout = [parout; P_thrust];
 
-%   Hyperbolic Path
+%   Thrust off
     kep_cap_arr = car2kep(YY(end,1:3), YY(end,4:6), mu);
+    T_orb = 2*pi*sqrt(kep_cap_arr(1)^3/mu);
 
     parameters.t0sym = parameters.tmax;
-    parameters.tmax = parameters.t0sym + dt_hyp/86400;
+    parameters.tmax = parameters.t0sym + T_orb/86400;
     parameters.T = [0; 0; 0];  
 
-    [T_hyp, Y_hyp, P_hyp] = cart_cont_thrust_model(YY(end,:), parameters);
+    [T_arr, Y_arr, P_arr] = cart_cont_thrust_model(YY(end,:), parameters);
 
-    YY = [YY; Y_hyp];
-    TT = [TT; T_hyp];
-    parout = [parout; P_hyp];
+    YY = [YY; Y_arr];
+    TT = [TT; T_arr];
+    parout = [parout; P_arr];
 
 %   plot of capture orbit result
     figure1 = gcf;
-    plot3(Y_hyp(:,1),Y_hyp(:,2),Y_hyp(:,3),'b','DisplayName','Effective Departure Hyperbola'), hold on
-%     xlim([-11000 11000]), ylim([-11000 11000]), zlim([-11000 11000])
-    xlim([-rSOI rSOI]), ylim([-rSOI rSOI]), zlim([-rSOI rSOI])
+    plot3(Y_arr(:,1),Y_arr(:,2),Y_arr(:,3),'b','DisplayName','Effective Capture Ellipse'), hold on
+    xlim([-11000 11000]), ylim([-11000 11000]), zlim([-11000 11000])
+%     xlim([-rSOI rSOI]), ylim([-rSOI rSOI]), zlim([-rSOI rSOI])
 
     legend()
 
@@ -206,12 +210,12 @@ if plot_flag %plot of geometrical orbits
     [0.075 0.65 0.15 0.3],...
     'String', ...
     {'Desired Orbit Kep:', ...
-    strcat('a: ', num2str(kep_departure(1)), 'km'), ...
-    strcat('e: ', num2str(kep_departure(2))), ...
-    strcat('i: ', num2str(rad2deg(kep_departure(3))), '°'), ...
-    strcat('OM: ', num2str(rad2deg(kep_departure(4))), '°'), ...
-    strcat('om: ', num2str(rad2deg(kep_departure(5))), '°'), ...
-    strcat('theta: ', num2str(rad2deg(kep_departure(6))), '°'), ...
+    strcat('a: ', num2str(kep_cap_desired(1)), 'km'), ...
+    strcat('e: ', num2str(kep_cap_desired(2))), ...
+    strcat('i: ', num2str(rad2deg(kep_cap_desired(3))), '°'), ...
+    strcat('OM: ', num2str(rad2deg(kep_cap_desired(4))), '°'), ...
+    strcat('om: ', num2str(rad2deg(kep_cap_desired(5))), '°'), ...
+    strcat('theta: ', num2str(rad2deg(kep_cap_desired(6))), '°'), ...
     ' ', ...
     'Effective Orbit Kep:', ...
     strcat('a: ', num2str(kep_cap_arr(1)), 'km'), ...

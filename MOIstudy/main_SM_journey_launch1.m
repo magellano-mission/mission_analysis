@@ -12,17 +12,16 @@
 
 close all, clear, clc
 
+parameters.isPerturbed = 0;
 parameters.isInterp = 1;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
-parameters.t_BO = 30*60;                                   % burnout time (chemical thrust)
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
-Thrust0 = [-3200; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
-parameters.Isp = 280;                                      % specific impulse [s]
-parameters.M0 = 5000;                                      % Total Mass of the s/c [kg]
+Thrust0 = [100000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.Isp = 380;                                      % specific impulse [s]
+parameters.M0 = 14000;                                      % Total Mass of the s/c [kg]
 parameters.c_r = 0.5;
 parameters.Across_sun = 10;                                % Cross area related to the sun [m^2]
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
-parameters.dt_p = parameters.t_BO/2;                       %time distance from pericenter at which firing occurs [s]
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   %,'Events', @event_cont_thrust);
 
@@ -63,7 +62,7 @@ parameters.tmax = date2mjd2000([2021, 1, 1, 0, 0, 0]);
 Dv1_best = norm(v_E - VI');
 Dv2_best = norm(VF' - v_M);
 
-[~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
+% [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
 %% Trans-Mars injection hyperbola 
 % https://www.nasa.gov/mission_pages/MRO/spacecraft/launch-cont.html
@@ -74,16 +73,32 @@ Dv2_best = norm(VF' - v_M);
 % % The parking orbit is needed to allow the Centaur to be in the right position relative to both Earth and Mars for each of its two burns. 
 % % The duration of the first burn is about nine-and-a-half minutes.
 % 
-% h_PO = 185;
+
+% parameters.isPerturbed = 0;
+% parameters.isInterp = 1;
+% parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
+% parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
+% Thrust0 = [100000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+% parameters.Isp = 380;                                      % specific impulse [s]
+% parameters.M0 = 14000;                                      % Total Mass of the s/c [kg]
+% parameters.t0sym = (Earth_time);    
+% parameters.event = 0;
+% parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);   %,'Events', @event_cont_thrust);
+% parameters.perc_tBO_before_p = 0.5;
+% 
+% 
+% h_PO = 10000;
+% rEarth = almanac('Earth','Radius','kilometers','sphere');
+% r_PO = h_PO + rEarth;       %[km]
 % muE = astroConstants(13); 
-% v_inf_plus = v_E - VI;
-% rp_opt_parc = 2*muE/norm(v_inf_plus)^2;%TBC
-% e_opt_parc = 0;
-% a_opt_parc = rp_opt_parc/(1 - e_opt_parc);
-% i_opt_parc = deg2rad(26.7);
+% v_inf_plus = v_E' - VI;   
+% % rp_opt_parc = 2*muE/norm(v_inf_plus)^2;%TBC
+% e_opt_parc = 0.1;
+% a_opt_parc = r_PO/(1 - e_opt_parc);
+% i_opt_parc = deg2rad(26.7)*0;
 % kep_parc = [a_opt_parc e_opt_parc i_opt_parc 0 0 0];%TBC
 % 
-% [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'departure');
+% [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_parc, v_inf_plus, r_E, muE, parameters, Thrust0, 1, 'departure', 1);
 
 %% Propagation of perturbed model
 %perturbed model (and later TCM maneuvers definition)
@@ -156,7 +171,7 @@ legend('Unperturbed','Perturbed')
 subplot(3,3,[7 8 9]), plot(T_interp,Y_interp(:,7),'b'); title('Expelled propellant mass')
 
 % interplanetary arc plot 
-figure_interp = figure;
+figure_interp = figure();
 I = imread('Sun.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
 rSun = 20*almanac('Sun','Radius','kilometers','sphere');
@@ -210,7 +225,9 @@ parameters.isInterp = 0;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.isPerturbed = 0;                                % perturbation switch 0 ,too slow :(
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
-Thrust0 = [-10000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.Isp = 380;  
+Thrust0 = [-4000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.perc_tBO_before_p = 0.5;
 parameters.t0sym = Mars_time;    
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12); 
@@ -233,7 +250,7 @@ kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
 %NS
 % [ YM_NS, hyp_NS, kep_cap_NS] = ...
 % capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
-[ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
+[ YM_NS, hyp_NS , kep_cap_NS] = hyp2PO(kep_NS, (VF' - v_M), rM, mu, parNS, [], 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS = rM + YM_NS(1, 1:3)';
@@ -249,7 +266,7 @@ parNS.isInterp = 1;
 parNS2.isInterp = 1;
 % [ YM_NS2, hyp_NS2, kep_cap_NS2] = ...
 % capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
-[ YM_NS2, hyp_NS2, kep_cap_NS2] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, [], 1, 'capture');
+[ YM_NS2, hyp_NS2, kep_cap_NS2] = hyp2PO(kep_NS2, (VF' - v_M), rM, mu, parNS2, [], 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1, 1:3)';
@@ -269,19 +286,21 @@ plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS injection');hol
 plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'ko', 'DisplayName','NS TCM');hold on
 
 
-annotation(figure_interp,'textbox', ...
-    [0.75 0.15 0.2 0.45], ...
-    'String',{'TCM:', ...
-    'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', 'Capture: ',num2str(norm(hyp_NS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS.dv_opt)),' m/s)') , ...
-    'NS2:', strcat('TCM:', num2str(1000*norm(dv_NS2)),' m/s', 'Capture: ',num2str(norm(hyp_NS2.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS2.dv_opt)),' m/s)')}, ...
-    'FitBoxToText','off');
+% annotation(figure_interp,'textbox', ...
+%     [0.75 0.15 0.2 0.45], ...
+%     'String',{'TCM:', ...
+%     'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', 'Capture: ',num2str(norm(hyp_NS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS.dv_opt)),' m/s)') , ...
+%     'NS2:', strcat('TCM:', num2str(1000*norm(dv_NS2)),' m/s', 'Capture: ',num2str(norm(hyp_NS2.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS2.dv_opt)),' m/s)')}, ...
+%     'FitBoxToText','off');
 
 %% TCM sensitivity study
 parameters.isInterp = 0;
 parameters.isEP = 0;                                       % 1:EP thrust, 0 Chem thust
 parameters.isPerturbed = 0;                                % perturbation switch 0 ,too slow :(
 parameters.T = [0; 0; 0];                                  % thrust [N] (@TNH) (constant profile for the moment)
-Thrust0 = [-10000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.Isp = 380;  
+Thrust0 = [-4000; 0; 0];                                   % thrust [N] (@TNH) (constant profile for the moment)
+parameters.perc_tBO_before_p = 0.5;
 parameters.t0sym = Mars_time;    
 parameters.event = 0;
 parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12); 
@@ -306,7 +325,7 @@ mu = astroConstants(14);
 %NS
 % [ YM_NS, ~, kep_cap_NS] = ...
 % capture_plot(kep_NS, (VF' - v_M), rM, mu, Thrust0 , 1, parNS);
-[ YM_NS, ~, kep_cap_NS] = PO2hyp(kep_NS, (VF' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
+[ YM_NS, ~, kep_cap_NS] = hyp2PO(kep_NS, (VF' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS = rM + YM_NS(1, 1:3)';
@@ -315,7 +334,7 @@ dv_NS = VI_NS - Y_interp(dv_instant, 4:6);
 
 % [ ~, hyp_NS, ~] = ...
 % capture_plot(kep_NS, (VF_NS' - v_M), rM, mu, Thrust0 , 1, parNS);
-[ ~, hyp_NS, ~] = PO2hyp(kep_NS, (VF_NS' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
+[ ~, hyp_NS, ~] = hyp2PO(kep_NS, (VF_NS' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
 
 DV_NS = [DV_NS; norm(dv_NS), hyp_NS.dv_req, hyp_NS.dv_opt];
 
@@ -323,7 +342,7 @@ DV_NS = [DV_NS; norm(dv_NS), hyp_NS.dv_req, hyp_NS.dv_opt];
 parNS2.isInterp = 1;
 % [ YM_NS2, ~, ~] = ...
 % capture_plot(kep_NS2, (VF' - v_M), rM, mu, Thrust0 , 1, parNS2);
-[ YM_NS2, ~, ~] = PO2hyp(kep_NS2, (VF' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
+[ YM_NS2, ~, ~] = hyp2PO(kep_NS2, (VF' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
 
 %definition of the last TCM
 YSOI_NS2 = rM + YM_NS2(1, 1:3)';
@@ -332,7 +351,7 @@ dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 
 % [ ~, hyp_NS2, ~] = ...
 % capture_plot(kep_NS2, (VF_NS2' - v_M), rM, mu, Thrust0 , 1, parNS2);
-[ ~, hyp_NS2, ~] = PO2hyp(kep_NS2, (VF_NS2' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
+[ ~, hyp_NS2, ~] = hyp2PO(kep_NS2, (VF_NS2' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
 
 DV_NS2 = [DV_NS2; norm(dv_NS2), hyp_NS2.dv_req, hyp_NS2.dv_opt];
 
