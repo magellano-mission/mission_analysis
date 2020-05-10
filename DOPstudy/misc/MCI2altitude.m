@@ -1,6 +1,6 @@
 function[alt, R_real] = MCI2altitude(r)
 % Compute the altitude starting from the position in ECI frame 
-% Earth Geoid model is assumed 
+% Mars Geoid model is assumed 
 %
 % INPUT : 
 % r [3x1] : Position Vector in ECI Frame [km]
@@ -13,7 +13,7 @@ function[alt, R_real] = MCI2altitude(r)
 r = r * 1000;               % [km] to [m] conversion 
 x = r(1); y = r(2) ; z = r(3); 
 
-% WGS84 ellipsoid constants:
+% ellipsoid constants:
 a = 3395428;                % Mars equatorial radius [m]
 b = 3377678;                % Mars polar radius [m]
 e = sqrt(1 - b^2 / a^2);

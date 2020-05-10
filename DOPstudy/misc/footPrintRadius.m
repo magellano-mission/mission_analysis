@@ -1,7 +1,7 @@
 function [theta, h_sat, h_user] = footPrintRadius(gamma, Y, data)
-%gamma: bw/2 [deg]
-%Y: position state [km]
-%altitude: [km] 
+% gamma: bw/2 [deg]
+% Y: position state [km]
+% altitude: [km] 
 
 % Initialization
 n = length(Y(:,1));
@@ -9,7 +9,7 @@ h_sat = zeros(n,1);
 theta = zeros(n,1);
 
 % Conversion
-for kk = 1 : n
+for kk = 1 : n                              % here probable error if alt ~0, because it won't compute satellite altitude
     if data.alt ~= 0
         h_user = data.R_eq + data.alt;
     else

@@ -22,7 +22,7 @@ check_errors(data);
 
 %% Sim
 tic
-[Cov_Results, time_map, GDOP_map, HDOP_map, VDOP_map] = NestedFor(data);
+[Cov_Results, time_map, GDOP_map] = NestedFor(data);
 toc
 
 %% plot

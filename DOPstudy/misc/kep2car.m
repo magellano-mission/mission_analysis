@@ -38,8 +38,8 @@ R_om=[cos(om) sin(om) 0; -sin(om) cos(om) 0; 0 0 1];
 R=R_Om'*R_i'*R_om';
 
 % Computation of rr and vv in GE
-rr=R*rr_pf;
-vv=R*vv_pf;
+rr=R*rr_pf;             % [km]
+vv=R*vv_pf;             % [km/s]
 
 
 end

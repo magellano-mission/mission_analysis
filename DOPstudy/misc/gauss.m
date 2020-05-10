@@ -5,8 +5,8 @@ function[dx, parout] = gauss(t, x)
 %                    - a = kep(1) [km]
 %                    - e = kep(2) ,
 %                    - i = kep(3) [rad]
-%                    - om = kep(4) [rad]
-%                    - OM = kep(5) [rad]
+%                    - OM = kep(4) [rad]
+%                    - om = kep(5) [rad]
 %                    - theta = kep(6) [rad]
 % OUTPUT :
 % dkepdt[6x1]: Derivative of the state (transposed to match the dimensions
@@ -24,24 +24,24 @@ dx = zeros(n, m);
 % Keplerian Parameter Propagation
 
 % Extract the keplerian parameters from the state vector
-a = x(1);
-e = x(2);
-i = x(3);
-om = x(5);
-theta = x(6);
+a = x(1);               % [km]
+e = x(2);               % [~]
+i = x(3);               % [rad]
+om = x(5);              % [rad]
+theta = x(6);           % [rad]
 kep = x(1:6);
 
 %Physical data and Time definition
-mu_m = astroConstants(14);
+mu_m = astroConstants(14);  % [km^3/s^2]
 J2 = 0.00196;
 
 %Preliminary calculations
-theta_star = theta+om;
-n = sqrt(mu_m/a^3);
-b = a*sqrt(1-e^2);
+theta_star = theta+om;      % [rad]
+n = sqrt(mu_m/a^3);         % [s^-1]
+b = a*sqrt(1-e^2);          
 h = n*a*b;
 p = b^2/a;
-r = p/(1+e*cos(theta));
+r = p/(1+e*cos(theta)); 
 v = sqrt( 2*mu_m/r  - mu_m/a);
 
 % Cartesian Coordinates of the satellite

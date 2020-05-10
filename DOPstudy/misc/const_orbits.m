@@ -6,13 +6,13 @@ F = curr.walker(3);                      % relative spacing between satellites i
 
 n_sat = TT/Nplane;                       % satellites per plane
 
-T_orb = 2 * pi * sqrt(curr.sma^3 / data.mi);
+T_orb = 2 * pi * sqrt(curr.sma^3 / data.mi);    % [s]
 tspan = linspace(0, data.N_orbits*T_orb, data.NT);
 
 % Setup 
-X0 = [curr.sma, 1e-8, curr.inc, 0, 0, 0];       % initial condition
-gamma = deg2rad(curr.beam/2);                   % satellite FoV
-opt = odeset('AbsTol', 1e-12, 'RelTol', 1e-13);
+X0 = [curr.sma, 1e-8, curr.inc, 0, 0, 0];       % initial condition [km, ~, rad, rad, rad, rad]
+gamma = deg2rad(curr.beam/2);                   % satellite FoV [rad]
+opt = odeset('AbsTol', 1e-12, 'RelTol', 1e-13); % ode tolerances
 
 % Orbits computation
 YYY = zeros(TT, 3, data.NT);       % states matrix (3D)
@@ -22,8 +22,8 @@ h_user = zeros(TT, data.NT);
 
  for ii = 1 : Nplane
      for kk = 1 : n_sat
-         X0(6) = (kk - 1) * pi * 2 /n_sat + (ii - 1) * F * 2 * pi / TT;
-         X0(4) = (ii - 1) * 2 * pi / Nplane;
+         X0(6) = (kk - 1) * pi * 2 /n_sat + (ii - 1) * F * 2 * pi / TT;    % true anomaly
+         X0(4) = (ii - 1) * 2 * pi / Nplane;                               % RAAN 
          [T, Y] = trajectory(X0, tspan, data, opt, curr);
          [theta, h_sat((ii-1)*n_sat + kk, :), h_user((ii-1)*n_sat + kk, :)] = footPrintRadius(gamma, Y, data);
          YYY((ii-1)*n_sat + kk, :, :) = Y';
