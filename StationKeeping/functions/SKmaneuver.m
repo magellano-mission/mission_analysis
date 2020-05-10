@@ -2,8 +2,8 @@ function dv = SKmaneuver(kep1, data)
 
 mi = data.mi;
 a1 = kep1(1);
-e1 = kep1(2) - data.X0_kep(2);
-i1 = kep1(3)*pi/180;
+e1 = abs(kep1(2) - data.X0_kep(2));
+i1 = kep1(3);
 
 rcirc = data.sma;
 icirc = data.inc;

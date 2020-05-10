@@ -30,52 +30,39 @@ v_GNSS = sqrt(mi/a_GNSS);           % linear velocity of the GNSS constellation 
 
 %% Orbital Parameters secular variation (J2 on GNNS orbit) 
 
-a_J2 = 6400:20:11000;
+a_J2 = 6400:10:14000;
 K = -3*J2*sqrt(mi)*R^2./(2*a_J2.^(7/2)*(1-e_GNSS^2)^2);
 
 % variation per seconds in rad
 RAAN_dot = K*cosd(i_GNSS);
 PA_dot = K*(5/2*(sind(i_GNSS))^2 - 2);
 
-% variation per days in degrees
-RAAN_d = RAAN_dot*86400*365*180/pi;
-PA_d = PA_dot*86400*365*180/pi;
+% variation over a synodic period
 
-% t = 0:365; 
+T_syn = 86400*365*2 + 86400*60;
+RAAN_T = RAAN_dot*T_syn*180/pi;
 
-figure; plot(a_J2, RAAN_d, 'LineWidth', 2);
+[~, ind1] = min(abs(RAAN_T + 240));
+a_shift(1) = a_J2(ind1);
+
+[~, ind2] = min(abs(RAAN_T + 120));
+a_shift(2) = a_J2(ind2);
+
+% PA_y = PA_dot*T_syn*180/pi;
+
+figure; plot(a_J2, RAAN_T, 'LineWidth', 2);
 xlabel('a [km]'); ylabel(' \Delta \Omega [deg/year]'); 
-title('RAAN variation due to J2');
+title('RAAN variation due to J2 in synodic period');
 
-figure; plot(a_J2, PA_d, 'LineWidth', 2);
-xlabel('a [km]'); ylabel(' PA [deg]'); 
-title('PA variation');
+% figure; plot(a_J2, PA_d, 'LineWidth', 2);
+% xlabel('a [km]'); ylabel(' PA [deg]'); 
+% title('PA variation');
 
 %% Phasing Maneuvers
 % computing the cost of the maneuver wrt the phasing angle and number of revolutions
 
 %%%%%%% NS
 T = 2*pi/n;                         % GNSS period [s]
-% N = 180;
-
-% dv_phas = NaN(N, N/2);
-% for i = 1:N                         % i: phasing angle
-%     for j = 3:N/2                     % j: number of revolutions
-%         dT_tot = (i*pi/180)/n;
-%         dT_rev = dT_tot/j;          
-%         T_phas = T - dT_rev;
-%         a_phas  = (T_phas*sqrt(mi)/(2*pi))^(2/3);
-%         ra_phas = a_GNSS;
-%         rp_phas = 2*a_phas - ra_phas;
-%         e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
-%         v_phas = sqrt(mi/a_phas)*(1 - e_phas);
-%         dv_phas(i, j) = 2*abs(v_GNSS - v_phas);
-%     end
-% end
-% 
-% surf(1:N, 1:N/2, dv_phas', 'EdgeColor', 'none')
-% colorbar; xlabel('phasing angle [deg]'), ylabel('number of revolutions');
-% zlabel('\Delta_v [km/s]'), title('phasing maneuver')
 
 m2 = 86400*60;                  % 2 months
 nrev = ceil(m2/T);
@@ -138,9 +125,6 @@ title('homhann to reach ECS')
 
 %% Homhann transfer from lower orbit to shift RAAN to NS
 % ECS constellation is not defined, circular orbit in the same plane of RS as an hyphotesys
-
-a_shift = [8100, 9850];
-
 
 dv_h = zeros(2, 1);
 tof_shift = zeros(2, 1);

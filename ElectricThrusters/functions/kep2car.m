@@ -18,8 +18,11 @@ i=stat(3); Om=stat(4);
 om=stat(5); th=stat(6);
 
 %Perifocal frame computation PF
-
 p = a*(1-e^2);
+if e > 1
+    p = a*(e^2 - 1);
+end
+
 %Magnitude of the position vector
 r=p/(1+e*cos(th));
 

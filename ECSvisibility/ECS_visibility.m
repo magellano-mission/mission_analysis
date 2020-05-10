@@ -22,11 +22,11 @@ RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];                       % earth image x sizes
 RI.YWorldLimits = [-90 90];                         % earth image y sizes
 
-DateInit = [2023, 1, 1, 0, 0, 0];                          % date of start
+DateInit = [2025, 1, 1, 0, 0, 0];                          % date of start
 DayInit = date2mjd2000(DateInit);                           % initial time  [days]
-DateEnd = [2033, 1, 1, 0, 0, 0];                            % date of end
+DateEnd = [2025, 1, 5, 0, 0, 0];                            % date of end
 DayEnd = date2mjd2000(DateEnd);                             % end time  [days]
-N = 1000000;
+N = 10000;
 days = linspace(DayInit, DayEnd, N);
 dTdays = (DayEnd - DayInit);
 dT = dTdays*86400;                              % simulation time [s]
@@ -34,9 +34,9 @@ t = linspace(0, dT, N);
 
 
 %% ECS orbit
-OrbPar(1) = 11500;
+OrbPar(1) = 6400;
 OrbPar(2) = 0;
-OrbPar(3) = 55*pi/180;
+OrbPar(3) = 0*pi/180;
 OrbPar(4)  = 0;
 OrbPar(5) = 0;
 OrbPar1 = OrbPar; OrbPar2 = OrbPar;
@@ -65,10 +65,10 @@ for i = 1:N
     [OrbParM, ~] = uplanet(mjd2000, Mars);
     [OrbParE, ~] = uplanet(mjd2000, Earth);
     
-    rS2M = kep2car(OrbParM);
-    rS2E = kep2car(OrbParE); norm_rS2E = norm(rS2E);
-    rSc1 = kep2car(OrbPar1);
-    rSc2 = kep2car(OrbPar2);
+    rS2M = kep2car_r_only(OrbParM);
+    rS2E = kep2car_r_only(OrbParE); norm_rS2E = norm(rS2E);
+    rSc1 = kep2car_r_only(OrbPar1);
+    rSc2 = kep2car_r_only(OrbPar2);
     
     rM2E = rS2E - rS2M;      norm_rM2E = norm(rM2E);
     rS2Sc1 = rS2M + rSc1;    norm_rS2Sc1 = norm(rS2Sc1);
@@ -91,25 +91,25 @@ for i = 1:N
     theta1_sat2 = acos(Rsun/norm_rS2Sc2);
     theta2 = acos(Rsun/norm_rS2E);
     
-    if phi_sat1 < (phi1 + phi2) || phi_sat2 < (phi1 + phi2) 
+    if phi_sat1 < (phi1 + phi2)% || phi_sat2 < (phi1 + phi2) 
         los_Mars = 1;
     else 
         los_Mars = 0;
     end    
     
-    if theta_sat1 < (theta1_sat1 + theta2) || theta_sat2 < (theta1_sat2 + theta2)
-        los_Sun = 1;
-    else
-        los_Sun = 0;
-    end
+%     if theta_sat1 < (theta1_sat1 + theta2) || theta_sat2 < (theta1_sat2 + theta2)
+%         los_Sun = 1;
+%     else
+%         los_Sun = 0;
+%     end
     
-    los(i) = los_Mars*los_Sun;
+    los(i) = los_Mars;%*los_Sun;
     
 end
 
-figure; plot(t/86400, los, 'LineWidth', 2);
+figure; plot(t/60, los, 'LineWidth', 2);
 xlabel('t [days]'); ylabel('los'); ylim([-0.1, 1.1]);
-title('line of sight ECS-Earth with a failure');
+title('line of sight ECS-Earth with both satellites');
 
 % ll = (los_Mars == 1);
 % nl = not(ll);

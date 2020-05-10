@@ -1,4 +1,4 @@
-function a_SRP = SRP(t, R_orbit, data)
+function a_srp = SRP(t, R_orbit, data)
 %{
 SRP.m - This function returns the perturbing acceleration due to
         the effects of the Solar Radiation Pressure.
@@ -51,8 +51,8 @@ AUTHORS: D'andrea Biagio | Frulla Piergiorgio | Inno Adriano Filippo
 
 CR = data.CR;                               % reflection coefficient
 R_pl = data.R_pl;                           % planet radius
-P0 = data.P0;                               % solar radiation pressure coefficient
-AU = data.AU;                               % astronomic unit
+S0 = data.S0;                               % solar radiation pressure coefficient
+eps = data.eps;                             
 AOverM = data.AOverM;                       % Am parameter
 
 DayActual = data.InitDay + t/86400;
@@ -61,10 +61,19 @@ KepS = uplanet(DayActual, 4);
 rM2S = - kep2car_r_only(KepS);              % retriving the sun position vector wrt the planet
 light = los(R_orbit, rM2S, R_pl);            % checking the sight of ligth
 
+c = cos(eps); s = sin(eps);
+E = [1 0 0
+     0 c -s
+     0 s c ];
+
+rSun2Sc = R_orbit - rM2S;
+r = rSun2Sc / norm(rSun2Sc);
+S = S0/((norm(rSun2Sc))^2);
+ 
 if light
-    rSun2Sc = R_orbit - rM2S;
-    a_srp = P0 * AU^2 / ((norm(rSun2Sc))^2) * CR * AOverM;
-    a_SRP = a_srp * rSun2Sc / norm(rSun2Sc) / 1e3; % convert to km/s^2
+    a_srp = S * CR * AOverM * r / 1e3;              % convert to km/s^2
 else
-    a_SRP = [0 0 0]';
+    a_srp = [0 0 0]';
 end
+
+a_srp = E*a_srp;

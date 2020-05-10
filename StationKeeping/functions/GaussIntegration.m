@@ -50,9 +50,9 @@ end
 %% Pertubations in TNH frame
 % Basis of TNH frame
 tvers = V./v;
-H = cross(R,V);
+H = cross(R, V);
 hvers = H./norm(H);
-nvers = cross(hvers,tvers);
+nvers = cross(hvers, tvers);
 
 % Rotation to TNH frame
 a_SRP_tnh = [tvers nvers hvers]'*a_SRP;

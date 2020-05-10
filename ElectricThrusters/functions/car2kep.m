@@ -26,6 +26,10 @@ v = norm(vv);
 E = (v^2)/2 -mu/r;
 a = -mu/(2*E);
 
+if a < 0
+    a = abs(a);
+end
+
 %Calcolo dell'eccentricità.
 ee = ((v^2-mu/r)*rr-(dot(rr,vv)*vv))/mu;
 e = norm(ee);
@@ -50,21 +54,19 @@ end
 
 %Calcolo dell'anomalia del pericentro.
 om = acos(dot(nn,ee)/(n*e));
-if ee(3)<0
+if ee(3) < 0
     om = 2*pi-om;
 end
 
 %Calcolo dell'anomalia vera.
 vr = dot(vv,rr)/r;
-th = acos(dot(ee,rr)/(e*r));
-if vr < 0
+th = acos( max( min( dot(ee, rr)/(e*r) , 1) , -1) );
+
+if vr < 0 && e > 1
+    th = - th;
+else 
     th = 2*pi - th;
 end
-
-
-
-
-
 
 K = [a, e, i, OM, om, th];
 

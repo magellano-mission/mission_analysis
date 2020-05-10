@@ -7,28 +7,16 @@ data.walker = [1, 1, 1];
 data.inc = deg2rad(25);
 data.sma = 10500;
 
-data.X0_kep = [data.sma, 1e-2, data.inc, 359.999/180*pi, pi/3, 0];
+data.X0_kep = [data.sma, 1e-2, data.inc, 359.999/180*pi, pi/3, 0]; 
 
-% data.trashold = 4; 
-
-% Parameters
-% lon = [-180, 180];
-% LRG = 15;
-% lat = [-LRG, LRG];
-
-% disc = [20 20];                           % discretization grid
-% data.lon = linspace(lon(1), lon(2), disc(1));
-% data.lat = linspace(lat(1), lat(2), disc(2));
-% data.alt = 0;                             % altitude at which evaluate the coverage ( ground level = 0)  
-
-N_orbits = 100;                         % number of orbits
-data.mi = astroConstants(14);               % Mars planetary constant
+N_orbits = 100;                                         % number of orbits
+data.mi = astroConstants(14);                           % Mars planetary constant
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 data.tend = 86400*365;
 
 %% perturbation switchers
-data.switchers.Moon = true;
-data.switchers.grav = true;
+data.switchers.Moon = false;
+data.switchers.grav = false;
 data.switchers.SRP = true;
 
 %% Mars model
@@ -49,8 +37,8 @@ data.CR = 1.5;                                      % reflection coefficient
 Acs = 10;                                           % area exposed to sun
 data.m_sat = 250;                                   % satellite mass
 data.R_pl = data.rM_eq;                             % planet radius
-data.P0 = 4.5*1e-6;                                 % solar radiation pressure coefficient
-data.AU = 1.496*1e8;                                % astronomic unit
+data.S0 = 63.15e6*696000^2/2.998e8;                 % solar radiation pressure coefficient
+data.eps = 5.65;                                    % Mars ecliptic plane[deg]
 data.AOverM = Acs/data.m_sat;                       % Am parameter
 
 %% Ephemerides
