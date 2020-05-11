@@ -39,11 +39,14 @@ rM = kep2car2(kepM, muS);
 VF =    [12.799958274752937 -16.478235594522850   0.335452507074074]; %SM heliocentric velocity
 v_M =   [13.837765883347817 -18.403996797073731  -0.725009406810734]; %mars heliocentric velocity
 
-kep_NS = [9850 0 deg2rad(25) 0 0 0];
-kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
+kep_NS = [12300 1e-8 deg2rad(25) 0 0 0];
+kep_NS2 = [10000 1e-8 deg2rad(25) 0 0 0];
 
 [YYNS, hyp_capture , kep_capture] = hyp2PO(kep_NS, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
 [YYNS2, hyp_capture , kep_capture] = hyp2PO(kep_NS2, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
+
+peri_NS = kep2car2(kep_NS, mu);
+peri_NS2 = kep2car2(kep_NS2, mu);
 
 figure()
 I = imread('Mars.jpg'); RI = imref2d(size(I));
@@ -53,16 +56,20 @@ rMars = almanac('Mars','Radius','kilometers','sphere');
 planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
-cap(1) = plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), 'DisplayName','NS');
-cap(2) = plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), 'DisplayName','NS2');
-xlim([-11000 11000]), ylim([-11000 11000]), zlim([-11000 11000])
+cap(1) = plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), 'Linewidth', 4, 'DisplayName','NS');
+cap(2) = plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), 'Linewidth', 4, 'DisplayName','NS2');
+plot3(peri_NS(1), peri_NS(2), peri_NS(3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [0.9490 0.4745 0.3137], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS');
+plot3(peri_NS2(1), peri_NS2(2), peri_NS2(3),'o', 'MarkerSize',15, 'MarkerFaceColor', [0.1020 0.6667 0.74120], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS2');
+xlim([-13000 13000]), ylim([-13000 13000]), zlim([-13000 13000])
 
 cap(1).Color = [0.9490    0.4745    0.3137];
 cap(2).Color = [0.1020    0.6667    0.74120];
-
-legend()
+grid off, set(gca, 'XColor','none', 'YColor','none', 'ZColor', 'none')
+% legend()
 %% second launch (2026)
-parameters.t0sym = 1.010485462521553e+04;  %MJD200
+parameters.t0sym = 1.010485462521553e+04;  %MJD2000
 
 [kepM, muS] = uplanet(parameters.t0sym, 4);
 rM = kep2car2(kepM, muS);
@@ -76,6 +83,9 @@ kep_RS = [6400 0 deg2rad(1e-8) 0 0 0];
 [YYNS3, hyp_capture , kep_capture] = hyp2PO(kep_NS3, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
 [YYRS, hyp_capture , kep_capture] = hyp2PO(kep_RS, (VF - v_M), rM, mu, parameters, Thrust0, 1, 'arrival', 2);
 
+peri_NS3 = kep2car2(kep_NS3, mu);
+peri_RS = kep2car2(kep_RS, mu);
+
 figure()
 I = imread('Mars.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
@@ -84,14 +94,19 @@ rMars = almanac('Mars','Radius','kilometers','sphere');
 planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
-plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), 'k--', 'DisplayName','NS');
-plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), 'k--', 'DisplayName','NS2');
+plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS');
+plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS2');
 
-cap(1) = plot3(YYNS3(:,1), YYNS3(:,2), YYNS3(:,3), 'DisplayName','NS + ECS');
-cap(2) = plot3(YYRS(:,1), YYRS(:,2), YYRS(:,3), 'DisplayName','RS');
-xlim([-11000 11000]), ylim([-11000 11000]), zlim([-11000 11000])
+cap(1) = plot3(YYNS3(:,1), YYNS3(:,2), YYNS3(:,3), 'Linewidth', 4,'DisplayName','NS + ECS');
+cap(2) = plot3(YYRS(:,1), YYRS(:,2), YYRS(:,3), 'Linewidth', 4, 'DisplayName','RS');
+plot3(peri_NS3(1), peri_NS3(2), peri_NS3(3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [0.9490 0.4745 0.3137], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS3');
+plot3(peri_RS(1), peri_RS(2), peri_RS(3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [0.1020 0.6667 0.74120], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS2');
+xlim([-13000 13000]), ylim([-13000 13000]), zlim([-13000 13000])
 
 cap(1).Color = [0.9490    0.4745    0.3137];
 cap(2).Color = [0.1020    0.6667    0.74120];
-
-legend()
+grid off, set(gca, 'XColor','none', 'YColor','none', 'ZColor', 'none')
+grid off
+% legend()

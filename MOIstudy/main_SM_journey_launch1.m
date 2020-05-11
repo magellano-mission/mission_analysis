@@ -179,26 +179,31 @@ rSun = 20*almanac('Sun','Radius','kilometers','sphere');
 planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
-plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b','DisplayName','Earth trajectory'), hold on
-plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r','DisplayName','Mars trajectory'), hold on
-plot3(R_V(:,1), R_V(:,2), R_V(:,3),'c','DisplayName','Venus trajectory'), hold on
-plot3(R_J(:,1), R_J(:,2), R_J(:,3),'m','DisplayName','Jupiter trajectory'), hold on
+Earth_plot = plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b', 'Linewidth', 4, 'DisplayName','Earth trajectory'); hold on
+Mars_plot = plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r', 'Linewidth', 4, 'DisplayName','Mars trajectory'); hold on
+Mars_plot.Color = [0.9490    0.4745    0.3137];
+Earth_plot.Color = [0.1020    0.6667    0.74120];
 
-plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r:', 'DisplayName','Unperturbed'), hold on
-plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3),'g', 'DisplayName','Perturbed'), hold on
-plot3(Y_interp(1,1), Y_interp(1,2), Y_interp(1,3),'go', 'DisplayName','Injection'), hold on,
-plot3(Y_interp(end,1), Y_interp(end,2), Y_interp(end,3),'ro', 'DisplayName','Capture'), hold on,
+% plot3(R_V(:,1), R_V(:,2), R_V(:,3),'c','DisplayName','Venus trajectory'), hold on
+% plot3(R_J(:,1), R_J(:,2), R_J(:,3),'m','DisplayName','Jupiter trajectory'), hold on
 
+plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r-', 'DisplayName','Unperturbed'), hold on
+plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3), 'Linewidth', 4, 'Color', [150 150 150]/255,  'DisplayName','Perturbed'), hold on
+xplot0 = plot3(Y_interp(1,1), Y_interp(1,2), Y_interp(1,3),'o', 'MarkerSize',15, 'MarkerFaceColor', [0.1020    0.6667    0.74120], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','Injection'); hold on,
+xplotend = plot3(Y_interp(end,1), Y_interp(end,2), Y_interp(end,3),'o', 'MarkerSize',15, 'MarkerFaceColor', [0.9490    0.4745    0.3137], ...
+    'MarkerEdgeColor', 'none', 'DisplayName','Capture'); hold on,
+axis equal, grid off, 
 view([0 0 90])
-% set(gcf, 'color', 'k')
+set(gca, 'XColor', 'none'), set(gca, 'YColor', 'none')
 % set(gca, 'color', 'k','visible','off'), 
-legend('Color','white')
+% legend('Color','white')
 
-for i=1:10:length(T_interp)
-    rrr = [R_E(i,1:3); Y_interp(i,1:3)];
-    plot3(rrr(:,1), rrr(:,2), rrr(:,3), 'k','HandleVisibility','off'), hold on,
-end
-
+% for i=1:10:length(T_interp)
+%     rrr = [R_E(i,1:3); Y_interp(i,1:3)];
+%     plot3(rrr(:,1), rrr(:,2), rrr(:,3), 'k','HandleVisibility','off'), hold on,
+% end
+%     plot3(rrr(:,1), rrr(:,2), rrr(:,3), 'k','DisplayName','Earth-s/c los'), hold on,
 % hold off 
 % 
 % figure()
@@ -235,7 +240,7 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);
 parNS = parameters;
 parNS2 = parameters;
 
-dv_instant = ceil(0.8*length(T_interp));
+dv_instant = ceil(0.7*length(T_interp));
 
 %capture delta_v
 [kepM, muS] = uplanet(parameters.t0sym, 4);
@@ -243,8 +248,8 @@ rM = kep2car2(kepM, muS);
 mu = astroConstants(14);
 
 %first launch
-kep_NS = [9850 0 deg2rad(25) 0 0 0];
-kep_NS2 = [8100 0 deg2rad(25) 0 0 0];
+kep_NS = [12300 1e-8 deg2rad(25) 0 0 0];
+kep_NS2 = [10000 1e-8 deg2rad(25) 0 0 0];
 
 %first launch
 %NS
@@ -273,23 +278,28 @@ YSOI_NS2 = rM + YM_NS2(1, 1:3)';
 [a_NS2, p_NS2 ,e_NS2, err_NS2, VI_NS2, VF_NS2, tspar_NS2, th_NS2] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
 dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
 
+dv_instant = ceil(0.95*length(T_interp));
 parNS2.t0sym = T_interp(dv_instant)/86400;
 parNS2.tmax = Mars_time;
 parNS2.isInterp = 1;
 [~, Y_NS2, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS2, 0], parNS2);
 
-
 figure(3)
-plot3(Y_NS(:,1), Y_NS(:,2), Y_NS(:,3), 'k', 'DisplayName','NS injection'); hold on
-plot3(Y_NS(1,1), Y_NS(1,2), Y_NS(1,3), 'ko', 'DisplayName','NS TCM');hold on
-plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS injection');hold on
-plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'ko', 'DisplayName','NS TCM');hold on
+% plot3(Y_NS(:,1), Y_NS(:,2), Y_NS(:,3), 'k', 'DisplayName','NS injection'); hold on
+plot3(Y_NS(1,1), Y_NS(1,2), Y_NS(1,3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [150 150 150]/255, ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS TCM'); hold on
+% plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS injection');hold on
+plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [150 150 150]/255, ...
+    'MarkerEdgeColor', 'none', 'DisplayName','NS TCM'); hold on
 
-
+% title('Interplanetary arc')
 % annotation(figure_interp,'textbox', ...
 %     [0.75 0.15 0.2 0.45], ...
-%     'String',{'TCM:', ...
-%     'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', 'Capture: ',num2str(norm(hyp_NS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS.dv_opt)),' m/s)') , ...
+%     'String',{'TMI date', ...
+%     'Capture Date', ...
+%     'TCM:', ...
+%     'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', ...
+%     'Capture: ',num2str(norm(hyp_NS.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS.dv_opt)),' m/s)') , ...
 %     'NS2:', strcat('TCM:', num2str(1000*norm(dv_NS2)),' m/s', 'Capture: ',num2str(norm(hyp_NS2.dv_req)),' m/s', '(opt: ', num2str(norm(1000*hyp_NS2.dv_opt)),' m/s)')}, ...
 %     'FitBoxToText','off');
 
