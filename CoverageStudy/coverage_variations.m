@@ -16,6 +16,7 @@ set(0,'defaultAxesTickLabelInterpreter', 'latex');
 
 %%
 run('config.m')
+load('MagellanoColorMap.mat')
 
 %% check
 check_errors(data);

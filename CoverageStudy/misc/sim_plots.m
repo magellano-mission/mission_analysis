@@ -33,7 +33,7 @@ switch data.SimType
             sss = pcolor(data.sma, data.bw, Cminsat);
             sss.FaceColor = 'Interp';
             sss.EdgeColor = 'interp';
-            colorbar
+            colormap(MagellanoColorMap); colorbar
 
             Title = strcat(System, " Minimum number of satellites for equatorial coverage, i = ", Incl_string(k) );
             xlabel('semi-major axes [km]'), ylabel('beam-width [deg]'), title(Title)
@@ -84,7 +84,7 @@ switch data.SimType
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         
     case "percent_cov"
         figure; grid off; hold on
@@ -122,7 +122,7 @@ switch data.SimType
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         
         case "max_time_gap"
             
@@ -161,7 +161,7 @@ switch data.SimType
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         
         case "mean_time_gap"
             
@@ -200,7 +200,7 @@ switch data.SimType
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         
     case "plot_belli"
         
@@ -222,7 +222,7 @@ switch data.SimType
             end
             
             xlabel('SMA [km]'), ylabel('LAT [deg]')
-            title(strcat('BW = ',num2str(data.bw(j)), ' deg')), colorbar
+            title(strcat('BW = ',num2str(data.bw(j)), ' deg')), colormap(MagellanoColorMap); colorbar
         end
         
         annotation(figure1,'textbox',...
@@ -246,7 +246,7 @@ switch data.SimType
         axis([-180 180,-90,90])
         xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
         timevarying = pcolor(data.lon, data.lat, time_map(:, :, 1)');
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         timevarying.FaceColor = 'Interp';
         timevarying.EdgeColor = 'none';
         timevarying.FaceAlpha = 0.2;
