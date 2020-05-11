@@ -20,7 +20,7 @@ run('ETcaptureConfig.m')                       %%% ADD YOUR DATA
 %%
 
 TT = 2e7;                                  % long period, Event function inside the ode
-data.T = -2;                              % [N] for clearness the Thrust is here
+data.T = -0.2;                              % [N] for clearness the Thrust is here
 [T1, Y1] = ode113(@ETcaptIntegration, [0, TT], data.Y0, data.opt1, data);
 kep1 = car2kep(Y1(end, 1:3), Y1(end, 4:6), data.mi);
 

@@ -4,47 +4,42 @@ function sim_plots(data, Cov_Results, time_map)
 
 switch data.SimType
     case "Dani"
-        System = ["NS", "RS"];
+        if data.trashold == 4
+            
+            System = "NS";
+        else
+            System = "RS";
+        end
+            
         Incl_string = string(round(data.inc*180/pi));
         
-        C_ns = (Cov_Results.Min_cov_latlon >= 4);
-        C_rs = (Cov_Results.Min_cov_latlon >= 1);
-        for c = 1:2
-            for k = 1:data.Ni
-                fig = figure; hold on; grid on
-                if c == 1
-                    C = C_ns;
-                elseif c == 2
-                    C = C_rs;
-                end
-                
-                C_ith = squeeze(C(:, :, k, :));
-                for i = 1:data.Nb
-                    for j = 1:data.Na
-                        C_sat = C_ith(i, j, :);
-                        if C_sat(1) == 1
-                            h1 = plot(data.sma(j), data.bw(i), 'og', 'MarkerSize', 14, 'MarkerFaceColor', 'g');
-                        elseif C_sat(1) == 0 && C_sat(2) == 1
-                            h2 = plot(data.sma(j), data.bw(i), 'oy', 'MarkerSize', 14, 'MarkerFaceColor', 'y');
-                        elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 1
-                            h3 = plot(data.sma(j), data.bw(i), 'o', 'Color', [255, 191, 0]/255, 'MarkerSize', 14, 'MarkerFaceColor', [255, 191, 0]/255);
-                        elseif C_sat(1) == 0 && C_sat(2) == 0 && C_sat(3) == 0
-                            h4 = plot(data.sma(j), data.bw(i), 'or', 'MarkerSize', 14, 'MarkerFaceColor', 'r');
-                        end
+        C = (Cov_Results.Min_cov_latlon >= data.trashold);
+        Cminsat = zeros(data.Nb, data.Na);
+        for k = 1:data.Ni
+            fig = figure; hold on; grid on
+            
+            C_kth = squeeze(C(:, :, k, :));
+            for i = 1:data.Nb
+                for j = 1:data.Na
+                    Cminsat(i, j) = min(squeeze(C_kth(i, j, :)).*data.Nsat');
+                    if Cminsat(i, j) == 0
+                        Cminsat(i, j) = data.Nsat(end) + data.Norb;
                     end
+                    
                 end
-                
-%                 if exist('h3', 'var')                     
-%                     legend([h1, h2, h3, h4], {'min 15 sat', 'min 18 sat', 'min 21 sat', 'no cov'}, 'Location', 'Northeast')
-%                 else
-%                     legend([h1, h2, h4], {'min 15 sat', 'min 18 sat', 'no cov'}, 'Location', 'Northeast')
-%                 end
-                Title = strcat(System(c), " coverage, i = ", Incl_string(k) );
-                xlabel('sma [km]'), ylabel('beam-width [deg]'), title(Title)
-                title_save = strcat(System(c), "_coverage_i=", Incl_string(k) );
-                saveas(fig, strcat(title_save, '.png'))
-                
             end
+            
+            
+            sss = pcolor(data.sma, data.bw, Cminsat);
+            sss.FaceColor = 'Interp';
+            sss.EdgeColor = 'interp';
+            colorbar
+
+            Title = strcat(System, " Minimum number of satellites for equatorial coverage, i = ", Incl_string(k) );
+            xlabel('semi-major axes [km]'), ylabel('beam-width [deg]'), title(Title)
+%             title_save = strcat(System, "_coverage_i=", Incl_string(k) );
+%             saveas(fig, strcat(title_save, '.png'))
+            
             
         end
 

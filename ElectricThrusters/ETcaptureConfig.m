@@ -8,8 +8,8 @@ V = 1.6318e11;                                              % mars volume [km^3]
 data.R_pl = nthroot(3*V/(4*pi), 3);                         % mars equivalent radius [km]
 
 data.M = 7000;                                             % [kg] Sc mass
-rp = 20000;
-Vinf = 0.5;
+rp = 100000;
+Vinf = 0.2;
 e = 1 + rp*Vinf^2/data.mi;
 p = rp*(e + 1);
 data.R_SOI = 570000;                                             % [km] from Curtis
@@ -23,7 +23,7 @@ Kep0 = [data.sma, data.e_hyp, data.i , 0, 0, data.th0];    % Sc initial conditio
 [R0, V0] = kep2car(Kep0, data.mi);
 data.Y0 = [R0; V0];
 
-data.opt1 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);% 'Event', @EThyp2ParabEvent);
+data.opt1 = odeset('RelTol', 1e-12, 'AbsTol', 1e-12);% 'Event', @EThyp2ParabEvent);
 data.opt2 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);% 'Event', @EThyp2ParabEvent);
 data.opt3 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10); %, 'Event', @EThyp2ParabEvent);
 
