@@ -1,4 +1,4 @@
-function [Cov_Results, time_map, GDOP_map] = NestedFor(data)
+function [Cov_Results, time_map, GDOP_map, state] = NestedFor(data)
 
 for w = 1:data.Nw
     curr.walker = [data.Nsat(w), data.Norb, data.walk_phas];    % Walker vector [sats, planes, phase shift]
@@ -12,7 +12,7 @@ for w = 1:data.Nw
                 for s = 1:data.Na
                     curr.sma = data.sma(s);      % semi-major axis [km]
                     [YYY, T, THETA, ~, h_user] = const_orbits(curr, data);
-                    [time_map, GDOP_map] = time_mapping(curr, YYY, T, THETA, h_user, data);
+                    [time_map, GDOP_map, state] = time_mapping(curr, YYY, T, THETA, h_user, data);
                     GDOP_max = max(GDOP_map, [], 3);
                     GDOP_max(GDOP_max == 100) = NaN;
 %                     HDOP_max = max(HDOP_map, [], 3);

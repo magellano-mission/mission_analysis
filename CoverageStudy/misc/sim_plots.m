@@ -1,6 +1,7 @@
 function sim_plots(data, Cov_Results, time_map)
 
 % bw, sma, incl, Nsat
+load('MagellanoColorMap.mat')
 
 switch data.SimType
     case "Dani"
@@ -65,7 +66,7 @@ switch data.SimType
                 sss = pcolor(data.lon, data.lat, Cov_Results.N_mean'); hold on
         end
         sss.FaceColor = 'Interp';
-        sss.EdgeColor = 'interp';
+        sss.EdgeColor = 'none';
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
@@ -80,7 +81,7 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+        %title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
@@ -103,7 +104,7 @@ switch data.SimType
         
         sss = pcolor(data.lon, data.lat, Cov_Results.percent_cov'); hold on
         sss.FaceColor = 'Interp';
-        sss.EdgeColor = 'interp';
+        sss.EdgeColor = 'none';
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
@@ -118,7 +119,7 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Max coverage gap', 'interpreter', 'latex', 'FontSize', 20)
+        %title('Max coverage gap', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
@@ -142,7 +143,7 @@ switch data.SimType
         
         sss = pcolor(data.lon, data.lat, Cov_Results.max_cov_gap'); hold on
         sss.FaceColor = 'Interp';
-        sss.EdgeColor = 'interp';
+        sss.EdgeColor = 'none';
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
@@ -157,7 +158,7 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+        %title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
@@ -181,7 +182,7 @@ switch data.SimType
         
         sss = pcolor(data.lon, data.lat, Cov_Results.mean_cov_gap'); hold on
         sss.FaceColor = 'Interp';
-        sss.EdgeColor = 'interp';
+        sss.EdgeColor = 'none';
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
@@ -196,7 +197,7 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Mean coverage gap', 'interpreter', 'latex', 'FontSize', 20)
+%         title('Mean coverage gap', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
@@ -246,7 +247,8 @@ switch data.SimType
         axis([-180 180,-90,90])
         xlabel('Longitude [deg]'), ylabel('Latitude [deg]')
         timevarying = pcolor(data.lon, data.lat, time_map(:, :, 1)');
-        colormap(MagellanoColorMap); colorbar
+        %colormap(MagellanoColorMap);
+        colorbar
         timevarying.FaceColor = 'Interp';
         timevarying.EdgeColor = 'none';
         timevarying.FaceAlpha = 0.2;

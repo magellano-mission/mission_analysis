@@ -20,15 +20,15 @@ data.perturb = false;           % false/true --> perturbations off/on
 % Parameters
 lon = [-180, 180];              % [deg]  
 lat = [-90, 90];                % [deg]
-disc = [20, 20];                % discretization grid
+disc = [180, 180];                % discretization grid
 data.lon = linspace(lon(1), lon(2), disc(1));
 data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                   % altitude at which evaluate the coverage ( ground level = 0)              
-data.N_orbits = 3;              % number of orbits in the simulation
+data.N_orbits = 2.7177;              % number of orbits in the simulation
 
 %% Ellipsoid model
 data.mi = astroConstants(14);      % Mars planetary constant [km^3/s^2]
-data.NT = 10000;                    % timestep
+data.NT = 1500;                    % timestep
 
 data.rM_eq = 3393.4;               % equatorial radius [km]
 rM_pol = 3375.7;                   % polar radius [km]

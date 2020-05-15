@@ -27,4 +27,5 @@ tic
 toc
 
 %% plot
+close all
 sim_plots(data, Cov_Results, time_map);

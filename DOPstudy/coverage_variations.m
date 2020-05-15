@@ -2,7 +2,7 @@
 close all; clear; clc
 
 %% Adding to path
-% addpath(genpath(fileparts(pwd)))
+%addpath(genpath(fileparts(pwd)))
 
 %% Figure Initialization
 set(0,'DefaultFigureUnits', 'normalized');
@@ -22,13 +22,37 @@ check_errors(data);
 
 %% Sim
 tic
-[Cov_Results, time_map, GDOP_map] = NestedFor(data);
+[Cov_Results, time_map, GDOP_map, state] = NestedFor(data);
 toc
 
 %% plot
+close all
 sim_plots(data, Cov_Results, time_map);
 
+% curiosity coord: lon = 137.4 lat = -4.6
+figure()
+subplot(1,2,1)
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-figure()
-plot(tspan/3600,squeeze(GDOP_map(10,10,:)))
+plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', [0.1020    0.6667    0.74120])
+%xlabel('Time [hr]')
+ylabel('GDOP')
+legend('Curiosiry','Location','northwest')
+grid minor
+ylim([1.2 2.6])
+% viking 1 coord: lon -50 lat 22.5
+subplot(1,2,2)
+T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+tspan = linspace(0, data.N_orbits*T_orb, data.NT);
+plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', [0.9490    0.4745    0.3137])
+xlabel('Time [hr]')
+ylabel('GDOP')
+legend('Viking 1','Location','northwest')
+grid minor
+ylim([1.2 2.6])
+
+% ba(1).CData = [0.9490    0.4745    0.3137];
+% ba(2).CData = [0.1020    0.6667    0.74120];
+
+
+

@@ -1,6 +1,6 @@
 function sim_plots(data, Cov_Results, time_map)
 
-% bw, sma, incl, Nsat
+load('MagellanoColorMap.mat')
 
 switch data.SimType
     case "Dani"
@@ -304,7 +304,7 @@ switch data.SimType
         sss = pcolor(lon, lat, GDOP_max'); hold on
         sss.FaceColor = 'Interp';
         sss.EdgeColor = 'none';
-        sss.FaceAlpha = 0.4;
+        sss.FaceAlpha = 0.6;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
             'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
@@ -318,11 +318,11 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Geometric Dilution of Precision', 'interpreter', 'latex', 'FontSize', 20)
+%         title('Geometric Dilution of Precision', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
-        colorbar
+        colormap(MagellanoColorMap); colorbar
         
         
 %% Constellation plot & groundtrack

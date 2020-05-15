@@ -1,4 +1,4 @@
-function [N, rho] = coverageNumber(lon, lat, t, Y, theta, h_user, data)
+function [N, rho, Yview] = coverageNumber(lon, lat, t, Y, theta, h_user, data)
 
 % Lon, lat of the target [deg]
 % t 
@@ -13,10 +13,11 @@ Y_unit = Y/norm(Y);
 if acos(dot(r, Y_unit)) < (theta)
     N = 1;                           % inside the geometric horizon
     rho = processForQ(Y, posMCI);
-
+    Yview = Y;
 else
     N = 0;                        % outside the geometric horizon
     rho = zeros(size(Y));
+    Yview = zeros(size(Y));
 end
 
  
