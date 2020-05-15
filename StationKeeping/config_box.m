@@ -1,15 +1,15 @@
 
 %% Simulation Setup
-data.walker = [15, 3, 2];
-data.bw = 40;              % beamwidth [deg]
-data.inc = deg2rad(25);
-data.sma = 10500;
+data.walker = [4, 1, 1];
+data.bw = 67;              % beamwidth [deg]
+data.inc = deg2rad(0);
+data.sma = 6400;
 
-data.trashold = 4; 
+data.trashold = 1; 
 
 % Parameters
 lon = [-180, 180];
-LRG = 15;
+LRG = 30;
 lat = [-LRG, LRG];
 
 disc = [20 20];             % discretization grid
@@ -18,9 +18,9 @@ data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                   % altitude at which evaluate the coverage ( ground level = 0)  
 
 % variations
-data.adot = 0;
+data.adot = -5e-4;
 data.edot = 0;
-data.idot = 1e-7;
+data.idot = 0;
 
 data.N_orbits = 100;            % number of orbits
 data.mi = astroConstants(14);            % Mars planetary constant

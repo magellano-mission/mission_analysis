@@ -4,19 +4,17 @@ InitData = [2025 01 01 0 0 0 ];                         % initial date
 data.InitDay = date2mjd2000(InitData);                  % initial day
 data.walker = [1, 1, 1];
 % data.bw = 40;              % beamwidth [deg]
-data.inc = deg2rad(25);
-data.sma = 10500;
+data.inc = deg2rad(1e-3);
+data.sma = 6400;
 
 data.X0_kep = [data.sma, 1e-2, data.inc, 359.999/180*pi, pi/3, 0]; 
 
-N_orbits = 100;                                         % number of orbits
 data.mi = astroConstants(14);                           % Mars planetary constant
-T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 data.tend = 86400*365;
 
 %% perturbation switchers
-data.switchers.Moon = false;
-data.switchers.grav = false;
+data.switchers.Moon = true;
+data.switchers.grav = true;
 data.switchers.SRP = true;
 
 %% Mars model

@@ -18,7 +18,7 @@ v1t = ht/ra1;
 
 dv1 = sqrt(v1^2 + v1t^2 - 2*v1*v1t*cos(abs(i1 - icirc)));
 
-%%%% first dv: from transfer orbit to circular
+%%%% second dv: from transfer orbit to circular
 v2t = ht/rcirc;
 
 v2 = sqrt(mi/rcirc);
@@ -26,5 +26,5 @@ v2 = sqrt(mi/rcirc);
 dv2 = abs(v2 - v2t);
 
 %%%% total dv
-dv = dv1 + dv2;
+dv = (dv1 + dv2)*1e3;
 

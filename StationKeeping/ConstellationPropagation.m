@@ -25,16 +25,35 @@ tic
 const = PropagatedOrbits(data);
 toc
 
+%% delta quantities
+T = const.T;
+da = const.Y(:, 1) - data.X0_kep(1);
+de = const.Y(:, 2) - data.X0_kep(2);
+di = rad2deg(const.Y(:, 3) - data.X0_kep(3));
+dO = rad2deg(const.Y(:, 4) - data.X0_kep(4));
+do = rad2deg(const.Y(:, 5) - data.X0_kep(5));
+dth = rad2deg(const.Y(:, 6) - data.X0_kep(6));
+
+%% retriving worst points for the SK
+[maxda, ia] = max(abs(da));
+[maxde, ie] = max(abs(de));
+[maxdi, ii] = max(abs(di));
+
 %% SK maneuver
-dv = SKmaneuver([const.Y(end, 1), const.Y(end, 2), const.Y(end, 3)], data);
+dv = SKmaneuver([const.Y(ia, 1), const.Y(ie, 2), const.Y(ii, 3)], data);  %[m/s]
 
 %% plots
 
-figure, plot(const.T, const.Y(:, 1)), ylabel('a');
-figure, plot(const.T, const.Y(:, 2)), ylabel('e');
-figure, plot(const.T, rad2deg(const.Y(:, 3))), ylabel('i');
-figure, plot(const.T, rad2deg(const.Y(:, 4))), ylabel('RAAN');
-figure, plot(const.T, rad2deg(const.Y(:, 5))), ylabel('PA');
-figure, plot(const.T, rad2deg(const.Y(:, 6))), ylabel('theta');
-% figure, plot3(const.Y(:, 1), const.Y(:, 2), const.Y(:, 3))
+% figure, plot(T, da) , ylabel('\Deltaa [km]');
+% figure, plot(T, de), ylabel('e');
+% figure, plot(T, di), ylabel('\Deltai [deg]');
+% figure, plot(T, dO), ylabel('\Delta\Omega [deg]');
+% figure, plot(T, do), ylabel('\Delta\omega [deg]');
+% figure, plot(T, dth), ylabel('\Delta\theta [deg]');
 
+%% report subplot
+
+figure;
+subplot(3, 1, 1), plot(T/86400, da) , ylabel('\Deltaa [km]'), xlabel('time [days]');
+subplot(3, 1, 2), plot(T/86400, de), ylabel('e'), xlabel('time [days]');
+subplot(3, 1, 3), plot(T/86400, di), ylabel('\Deltai [deg]'), xlabel('time [days]');

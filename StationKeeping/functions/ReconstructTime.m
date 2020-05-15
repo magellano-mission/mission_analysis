@@ -9,4 +9,4 @@ while flag && i < data.NT
     i = i + 1;
 end
 
-t_box = ceil(data.tspan(i)/data.T_orb);
+t_box = data.tspan(i-1);
