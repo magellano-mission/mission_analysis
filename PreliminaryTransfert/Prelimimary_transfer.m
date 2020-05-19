@@ -12,8 +12,8 @@ set(0,'defaultAxesTickLabelInterpreter','latex');
 
 [~, mu_s] = uplanet(0, 1);
 
-in_date_min = [2022 1 1 0 0 0];
-fin_date_min = [2022 1 1 0 0 0];
+in_date_min = [2023 1 1 0 0 0];
+fin_date_min = [2023 1 1 0 0 0];
 
 [k_E, ~] = uplanet(date2mjd2000(in_date_min), 3);
 [k_M, ~] = uplanet(date2mjd2000(in_date_min), 4);
@@ -26,7 +26,7 @@ n_per = 5;
 EM_SP = (E_P*M_P) / abs(E_P-M_P);
 
 [minDVI,Earth_time, Mars_time]=porkchop(in_date_min,fin_date_min,EM_SP,n_per);
-
+colormap(MagellanoColorMap)
 
 %% Deltav min for the IT, Delta V at the departure and arrival hyp
 [k_E, ~] = uplanet(Earth_time, 3);

@@ -133,7 +133,7 @@ if plot_flag %plot of geometrical orbits
     kep_departure(6) = 0;
     plot3(r_departure(1,:), r_departure(2,:), r_departure(3,:),'g','DisplayName','Desired Arrival Orbit'), hold on
     plot3(r_departure(1,1), r_departure(2,1), r_departure(3,1), 'o','DisplayName','PO Pericenter'), hold on
-
+    xlim([-13000 13000]), ylim([-13000 13000]), zlim([-13000 13000])
     if plot_flag == 2
 %   integration of hyperbolic fligt
     X0_PO = zeros(7,1);

@@ -94,8 +94,8 @@ rMars = almanac('Mars','Radius','kilometers','sphere');
 planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
-plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS');
-plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS2');
+% plot3(YYNS(:,1), YYNS(:,2), YYNS(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS');
+% plot3(YYNS2(:,1), YYNS2(:,2), YYNS2(:,3), '-', 'Color', [150 150 150]/255, 'DisplayName','NS2');
 
 cap(1) = plot3(YYNS3(:,1), YYNS3(:,2), YYNS3(:,3), 'Linewidth', 4,'DisplayName','NS + ECS');
 cap(2) = plot3(YYRS(:,1), YYRS(:,2), YYRS(:,3), 'Linewidth', 4, 'DisplayName','RS');

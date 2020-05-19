@@ -4,13 +4,28 @@
 %myabe it is better to understand the order of magnitudes involved)
 %delta_t_before_pericenter: trying to understand the impact of the firing
 %timing
-
-%these are all the parameters that we are using, changing among the code:
-%t_BO
-%thrust
-%t0sym tmax
-
 close all, clear, clc
+% Figure Initialization    
+load('MagellanoColorMap.mat');
+DefaultOrderColor = get(0, 'DefaultAxesColorOrder');
+NewOrderColor = [0.9490    0.4745    0.3137
+                 0.1020    0.6667    0.74120
+                 155/255   155/255   155/255
+                 DefaultOrderColor];  
+             
+set(0,'DefaultFigureColormap', MagellanoColorMap);
+set(0, 'DefaultAxesColorOrder', NewOrderColor);
+set(0,'DefaultLineLineWidth', 2)
+set(0,'DefaultLineMarkerSize', 10)
+set(0, 'DefaultFigureUnits', 'normalized');
+set(0, 'DefaultFigurePosition', [0 0 1 1]);
+set(0, 'DefaultTextFontSize', 18);
+set(0, 'DefaultAxesFontSize', 18);
+set(0, 'DefaultAxesXGrid', 'on')
+set(0, 'DefaultAxesYGrid', 'on')
+set(0, 'defaultLegendInterpreter', 'latex');
+set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+
 
 parameters.isPerturbed = 0;
 parameters.isInterp = 1;
@@ -44,9 +59,17 @@ n_per = 2;
 
 % Synodic periods
 EM_SP = (E_P*M_P) / abs(E_P-M_P);
-
 [minDVI,Earth_time, Mars_time]=porkchop(in_date_min,fin_date_min,EM_SP,n_per);
-
+Earth_date = mjd20002date(Earth_time);
+Mars_date = mjd20002date(Mars_time);
+annotation(gcf,'textarrow',[0.63125 0.46171875],...
+    [0.454246913580247 0.54320987654321],...
+    'String',{strcat('Departure: [', num2str(Earth_date(3)), '/',num2str(Earth_date(2)), '/', num2str(Earth_date(1)) ,']'), ...
+    strcat('Arrival: [', num2str(Mars_date(3)), '/',num2str(Mars_date(2)), '/', num2str(Mars_date(1)) ,']'), ...
+    strcat('Cost:', num2str(minDVI), 'km/s')});
+load('MagellanoColorMap.mat')
+colormap(MagellanoColorMap)
+%%
 parameters.t0sym = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 parameters.tmax = date2mjd2000([2021, 1, 1, 0, 0, 0]);    
 
@@ -64,7 +87,7 @@ Dv2_best = norm(VF' - v_M);
 
 % [~, Dv] = Earth_Mars_transfer_plot(Earth_time, Mars_time);
 
-%% Trans-Mars injection hyperbola 
+% Trans-Mars injection hyperbola 
 % https://www.nasa.gov/mission_pages/MRO/spacecraft/launch-cont.html
 
 % First engine firing: The Centaur engine fires for the first time shortly 
@@ -95,12 +118,12 @@ Dv2_best = norm(VF' - v_M);
 % % rp_opt_parc = 2*muE/norm(v_inf_plus)^2;%TBC
 % e_opt_parc = 0.1;
 % a_opt_parc = r_PO/(1 - e_opt_parc);
-% i_opt_parc = deg2rad(26.7)*0;
+% i_opt_parc = deg2rad(26.7);
 % kep_parc = [a_opt_parc e_opt_parc i_opt_parc 0 0 0];%TBC
 % 
 % [ YM_NS, hyp_NS , kep_cap_NS] = PO2hyp(kep_parc, v_inf_plus, r_E, muE, parameters, Thrust0, 1, 'departure', 1);
 
-%% Propagation of perturbed model
+% Propagation of perturbed model
 %perturbed model (and later TCM maneuvers definition)
 %initialization
 
@@ -176,28 +199,26 @@ I = imread('Sun.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
 rSun = 20*almanac('Sun','Radius','kilometers','sphere');
 [X, Y, Z] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
-planet = surf(X, Y, -Z,'Edgecolor', 'none','DisplayName', 'Sun'); hold on
+planet = surf(X, Y, -Z,'Edgecolor', 'none','HandleVisibility','off'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 
-Earth_plot = plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b', 'Linewidth', 4, 'DisplayName','Earth trajectory'); hold on
-Mars_plot = plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r', 'Linewidth', 4, 'DisplayName','Mars trajectory'); hold on
+Earth_plot = plot3(R_E(:,1), R_E(:,2), R_E(:,3),'b', 'DisplayName','Earth trajectory'); hold on
+Mars_plot = plot3(R_M(:,1), R_M(:,2), R_M(:,3),'r', 'DisplayName','Mars trajectory'); hold on
 Mars_plot.Color = [0.9490    0.4745    0.3137];
 Earth_plot.Color = [0.1020    0.6667    0.74120];
 
 % plot3(R_V(:,1), R_V(:,2), R_V(:,3),'c','DisplayName','Venus trajectory'), hold on
 % plot3(R_J(:,1), R_J(:,2), R_J(:,3),'m','DisplayName','Jupiter trajectory'), hold on
 
-plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r-', 'DisplayName','Unperturbed'), hold on
-plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3), 'Linewidth', 4, 'Color', [150 150 150]/255,  'DisplayName','Perturbed'), hold on
-xplot0 = plot3(Y_interp(1,1), Y_interp(1,2), Y_interp(1,3),'o', 'MarkerSize',15, 'MarkerFaceColor', [0.1020    0.6667    0.74120], ...
+% plot3(Y_interp_unp(:,1),Y_interp_unp(:,2),Y_interp_unp(:,3),'r-', 'DisplayName','Unperturbed'), hold on
+plot3(Y_interp(:,1), Y_interp(:,2), Y_interp(:,3), 'Color', [150 150 150]/255,  'DisplayName','Perturbed'), hold on
+xplot0 = plot3(Y_interp(1,1), Y_interp(1,2), Y_interp(1,3),'o', 'MarkerFaceColor', [0.1020    0.6667    0.74120], ...
     'MarkerEdgeColor', 'none', 'DisplayName','Injection'); hold on,
-xplotend = plot3(Y_interp(end,1), Y_interp(end,2), Y_interp(end,3),'o', 'MarkerSize',15, 'MarkerFaceColor', [0.9490    0.4745    0.3137], ...
+xplotend = plot3(Y_interp(end,1), Y_interp(end,2), Y_interp(end,3),'o', 'MarkerFaceColor', [0.9490    0.4745    0.3137], ...
     'MarkerEdgeColor', 'none', 'DisplayName','Capture'); hold on,
-axis equal, grid off, 
+axis equal, 
 view([0 0 90])
-set(gca, 'XColor', 'none'), set(gca, 'YColor', 'none')
-% set(gca, 'color', 'k','visible','off'), 
-% legend('Color','white')
+legend('Color','white')
 
 % for i=1:10:length(T_interp)
 %     rrr = [R_E(i,1:3); Y_interp(i,1:3)];
@@ -208,18 +229,21 @@ set(gca, 'XColor', 'none'), set(gca, 'YColor', 'none')
 % 
 % figure()
 % plot(T_interp, parameters.M0 - Y_interp(:,7)); title('s/c mass')
-dist = zeros(length(T_interp),1);
-ang = dist;
-for i=1:length(dist)
-    dist(i) = norm(Y_interp(i,1:3) - R_E(i,1:3));
-    ang(i) = acosd(dot((Y_interp(i,1:3) - R_E(i,1:3))/norm((Y_interp(i,1:3) - R_E(i,1:3))), -R_E(i,1:3)/norm(R_E(i,1:3))));
-end
-figure()
-subplot(2,1,1), plot(T_interp, dist), xlabel('Mission Time [days]'), 
-xlabel('Mission Time [days]'), ylabel('km'), title('Distance'), grid minor
-subplot(2,1,2), plot(T_interp, ang), 
-xlabel('Mission Time [days]'), ylabel('deg'), title('Angle Sun-Earth-s/c')
-grid minor
+% dist = zeros(length(T_interp),1);
+% ang = dist;
+% for i=1:length(dist)
+%     dist(i) = norm(Y_interp(i,1:3) - R_E(i,1:3));
+%     ang(i) = acosd(dot((Y_interp(i,1:3) - R_E(i,1:3))/norm((Y_interp(i,1:3) - R_E(i,1:3))), -R_E(i,1:3)/norm(R_E(i,1:3))));
+% end
+% figure()
+% subplot(2,1,1), plot(T_interp, dist), xlabel('Mission Time [days]'), 
+% xlabel('Mission Time [days]'), ylabel('km'), title('Distance'), grid minor
+% subplot(2,1,2),
+% SAA = plot((T_interp - T_interp(1))/86400, ang);
+% SAA.Color = [0.9490    0.4745    0.3137];
+% % SAA.Color = [0.1020    0.6667    0.74120];
+% xlabel('Mission Time [days]'), ylabel('deg'), title('Angle Sun-Earth-s/c')
+% grid minor, colormap(MagellanoColorMap)
 %% TCM -> CAPTURE STUDY (4 SM)
 %these are all the parameters that we are using, changing among the code:
 %t_BO
@@ -240,8 +264,9 @@ parameters.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12);
 parNS = parameters;
 parNS2 = parameters;
 
-dv_instant = ceil(0.7*length(T_interp));
-
+dv_instantNS = ceil(0.95*length(T_interp));
+TCM_before_MarsNS = (T_interp(end) - T_interp(dv_instantNS))/86400 %days
+TCM_dateNS = mjd20002date(T_interp(dv_instantNS)/86400)
 %capture delta_v
 [kepM, muS] = uplanet(parameters.t0sym, 4);
 rM = kep2car2(kepM, muS);
@@ -259,13 +284,16 @@ kep_NS2 = [10000 1e-8 deg2rad(25) 0 0 0];
 
 %definition of the last TCM
 YSOI_NS = rM + YM_NS(1, 1:3)';
-[a_NS, p_NS ,e_NS, err_NS, VI_NS, VF_NS, tspar_NS, th_NS] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instant)) , mu_s);
-dv_NS = VI_NS - Y_interp(dv_instant, 4:6);
+[a_NS, p_NS ,e_NS, err_NS, VI_NS, VF_NS, tspar_NS, th_NS] = lambertMR(Y_interp(dv_instantNS,1:3)', YSOI_NS, (Mars_time* 86400- T_interp(dv_instantNS)) , mu_s);
+dv_NS = VI_NS - Y_interp(dv_instantNS, 4:6);
+TCM_NS = norm(dv_NS)*1000
+[ ~, hyp_NS, ~] = hyp2PO(kep_NS, (VF_NS' - v_M), rM, mu, parNS, Thrust0, 1, 'capture');
 
-parNS.t0sym = T_interp(dv_instant)/86400;
+
+parNS.t0sym = T_interp(dv_instantNS)/86400;
 parNS.tmax = Mars_time;
 parNS.isInterp = 1;
-[~, Y_NS, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS, 0], parNS);
+[~, Y_NS, ~] = cart_cont_thrust_model([Y_interp(dv_instantNS,1:3), VI_NS, 0], parNS);
 
 %NS2
 parNS2.isInterp = 1;
@@ -274,28 +302,31 @@ parNS2.isInterp = 1;
 [ YM_NS2, hyp_NS2, kep_cap_NS2] = hyp2PO(kep_NS2, (VF' - v_M), rM, mu, parNS2, [], 1, 'capture');
 
 %definition of the last TCM
-YSOI_NS2 = rM + YM_NS2(1, 1:3)';
-[a_NS2, p_NS2 ,e_NS2, err_NS2, VI_NS2, VF_NS2, tspar_NS2, th_NS2] = lambertMR(Y_interp(dv_instant,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instant)) , mu_s);
-dv_NS2 = VI_NS2 - Y_interp(dv_instant, 4:6);
+dv_instantNS2 = ceil(0.95*length(T_interp));
 
-dv_instant = ceil(0.95*length(T_interp));
-parNS2.t0sym = T_interp(dv_instant)/86400;
+YSOI_NS2 = rM + YM_NS2(1, 1:3)';
+[a_NS2, p_NS2 ,e_NS2, err_NS2, VI_NS2, VF_NS2, tspar_NS2, th_NS2] = lambertMR(Y_interp(dv_instantNS2,1:3)', YSOI_NS2, (Mars_time*86400 - T_interp(dv_instantNS2)) , mu_s);
+dv_NS2 = VI_NS2 - Y_interp(dv_instantNS2, 4:6);
+[ ~, hyp_NS2, ~] = hyp2PO(kep_NS2, (VF_NS2' - v_M), rM, mu, parNS2, Thrust0, 1, 'capture');
+
+parNS2.t0sym = T_interp(dv_instantNS2)/86400;
 parNS2.tmax = Mars_time;
 parNS2.isInterp = 1;
-[~, Y_NS2, ~] = cart_cont_thrust_model([Y_interp(dv_instant,1:3), VI_NS2, 0], parNS2);
+[~, Y_NS2, ~] = cart_cont_thrust_model([Y_interp(dv_instantNS2,1:3), VI_NS2, 0], parNS2);
 
-figure(3)
-% plot3(Y_NS(:,1), Y_NS(:,2), Y_NS(:,3), 'k', 'DisplayName','NS injection'); hold on
-plot3(Y_NS(1,1), Y_NS(1,2), Y_NS(1,3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [150 150 150]/255, ...
-    'MarkerEdgeColor', 'none', 'DisplayName','NS TCM'); hold on
-% plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS injection');hold on
-plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'o', 'MarkerSize',15, 'MarkerFaceColor', [150 150 150]/255, ...
-    'MarkerEdgeColor', 'none', 'DisplayName','NS TCM'); hold on
+% figure(3)
+% plot3(Y_NS(:,1), Y_NS(:,2), Y_NS(:,3), 'm', 'DisplayName','SMs injection');hold on
+% plot3(Y_NS(1,1), Y_NS(1,2), Y_NS(1,3), 'o', 'Color','m', 'DisplayName','TCM NS-1'); hold on
+plot3(Y_NS2(1,1), Y_NS2(1,2), Y_NS2(1,3), 'o', 'Color', 'k', 'DisplayName','Service Modules TCM'); hold on
+plot3(Y_NS2(:,1), Y_NS2(:,2), Y_NS2(:,3), 'k', 'DisplayName','NS1+NS2 injection'); hold on
 
+TCM_before_MarsNS2 = (T_interp(end) - T_interp(dv_instantNS2))/86400 %days
+TCM_dateNS2 = mjd20002date(T_interp(dv_instantNS2)/86400)
+TCM_NS2 = norm(dv_NS2)*1000
 % title('Interplanetary arc')
 % annotation(figure_interp,'textbox', ...
 %     [0.75 0.15 0.2 0.45], ...
-%     'String',{'TMI date', ...
+%     'String',{'TMI date', 
 %     'Capture Date', ...
 %     'TCM:', ...
 %     'NS:', strcat('TCM:', num2str(1000*norm(dv_NS)),' m/s', ...
@@ -367,25 +398,28 @@ DV_NS2 = [DV_NS2; norm(dv_NS2), hyp_NS2.dv_req, hyp_NS2.dv_opt];
 
 end
 
-tof_interp = (T_interp(end) - T_interp(1)); % [s]
+tof_interp = (T_interp(end) - T_interp(1))/86400; % [s]
 
 figure
-sgtitle('Launch 1: Single burn TCM and Capture Maneuver - Sensitivity to maneuver instant')
-subplot(3,1,1), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,1),'DisplayName', 'TCM NS'), hold on
-plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,1),'DisplayName', 'TCM NS2'), hold on
-xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('TCM maneuver')
+% sgtitle('Launch 1: Single burn TCM and Capture Maneuver - Sensitivity to maneuvering instant')
+subplot(3,1,1), plot((1-perc_timing)*tof_interp, 1000*DV_NS(:,1),'DisplayName', 'TCM NS'), hold on
+plot((1-perc_timing)*tof_interp, 1000*DV_NS2(:,1),'DisplayName', 'TCM NS2'), hold on
+xline((T_interp(end) - T_interp(dv_instantNS2))/86400, 'r', 'linewidth', 2, 'DisplayName', 'Selected TCM')
+xlabel('Time before arriving on Mars [days]'), ylabel('\Deltav [m/s]'), grid minor, title('TCM maneuver')
 legend()
 
-subplot(3,1,2), plot((1-perc_timing)*tof_interp/86400, DV_NS(:,2),'DisplayName', 'dv NS'), hold on
-plot((1-perc_timing)*tof_interp/86400, DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
-plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,3), 's','DisplayName', 'opt dv NS'), hold on
-plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,3),'s','DisplayName', 'opt dv NS2'), hold on
-xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Capture delta v')
+subplot(3,1,2), plot((1-perc_timing)*tof_interp, DV_NS(:,2),'DisplayName', 'dv NS'), hold on
+plot((1-perc_timing)*tof_interp, DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
+xline((T_interp(end) - T_interp(dv_instantNS2))/86400, 'r', 'linewidth', 2, 'DisplayName', 'Selected TCM')
+% plot((1-perc_timing)*tof_interp, 1000*DV_NS(:,3), 's','DisplayName', 'opt dv NS'), hold on
+% plot((1-perc_timing)*tof_interp, 1000*DV_NS2(:,3),'s','DisplayName', 'opt dv NS2'), hold on
+xlabel('Time before arriving on Mars [days]'), ylabel('\Deltav [m/s]'), grid minor, title('Capture \Deltav')
 legend()
 
-subplot(3,1,3), plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS(:,1) + DV_NS(:,2),'DisplayName', 'dv NS'), hold on
-plot((1-perc_timing)*tof_interp/86400, 1000*DV_NS2(:,1) + DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
-xlabel('Time before arriving on Mars [days]'), ylabel('delta v [m/s]'), grid minor, title('Total delta v')
+subplot(3,1,3), plot((1-perc_timing)*tof_interp, 1000*DV_NS(:,1) + DV_NS(:,2),'DisplayName', 'dv NS'), hold on
+plot((1-perc_timing)*tof_interp, 1000*DV_NS2(:,1) + DV_NS2(:,2),'DisplayName', 'dv NS2'), hold on
+xline((T_interp(end) - T_interp(dv_instantNS))/86400, 'r', 'linewidth', 2, 'DisplayName', 'Selected TCM')
+xlabel('Time before arriving on Mars [days]'), ylabel('\Deltav [m/s]'), grid minor, title('Total \Deltav')
 legend()
 
 
@@ -474,7 +508,4 @@ legend()
 %     % Function used to get a correction on the theta for the hyperbola arc to
 %     % reach the Sphere of Influence
 % end
-function val = correc_SOI_f(rSOI,alpha,a,e,theta,muM)
-    [r,~]= kep2car2([a,e,0,0,0,theta+alpha],muM);
-    val = (norm(r)-rSOI)^2;
-end
+
