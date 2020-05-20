@@ -30,7 +30,7 @@ function [value,isterminal,direction] = event_interp_LT(t_seconds, x, parameters
     %SOI definition
     rSOI = rP_norm * (muP/muS)^(2/5);
 
-    value = [r_sc_norm - rP_norm, ...
+    value = [r_sc_norm - rP_norm; ...
              rSOI - r_scPnorm]; 
          
     %isterminal defied previously

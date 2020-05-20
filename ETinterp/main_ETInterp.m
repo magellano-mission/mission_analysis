@@ -36,32 +36,24 @@ data_stacks.Across_sun = 10;                                % Cross area related
 data_stacks.event = 1;
 data_stacks.opt = odeset('RelTol',1e-13, 'AbsTol',1e-13, 'InitialStep', 1e-12, 'Event', @event_interp_LT);
 
-Thrust = 0.2;                                               % value of thrust [N]
+Thrust = 0.8;                                               % value of thrust [N]
 data_stacks.T = [Thrust; 0; 0];                           % thrust [N] (@TNH) (constant profile for the moment)
 
-
-[kepEarth, muS] = uplanet(data_stacks.t0sym/86400,3);
-[kepMars, ~] = uplanet(data_stacks.t0sym/86400,4);
-rE = kep2car2(kepEarth, muS);
-rM = kep2car2(kepMars, muS);
-[~, ~ ,~, ~, VI, VF, ~, ~] = lambertMR(rE, rM, (data_stacks.tmax - data_stacks.t0sym)*86400 , muS);
-kepInterp = car2kep(rE, VI', muS);
-
 i_e = 0;
-% while i_e ~= 1
+% while i_e ~= 2
 data_stacks.t0sym = data_stacks.t0sym + 1;
 % initial point
 X0 = zeros(7,1);
 [kepEarth, muS] = uplanet(data_stacks.t0sym,3);
-kepEarth(3:4) = kepInterp(3:4);
 [X0(1:3), X0(4:6)] = kep2car2(kepEarth, muS);
 [T, Y, parout, t_e, y_e, i_e] = cart_cont_thrust_model(X0, data_stacks);
 % end
-TOF = (T(end) - T(1))/86400;
-fprintf('TOF %d100 days \n', TOF)
+TOF = (T(end) - T(1))/86400/365;
+fprintf('TOF %d days \n', TOF)
 rE = zeros(360,3);
 rM = zeros(360,3);
 rE0 = kep2car2(kepEarth, muS);
+x = ga(fun,nvars,A,b,Aeq,beq,lb,ub,nonlcon,options);
 
 [kepMars, ~] = uplanet(T(end)/86400,4);
 rMend = kep2car2(kepMars, muS);
@@ -78,3 +70,5 @@ plot3 (rE0(1), rE0(2), rE0(3),'o'), hold on
 plot3 (rMend(1), rMend(2), rMend(3),'o'), hold on
 plot3(Y(:,1), Y(:,2), Y(:,3),'k'), axis equal
 %save TOF, thrust, delta v 
+
+
