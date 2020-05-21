@@ -28,21 +28,26 @@ TOF = 3.5*365;%[days]
 N_rev = 2; %max 2-3 for Conway hp on convergence
 q = 3; %qmin = 3
 
-%initialization
-data_stacks.t0sym = date2mjd2000([2025 1 1 0 0 0]);
-data_stacks.tmax = data_stacks.t0sym + TOF;
-
 data_stacks.Isp = 4300;                                      % specific impulse [s]
 data_stacks.Mdry = 8000;                                      % Total Mass of the s/c [kg]
 
-[kepEarth, muS] = uplanet(data_stacks.t0sym, 3);
-[rE0, vE0] = kep2car2(kepEarth, muS);
-[kepMars, muS] = uplanet(data_stacks.t0sym + TOF, 4);
-[rMend, vMend] = kep2car2(kepMars, muS);
+%lower boundary
+lb(1) = date2mjd2000([2023 1 1 0 0 0]);
+lb(2) = 300;
+lb(3) = 0;
+lb(4) = 3;
+%upper boundary 
+ub(1) = date2mjd2000([2023+3 1 1 0 0 0]);
+ub(2) = 1500;
+ub(3) = 3;
+ub(4) = 10;
 
-[r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, TOFr] = ...
-    Conway(data_stacks.t0sym, TOF, N_rev, q, data_stacks);
-
+options = optimoptions('gamultiobj', 'Display', 'Iter', 'MaxGenerations', 1000, 'UseParallel', true);
+[SOL,feval,exitflag] = gamultiobj(@(x) ga_conway(x,data_stacks), 4,[],[],[],[],lb,ub,options);
+t0 = SOL(1); 
+TOF = SOL(2);
+N_rev = SOL(3);
+q = SOL(4);
 
 %capture (computation of v_arrival necessary)
 %%%%%%

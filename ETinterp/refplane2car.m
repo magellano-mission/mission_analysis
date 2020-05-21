@@ -1,11 +1,18 @@
-function rr = refplan2car( hh, th )
+function [rr, vv] = refplane2car( r, z, r1vers, vr, vt, hh, th, muS )
 % Transformation from reference plane to cartesian
+ee = r1vers;
 
+r_pf=[r*cos(th)
+      r*sin(th)
+           z   ];
+v_pf = [vr
+        vt
+        0];
 %Calcolo dell'inclinazione.
-i = acos(hh(3)/h);
+i = acos(hh(3)/norm(hh)); %versor
 
 %Calcolo della linea dei nodi.
-nn = cross([0,0,1],hh);
+nn = cross([0,0,1]',hh);
 n = norm(nn);
 
 %Calcolo dell'ascensione retta del nodo ascendente.
@@ -15,6 +22,10 @@ if nn(2)<0
 end
 
 %Calcolo dell'anomalia del pericentro.
+om = acos(dot(nn/n,ee));
+if ee(3)<0
+    om = 2*pi-om;
+end
 om = 0;
 
 R3_OM=[cos(OM) sin(OM) 0
@@ -28,9 +39,7 @@ R3_om=[cos(om) sin(om) 0
           0       0    1];
 R=[R3_om*R1_i*R3_OM]';
 
-r_pf=r*[cos(th)
-        sin(th)
-           0   ];
-rr=R*r_pf;
 
+rr=R*r_pf;
+vv=R*v_pf;
 end
