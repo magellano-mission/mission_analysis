@@ -28,19 +28,21 @@ data_stacks.Mdry = 8000;                                      % Total Mass of th
 data_stacks.n_int = 10000;
 %lower boundary
 lb = zeros(1,4); ub = lb;
-lb(1) = date2mjd2000([2028 1 1 0 0 0]);
-lb(2) = 600;
+lb(1) = date2mjd2000([2024 1 1 0 0 0]);
+lb(2) = 400;
 lb(3) = 0;
 lb(4) = 3;
 %upper boundary 
-ub(1) = date2mjd2000([2031 1 1 0 0 0]);
+ub(1) = date2mjd2000([2029 1 1 0 0 0]);
 ub(2) = 1000;
 ub(3) = 3;
 ub(4) = 7;
 Bound = [lb; ub];
 options = optimoptions('gamultiobj', ...
                        'Display', 'Iter', ...
-                       'PopulationSize', 100, ...%                        'StallGenLimit', 200, ... %                        'ParetoFraction', 0.35, ...
+                       'PopulationSize', 100, ...%                     
+                       'StallGenLimit', 200, ... %          
+                       'ParetoFraction', 0.35, ...
                        'MaxGenerations', 100, ...
                        'UseParallel', true, ...
                        'PopInitRange',Bound);

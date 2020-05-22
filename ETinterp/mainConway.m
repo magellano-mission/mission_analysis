@@ -24,9 +24,9 @@ set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
 %definition of interplanetary arc
-% TOF = 3.5*365;%[days]
-% N_rev = 2; %max 2-3 for Conway hp on convergence
-% q = 3; %qmin = 3
+TOF = 3.5*365;%[days]
+N_rev = 2; %max 2-3 for Conway hp on convergence
+q = 3; %qmin = 3
 
 %initialization
 data_stacks.t0sym = date2mjd2000([2025 1 1 0 0 0]);
@@ -73,7 +73,7 @@ vr2 = r2vers * vr(end);
 vt1 = dirt1 * vt(1);
 vt2 = dirt2 * vt(end);
 
-v1 = vr1 + vt1 + v1perp; v2 = vr2 + vt2 + v2perp;
+v1 = vr1 + vt1 + v1perp*RCRRv; v2 = vr2 + vt2 + v2perp*RCRRv;
 v_inf1 = v1 - vE0; v_inf2 = vMend - v2;
 
 fprintf('Departure v_inf: \t %d \n', norm(v_inf1))
