@@ -24,9 +24,9 @@ set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
 %definition of interplanetary arc
-TOF = 3.5*365;%[days]
-N_rev = 2; %max 2-3 for Conway hp on convergence
-q = 3; %qmin = 3
+% TOF = 3.5*365;%[days]
+% N_rev = 2; %max 2-3 for Conway hp on convergence
+% q = 3; %qmin = 3
 
 %initialization
 data_stacks.t0sym = date2mjd2000([2025 1 1 0 0 0]);
@@ -34,6 +34,7 @@ data_stacks.tmax = data_stacks.t0sym + TOF;
 
 data_stacks.Isp = 4300;                                      % specific impulse [s]
 data_stacks.Mdry = 8000;                                      % Total Mass of the s/c [kg]
+data_stacks.n_int = 10000;
 
 [kepEarth, muS] = uplanet(data_stacks.t0sym, 3);
 [rE0, vE0] = kep2car2(kepEarth, muS);
@@ -42,7 +43,6 @@ data_stacks.Mdry = 8000;                                      % Total Mass of th
 
 [r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, TOFr] = ...
     Conway(data_stacks.t0sym, TOF, N_rev, q, data_stacks);
-
 
 %capture (computation of v_arrival necessary)
 %%%%%%

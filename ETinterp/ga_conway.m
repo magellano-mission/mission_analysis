@@ -27,14 +27,15 @@ vt1 = dirt1 * vt(1);
 vt2 = dirt2 * vt(end);
 
 v1 = vr1 + vt1 + v1perp; v2 = vr2 + vt2 + v2perp;
-v_inf1 = v1 - vE0; v_inf2 = vMend - v2;
+v_inf1 = v1 - vE0;
+v_inf2 = vMend - v2;
 
 y(1) = max(abs(T));
 y(2) = m(1) - m(end);
 y(3) = norm(v_inf2);
 y(4) = norm(v_inf1);
 else
-    y = NaN(4,1);
+    y = 999999*(1*rand(4,1));
 end
 end
 

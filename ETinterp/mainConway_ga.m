@@ -23,43 +23,57 @@ set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
-%definition of interplanetary arc
-TOF = 3.5*365;%[days]
-N_rev = 2; %max 2-3 for Conway hp on convergence
-q = 3; %qmin = 3
-
 data_stacks.Isp = 4300;                                      % specific impulse [s]
 data_stacks.Mdry = 8000;                                      % Total Mass of the s/c [kg]
-
+data_stacks.n_int = 10000;
 %lower boundary
-lb(1) = date2mjd2000([2023 1 1 0 0 0]);
-lb(2) = 300;
+lb = zeros(1,4); ub = lb;
+lb(1) = date2mjd2000([2028 1 1 0 0 0]);
+lb(2) = 600;
 lb(3) = 0;
 lb(4) = 3;
 %upper boundary 
-ub(1) = date2mjd2000([2023+3 1 1 0 0 0]);
-ub(2) = 1500;
+ub(1) = date2mjd2000([2031 1 1 0 0 0]);
+ub(2) = 1000;
 ub(3) = 3;
-ub(4) = 10;
-
-options = optimoptions('gamultiobj', 'Display', 'Iter', 'MaxGenerations', 1000, 'UseParallel', true);
+ub(4) = 7;
+Bound = [lb; ub];
+options = optimoptions('gamultiobj', ...
+                       'Display', 'Iter', ...
+                       'PopulationSize', 100, ...%                        'StallGenLimit', 200, ... %                        'ParetoFraction', 0.35, ...
+                       'MaxGenerations', 100, ...
+                       'UseParallel', true, ...
+                       'PopInitRange',Bound);
 [SOL,feval,exitflag] = gamultiobj(@(x) ga_conway(x,data_stacks), 4,[],[],[],[],lb,ub,options);
-t0 = SOL(1); 
-TOF = SOL(2);
-N_rev = SOL(3);
-q = SOL(4);
 
-%capture (computation of v_arrival necessary)
-%%%%%%
+t0 = SOL(end,1); 
+TOF = SOL(end,2);
+N_rev = round(SOL(end,3));
+q = SOL(end,4);
 
-%plots
+% optimization result
+datedep=mjd20002date(t0);
+fprintf('departure date %d %d %d \n', datedep(3), datedep(2),datedep(1));
+fprintf('TOF \t \t %d \n', TOF);
+fprintf('N_rev \t \t %d \n', N_rev);
+fprintf('q \t \t %d \n', q);
+
+[kepEarth, muS] = uplanet(t0, 3);
+[rE0, vE0] = kep2car2(kepEarth, muS);
+[kepMars, muS] = uplanet(t0 + TOF, 4);
+[rMend, vMend] = kep2car2(kepMars, muS);
+
+[r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, TOFr] = ...
+    Conway(t0, TOF, N_rev, q, data_stacks);
+
+%% plots
 if ~isnan(r) 
 RE = zeros(length(TOFr), 3); RM = RE;
 REnorm = zeros(length(TOFr),1); RMnorm = REnorm;
 rr = RE; vv = rr;
 for i =1:length(TOFr)
-    kepE = uplanet(data_stacks.t0sym+TOFr(i), 3);
-    kepM = uplanet(data_stacks.t0sym+TOFr(i), 4);
+    kepE = uplanet(t0+TOFr(i), 3);
+    kepM = uplanet(t0+TOFr(i), 4);
     RE(i,:) = kep2car2(kepE, muS);
     RM(i,:) = kep2car2(kepM, muS);
     REnorm(i) = norm(RE(i,:));

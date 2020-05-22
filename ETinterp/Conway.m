@@ -4,6 +4,7 @@ function [r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, vr, vt, v1perp, v2p
 [kepMars, ~] = uplanet(t0 + TOF,4);
 [r1, v1] = kep2car2(kepEarth, muS); %km....
 [r2, v2] = kep2car2(kepMars, muS);  %km....
+n_int = data_stacks.n_int;
 
 %definition of plane of motion
 r1norm = norm(r1);
@@ -58,11 +59,8 @@ b_plan = -tan(gamma1)/r1norm;
 c_plan = 1/(2*r1norm) * ( (muS/(r1norm^3 * th_dot1^2)) -1 );
 ABC = [a_plan b_plan c_plan];
 
-opts = optimset('TolX', 1e-14, 'TolFun', 1e-14, 'MaxFunEvals', 1e3);
-[dd, feval] = fzero(@(d) find_d(d, ABC, muS, L, r2, th_dot2, gamma2, TOF), 0, opts);
-
-options = odeset('RelTol',1e-12,'AbsTol',1e-12);
-par.muS = muS;
+opts = optimset('Display','off');
+[dd, ~] = fzero(@(d) find_d(d, ABC, muS, L, r2, th_dot2, gamma2, TOF, n_int), 0, opts);
 
 A0 = [30*L^2   -10*L^3   L^4; ...
      -48*L      18*L^2  -2*L^3; ...
@@ -76,15 +74,14 @@ e_plan = 0.5/L^6*A0(1,:)*B0;
 f_plan = 0.5/L^6*A0(2,:)*B0;
 g_plan = 0.5/L^6*A0(3,:)*B0;
 
-
-[~, ~, TH] = TOFcomp(dd, ABC, muS, L, r2, th_dot2, gamma2);
+[~, ~, TH] = TOFcomp(dd, ABC, muS, L, r2, th_dot2, gamma2, n_int);
 
 TH2 = TH.^2; TH3 = TH.^3;
 TH4 = TH.^4; TH5 = TH.^5;
 TH6 = TH.^6;
 
 %computation of vector of time of flight
-n_int = 10000; d = dd;
+ d = dd;
 for i = 1:n_int
     tm(i) = 0.5*(TH(i+1)+TH(i));
 end

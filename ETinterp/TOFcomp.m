@@ -1,5 +1,5 @@
 
-function [I, r, TH] = TOFcomp(d, ABC, muS, th_f, rM, th_dotM, gammaM)
+function [I, r, TH] = TOFcomp(d, ABC, muS, th_f, rM, th_dotM, gammaM, n_int)
 a = ABC(1); b = ABC(2); c = ABC(3);
 rMnorm = norm(rM);
 A0 = [30*th_f^2   -10*th_f^3   th_f^4; ...
@@ -14,7 +14,6 @@ e = 0.5/th_f^6*A0(1,:)*A1;
 f = 0.5/th_f^6*A0(2,:)*A1;
 g = 0.5/th_f^6*A0(3,:)*A1;
 
-n_int = 10000;
 TH = linspace(0, th_f, n_int + 1);
 for i = 1:n_int
     tm(i) = 0.5*(TH(i+1)+TH(i));
