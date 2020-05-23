@@ -24,28 +24,26 @@ set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
 %definition of interplanetary arc
-TOF = 3.5*365;%[days]
-N_rev = 2; %max 2-3 for Conway hp on convergence
+TOF = 878;%[days]
+N_rev = 1; %max 2-3 for Conway hp on convergence
 q = 3; %qmin = 3
+v_inf = 0*sqrt(10); alpha = pi/2; beta = pi/2; %departure v_infinite
 
 %initialization
-data_stacks.t0sym = date2mjd2000([2025 1 1 0 0 0]);
+data_stacks.t0sym = date2mjd2000([2029 1 1 0 0 0]);
 data_stacks.tmax = data_stacks.t0sym + TOF;
 
-data_stacks.Isp = 4300;                                      % specific impulse [s]
+data_stacks.Isp = 3000;                                      % specific impulse [s]
 data_stacks.Mdry = 8000;                                      % Total Mass of the s/c [kg]
-data_stacks.n_int = 10000;
+data_stacks.n_int = 1000;
 
 [kepEarth, muS] = uplanet(data_stacks.t0sym, 3);
 [rE0, vE0] = kep2car2(kepEarth, muS);
 [kepMars, muS] = uplanet(data_stacks.t0sym + TOF, 4);
 [rMend, vMend] = kep2car2(kepMars, muS);
 
-[r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, TOFr] = ...
-    Conway(data_stacks.t0sym, TOF, N_rev, q, data_stacks);
-
-%capture (computation of v_arrival necessary)
-%%%%%%
+[r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, acc_inplane, acc_out, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, T_inplane, T_outplane, TOFr] = ...
+    Conway(data_stacks.t0sym, TOF, N_rev, q, v_inf, alpha, beta, data_stacks);
 
 %plots
 if ~isnan(r) 
@@ -78,24 +76,38 @@ v_inf1 = v1 - vE0; v_inf2 = vMend - v2;
 
 fprintf('Departure v_inf: \t %d \n', norm(v_inf1))
 fprintf('Arrival v_inf: \t %d \n', norm(v_inf2))
+fprintf('Mass ratio: \t %d \n', m(end)/m(1))
+fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
+
 
 figure()
-
-plot3(r.*cos(TH), r.*sin(TH), z), hold on, axis equal
+subplot(2,2,[1 3])
+plot3(r.*cos(TH), r.*sin(TH), z), hold on,
 plot3(REnorm(1), 0, 0, 'o'), hold on,
-plot3(cos(L)*RMnorm(end), RMnorm(end)*sin(L), 0, 'o'), hold on,
-
+plot3(cos(L)*RMnorm(end), RMnorm(end)*sin(L), 0, 'o'), hold off, axis equal
+title('complete path')
+subplot(2,2,2), 
+plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
+hold off, title('in-plane motion')
+subplot(2,2,4), 
+plot(TOFr, RM*RCRRv), hold on, plot(TOFr, RE*RCRRv), hold on, plot(TOFr, z), 
+hold off, title('out-of-plane motion')
 
 figure()
 sgtitle('Thrust Profile')
-subplot(3,1,1), plot(TOFr, acc), title('a_{tot}')
-subplot(3,1,2), plot(TOFr, T), title('T')
-subplot(3,1,3), plot(TOFr, m), title('mass')
+subplot(5,2,1), plot(TOFr, acc_inplane), title('a_{inplane}')
+subplot(5,2,2), plot(TOFr, acc_out), title('a_{outplane}')
+subplot(5,2,3), plot(TOFr, T_inplane), title('T_{inplane}')
+subplot(5,2,4), plot(TOFr, T_outplane), title('T_{outplane}')
+subplot(5,2,[5 6]), plot(TOFr, acc), title('a_{tot}')
+subplot(5,2,[7 8]), plot(TOFr, T), title('T')
+subplot(5,2,[9 10]), plot(TOFr, m), title('m')
 
 figure()
 sgtitle('Flight path angle')
-plot(TOFr, gamma), hold on 
-yline(gamma1); hold on, yline(gamma2);
+plot(TOFr, gamma,'DisplayName','spacecraft'), hold on 
+yline(gamma1,'DisplayName','Departure'); hold on, yline(gamma2,'DisplayName','Mars');
+legend(),
 
 figure()
 plot(TOFr, vt,'DisplayName','$v_{t}$'), hold on
@@ -106,5 +118,3 @@ else
     fprintf('No real solution for Conway algorithm \n')
 end
 
-figure()
-plot(TOFr, z)
