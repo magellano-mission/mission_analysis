@@ -23,21 +23,24 @@ set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
-data_stacks.Isp = 3000;                                      % specific impulse [s]
-data_stacks.Mdry = 3000;                                      % Total Mass of the s/c [kg]
+data_stacks.Isp = 6000;                                      % specific impulse [s]
+data_stacks.Mdry = 2400;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
 %%%%%
-% t0, TOF, N_rev, q, v_inf, alpha, beta, data_stacks
+% t0, TOF, N_rev, q, v_inf, alpha, beta, v_infcap, alphacap, betacap 
 %%%%%
 %lower boundary
-lb = zeros(1,4); ub = lb;
+lb = zeros(1,7); ub = lb;
 lb(1) = date2mjd2000([2024 1 1 0 0 0]); %t0
 lb(2) = 600; %TOF
-lb(3) = 1; %N_rev
+lb(3) = 2; %N_rev
 lb(4) = 3;% q
 lb(5) = 0;
 lb(6) = -pi;
 lb(7) = -pi;
+% lb(8) = 0;
+% lb(9) = -pi;
+% lb(10) = -pi;
 %upper boundary 
 ub(1) = date2mjd2000([2027 1 1 0 0 0]);
 ub(2) = 1500;
@@ -46,11 +49,14 @@ ub(4) = 7;
 ub(5) = sqrt(9);
 ub(6) = pi;
 ub(7) = pi;
+% ub(8) = 0.5;
+% ub(9) = pi;
+% ub(10) = pi;
 
 Bound = [lb; ub];
 
 options = optimoptions('gamultiobj', 'Display', 'Iter', ...
-                       'PopulationSize', 200, 'StallGenLimit', 200, ... %          
+                       'PopulationSize', 100, 'StallGenLimit', 200, ... %          
                        'MaxGenerations', 100, ...
                        'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
@@ -59,7 +65,7 @@ options = optimoptions('gamultiobj', 'Display', 'Iter', ...
 feval(:,1) = feval(:,1)/1000;
 %% plots
 chosen = paretoplot(SOL, feval);
-
+% chosen = 27
 data_stacks.n_int = 1000;
 t0      =          SOL(chosen,1); 
 TOF     =          SOL(chosen,2);
@@ -72,10 +78,8 @@ beta    =          SOL(chosen,7);
 [kepEarth, muS] = uplanet(t0      ,3);
 [kepMars, ~]    = uplanet(t0 + TOF,4);
 
-[RE, vE] = kep2car2(kepEarth, muS); %km....
+[R1, v1] = kep2car2(kepEarth, muS); %km....
 [R2, v2] = kep2car2(kepMars, muS);  %km....
-
-R1 = RE;
 
 %definition of plane of motion
 r1norm = norm(R1);
@@ -92,9 +96,11 @@ if RIvcRFv(3) <0
 end
 
 %adding TMI maneuver
-v1 = vE + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
+v1 = v1 + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
                  sin(beta)*sin(alpha)*cross(RCRRv,r1vers) + ...
                  cos(beta)*RCRRv);
+             
+             
 
 [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, time, TOFr] = ...
     Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
@@ -111,15 +117,15 @@ if ~isnan(r)
 r1vers = rE0/norm(rE0);
 r2vers = rMend/norm(rMend) ; 
     
-RE = zeros(length(TOFr), 3); RM = RE;
+R1 = zeros(length(TOFr), 3); RM = R1;
 REnorm = zeros(length(TOFr),1); RMnorm = REnorm;
-rr = RE; vv = rr;
+rr = R1; vv = rr;
 for i =1:length(TOFr)
     kepE = uplanet(t0+TOFr(i), 3);
     kepM = uplanet(t0+TOFr(i), 4);
-    RE(i,:) = kep2car2(kepE, muS);
+    R1(i,:) = kep2car2(kepE, muS);
     RM(i,:) = kep2car2(kepM, muS);
-    REnorm(i) = norm(RE(i,:));
+    REnorm(i) = norm(R1(i,:));
     RMnorm(i) = norm(RM(i,:));
     [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, RCRRv);
 end
@@ -156,7 +162,7 @@ fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
 figure()
 subplot(2,2,[1 3])
 plot3(RM(:,1), RM(:,2), RM(:,3)), hold on,
-plot3(RE(:,1), RE(:,2), RE(:,3)), hold on,
+plot3(R1(:,1), R1(:,2), R1(:,3)), hold on,
 plot3(rr(:,1), rr(:,2), rr(:,3),'--'), hold on,
 axis equal,  title('complete path')
 
@@ -164,7 +170,7 @@ subplot(2,2,2),
 plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
 hold off, title('in-plane motion')
 subplot(2,2,4), 
-plot(TOFr, RM*RCRRv), hold on, plot(TOFr, RE*RCRRv), hold on, plot(TOFr, z), 
+plot(TOFr, RM*RCRRv), hold on, plot(TOFr, R1*RCRRv), hold on, plot(TOFr, z), 
 hold off, title('out-of-plane motion')
 
 figure()

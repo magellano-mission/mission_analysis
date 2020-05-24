@@ -43,7 +43,7 @@ ABC = [a_plan b_plan c_plan];
 
 fun = @(d) find_d(d, ABC, muS, L, r2norm, th_dot2, gamma2, TOF, n_int);
 opts = optimset('Display','off');
-d_plan = fzero(fun, 0, opts);
+d_plan = fzero(fun, 1e-10, opts);
 
 A0 = [30*L^2   -10*L^3   L^4; ...
      -48*L      18*L^2  -2*L^3; ...
