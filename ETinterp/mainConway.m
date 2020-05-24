@@ -27,7 +27,7 @@ set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 TOF = 878;%[days]
 N_rev = 1; %max 2-3 for Conway hp on convergence
 q = 3; %qmin = 3
-v_inf = 0*sqrt(10); alpha = pi/2; beta = pi/2; %departure v_infinite
+v_inf = 2; alpha = pi/2; beta = pi/2; %departure v_infinite
 
 %initialization
 data_stacks.t0sym = date2mjd2000([2029 1 1 0 0 0]);
@@ -42,26 +42,65 @@ data_stacks.n_int = 1000;
 [kepMars, muS] = uplanet(data_stacks.t0sym + TOF, 4);
 [rMend, vMend] = kep2car2(kepMars, muS);
 
-[r, z, s, TH, L, gamma1, gamma2, gamma, RCRRv, acc, acc_inplane, acc_out, vr, vt, v1perp, v2perp, v1tra, v2tra, vnorm, time, dmdt, m, T, T_inplane, T_outplane, TOFr] = ...
-    Conway(data_stacks.t0sym, TOF, N_rev, q, v_inf, alpha, beta, data_stacks);
+t0 = data_stacks.t0sym;
 
 %plots
+[kepEarth, muS] = uplanet(t0      ,3);
+[kepMars, ~]    = uplanet(t0 + TOF,4);
+
+[RE, vE] = kep2car2(kepEarth, muS); %km....
+[R2, v2] = kep2car2(kepMars, muS);  %km....
+
+R1 = RE;
+
+%definition of plane of motion
+r1norm = norm(R1);
+r2norm = norm(R2);
+
+r1vers = R1/r1norm;
+r2vers = R2/r2norm;
+
+RIvcRFv = cross(r1vers, r2vers);
+RCRRv = RIvcRFv/norm(RIvcRFv);
+
+if RIvcRFv(3) <0
+    RCRRv = -RCRRv;
+end
+
+%adding TMI maneuver
+v1 = vE + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
+                 sin(beta)*sin(alpha)*cross(RCRRv,r1vers) + ...
+                 cos(beta)*RCRRv);
+
+[ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, time, TOFr] = ...
+    Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
+
 if ~isnan(r) 
+    
+    
+[kepEarth, muS] = uplanet(t0, 3);
+[rE0, vE0] = kep2car2(kepEarth, muS);
+[kepMars, muS] = uplanet(t0 + TOF, 4);
+[rMend, vMend] = kep2car2(kepMars, muS);
+
+    
+r1vers = rE0/norm(rE0);
+r2vers = rMend/norm(rMend) ; 
+    
 RE = zeros(length(TOFr), 3); RM = RE;
 REnorm = zeros(length(TOFr),1); RMnorm = REnorm;
 rr = RE; vv = rr;
 for i =1:length(TOFr)
-    kepE = uplanet(data_stacks.t0sym+TOFr(i), 3);
-    kepM = uplanet(data_stacks.t0sym+TOFr(i), 4);
+    kepE = uplanet(t0+TOFr(i), 3);
+    kepM = uplanet(t0+TOFr(i), 4);
     RE(i,:) = kep2car2(kepE, muS);
     RM(i,:) = kep2car2(kepM, muS);
     REnorm(i) = norm(RE(i,:));
     RMnorm(i) = norm(RM(i,:));
-    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i), rE0/norm(rE0), vr(i), vt(i), RCRRv, TH(i), muS); %da controllare
+    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, RCRRv);
 end
 
-r1vers = rE0/norm(rE0);
-r2vers = rMend/norm(rMend) ;
+
 dirt1 = cross(RCRRv , r1vers);
 dirt2 = cross(RCRRv , r2vers);
 
@@ -74,18 +113,29 @@ vt2 = dirt2 * vt(end);
 v1 = vr1 + vt1 + v1perp*RCRRv; v2 = vr2 + vt2 + v2perp*RCRRv;
 v_inf1 = v1 - vE0; v_inf2 = vMend - v2;
 
-fprintf('Departure v_inf: \t %d \n', norm(v_inf1))
-fprintf('Arrival v_inf: \t %d \n', norm(v_inf2))
+% optimization result
+datedep=mjd20002date(t0);
+datearr=mjd20002date(t0 + TOF);
+fprintf('OPTIMIZATION RESULTS \n')
+fprintf('Departure Date \t %d %d %d \n', datedep(3), datedep(2),datedep(1));
+fprintf('Arrival Date \t %d %d %d \n', datearr(3), datearr(2),datearr(1));
+fprintf('TOF \t \t %d days \n', TOF);
+fprintf('N_rev \t \t %d \n', N_rev);
+fprintf('q \t \t %d \n', q);
+fprintf('Departure v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf1), norm(v_inf1)^2)
+fprintf('Arrival v_inf: \t %d km/s \n', norm(v_inf2))
 fprintf('Mass ratio: \t %d \n', m(end)/m(1))
+fprintf('Fuel Mass Fraction: \t %d \n', (m(1) - m(end))/m(1))
 fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
 
 
 figure()
 subplot(2,2,[1 3])
-plot3(r.*cos(TH), r.*sin(TH), z), hold on,
-plot3(REnorm(1), 0, 0, 'o'), hold on,
-plot3(cos(L)*RMnorm(end), RMnorm(end)*sin(L), 0, 'o'), hold off, axis equal
-title('complete path')
+plot3(RM(:,1), RM(:,2), RM(:,3)), hold on,
+plot3(RE(:,1), RE(:,2), RE(:,3)), hold on,
+plot3(rr(:,1), rr(:,2), rr(:,3),'--'), hold on,
+axis equal,  title('complete path')
+
 subplot(2,2,2), 
 plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
 hold off, title('in-plane motion')
@@ -117,4 +167,3 @@ legend()
 else
     fprintf('No real solution for Conway algorithm \n')
 end
-

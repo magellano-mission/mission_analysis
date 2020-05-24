@@ -23,8 +23,8 @@ set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
-data_stacks.Isp = 4300;                                      % specific impulse [s]
-data_stacks.Mdry = 7000;                                      % Total Mass of the s/c [kg]
+data_stacks.Isp = 3000;                                      % specific impulse [s]
+data_stacks.Mdry = 3000;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
 %%%%%
 % t0, TOF, N_rev, q, v_inf, alpha, beta, data_stacks
@@ -32,7 +32,7 @@ data_stacks.n_int = 1000;
 %lower boundary
 lb = zeros(1,4); ub = lb;
 lb(1) = date2mjd2000([2024 1 1 0 0 0]);
-lb(2) = 700;
+lb(2) = 600;
 lb(3) = 0;
 lb(4) = 3;
 lb(5) = 0;
@@ -50,15 +50,17 @@ ub(7) = pi;
 Bound = [lb; ub];
 
 options = optimoptions('gamultiobj', 'Display', 'Iter', ...
-                       'PopulationSize', 100, 'StallGenLimit', 200, ... %          
+                       'PopulationSize', 200, 'StallGenLimit', 200, ... %          
                        'MaxGenerations', 200, ...
-                       'ParetoFraction', 0.35, ...
+                       'ParetoFraction', 0.50, ...
                        'UseParallel', true, 'PopInitRange',Bound);
 [SOL,feval,exitflag] = gamultiobj(@(x) ga_conway(x,data_stacks), 7,[],[],[],[],lb,ub,options);
 
-% plots
+feval(:,1) = feval(:,1)/10000;
+%% plots
 chosen = paretoplot(SOL, feval);
 
+data_stacks.n_int = 1000;
 t0      =          SOL(chosen,1); 
 TOF     =          SOL(chosen,2);
 N_rev   =    round(SOL(chosen,3));
