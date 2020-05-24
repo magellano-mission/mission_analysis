@@ -53,13 +53,20 @@ ub(8) = 0.15;% v_inf arr
 ub(9) = pi;% alhpa arr
 ub(10) = pi;% beta arr
  
-% Bound = [lb; ub];
- 
+Bound = [lb; ub];
+% load('optim1.m')
+%optimization of thrust only
+% options = optimoptions('ga', 'Display', 'Iter', ...
+%                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
+%                        'MaxGenerations', 200, ...%                        'ParetoFraction', 0.35, ...
+%                        'UseParallel', true, 'PopInitRange',Bound);% 'InitialPopulationMatrix', optim1);
+% [SOL,feval,exitflag] = ga(@(x) ga_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
+%multiobj optimization of thrust and mass
 options = optimoptions('ga', 'Display', 'Iter', ...
                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
                        'MaxGenerations', 200, ...%                        'ParetoFraction', 0.35, ...
-                       'UseParallel', true, 'PopInitRange',Bound, 'InitialPopulationMatrix', optim1);
-[SOL,feval,exitflag] = ga(@(x) ga_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
+                       'UseParallel', true, 'PopInitRange',Bound);
+[SOL,feval,exitflag] = ga(@(x) gamultiobj_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
 
 % feval(:,1) = feval(:,1);
 %%
