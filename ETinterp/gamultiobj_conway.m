@@ -1,4 +1,4 @@
-function y = ga_conway(x, data_stacks)
+function y = gamultiobj_conway(x, data_stacks)
 t0 = x(1);              TOF = x(2);
 N_rev = round(x(3));      q = x(4);
 v_inf = x(5); alpha = x(6); beta = x(7);
