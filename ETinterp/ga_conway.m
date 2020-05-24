@@ -33,16 +33,12 @@ v1 = vE + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
 [ m, T ] = Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
 
 if ~isnan(m) 
-%     if max(abs(T)) < 0.22
 
-        y(1) = 10000*max(abs(T));
+        y(1) = 1000*max(abs(T));
         y(2) = m(1) - m(end);
-%     else
-%         y = 1e6*ones(2,1);
-%     end
-    
+   
 else
-    y = 1e6*ones(2,1);
+    y = 1e9*ones(2,1);
 end
 end
 

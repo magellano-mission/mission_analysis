@@ -31,10 +31,10 @@ data_stacks.n_int = 1000;
 %%%%%
 %lower boundary
 lb = zeros(1,4); ub = lb;
-lb(1) = date2mjd2000([2024 1 1 0 0 0]);
-lb(2) = 600;
-lb(3) = 0;
-lb(4) = 3;
+lb(1) = date2mjd2000([2024 1 1 0 0 0]); %t0
+lb(2) = 600; %TOF
+lb(3) = 1; %N_rev
+lb(4) = 3;% q
 lb(5) = 0;
 lb(6) = -pi;
 lb(7) = -pi;
@@ -43,7 +43,7 @@ ub(1) = date2mjd2000([2027 1 1 0 0 0]);
 ub(2) = 1500;
 ub(3) = 3;
 ub(4) = 7;
-ub(5) = sqrt(11);
+ub(5) = sqrt(9);
 ub(6) = pi;
 ub(7) = pi;
 
@@ -51,12 +51,12 @@ Bound = [lb; ub];
 
 options = optimoptions('gamultiobj', 'Display', 'Iter', ...
                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
-                       'MaxGenerations', 200, ...
-                       'ParetoFraction', 0.50, ...
+                       'MaxGenerations', 100, ...
+                       'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
 [SOL,feval,exitflag] = gamultiobj(@(x) ga_conway(x,data_stacks), 7,[],[],[],[],lb,ub,options);
 
-feval(:,1) = feval(:,1)/10000;
+feval(:,1) = feval(:,1)/1000;
 %% plots
 chosen = paretoplot(SOL, feval);
 
@@ -203,7 +203,7 @@ for i = 1:length(feval)
     else 
         plot(feval(i,1), feval(i,2), 'k+','HandleVisibility','off'), hold on
     end
-             if SOL(i,2) < minTOF
+         if SOL(i,2) < minTOF
             minTOF = SOL(i,2);
             chosen = i;
          end
