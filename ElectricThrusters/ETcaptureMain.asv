@@ -45,10 +45,7 @@ eM_orbit = 0.09341233;
 smaM_orbit = rpM_orbit/(1 - eM_orbit);
 wM_orbit = sqrt(astroConstants(4)/smaM_orbit^3);
 
-% delta T between arrival of the first stack and the second to get in
-% correct RAAN
-deltaT = (120*pi/180)/(wM_orbit - RAAN_dot)/86400;
-
+cristo = (120*pi/180)/(wM_orbit - RAAN_dot)/86400
 %% Graphs
 figure()
 rM = almanac('mars','radius','kilometers','sphere');

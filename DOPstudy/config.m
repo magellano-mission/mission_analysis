@@ -3,9 +3,9 @@ data.Norb = 3;                  % number of orbits in Walker constellation
 data.walk_phas = 2;             % phase shift in Walker constellation
 
 
-data.Nsat = 15;                 % number of satellites in Walker constellation
+data.Nsat = 18;                 % number of satellites in Walker constellation
 data.bw = 40;                   % beamwidth [deg]
-data.inc = deg2rad(25);         % inclination [deg (inserted) --> rad (converted)]
+data.inc = deg2rad(45);         % inclination [deg (inserted) --> rad (converted)]
 data.sma = 10500;               % semi-major axis [km]
 
 
@@ -14,7 +14,7 @@ data.Nb = length(data.bw);
 data.Ni = length(data.inc);
 data.Na = length(data.sma);
 
-data.trashold = 1; 
+data.trashold = 4; 
 data.perturb = false;           % false/true --> perturbations off/on
 
 % Parameters
@@ -28,7 +28,7 @@ data.N_orbits = 2.7177;              % number of orbits in the simulation
 
 %% Ellipsoid model
 data.mi = astroConstants(14);      % Mars planetary constant [km^3/s^2]
-data.NT = 1500;                    % timestep
+data.NT = 1200;                    % timestep
 
 data.rM_eq = 3393.4;               % equatorial radius [km]
 rM_pol = 3375.7;                   % polar radius [km]
@@ -39,17 +39,6 @@ data.wM = 2 * pi / T_lla2;         % [rad/s]
 data.theta_Airy_0 = 0;             % Mars principal meridian [rad]
 
 %% plot selection
-
-% data.SimType = "Dani";
-% data.SimType = "FPCP"; 
-%      data.SubType = "mean"; 
-%      data.SubType = "min"; 
-% data.SimType = 'none';
-% data.SimType = "percent_cov";
-% data.SimType = "max_time_gap";
-% data.SimType = "mean_time_gap";
-% data.SimType = "plot_belli";
-% data.SimType =  "Time_varying";
 data.SimType = "GDOP";
 
 clearvars -except data

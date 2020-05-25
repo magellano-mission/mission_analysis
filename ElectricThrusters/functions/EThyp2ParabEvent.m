@@ -1,6 +1,6 @@
 function [value, isterminal, direction] = EThyp2ParabEvent(t, Y, data)
 %{ 
-EVENT Function to stop the integration at the pericenter hyperbola;
+EVENT qui diventa parabola;
 The true anomaly is computed here below and the ode stops when theta become 0.
 %}
 
