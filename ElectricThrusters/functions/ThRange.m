@@ -9,7 +9,7 @@ E = ((v^2 - mi/r)*R - (dot(R, V)*V))/mi;
 e = norm(E);
 
 vr = dot(V, R)/r;
-th = acos( max( min( dot(E, R)/(e*r) , 1) , -1) );
+th = acos( max( min( dot(E, R)/(e*r) , 1) , -1) ); 
 
 if vr < 0 && e > 1
     th = - th;

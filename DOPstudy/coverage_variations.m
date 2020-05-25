@@ -31,28 +31,30 @@ sim_plots(data, Cov_Results, time_map);
 
 % curiosity coord: lon = 137.4 lat = -4.6
 figure()
-subplot(1,2,1)
+subplot(3,1,1)
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', [0.1020    0.6667    0.74120])
-%xlabel('Time [hr]')
+plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', 'k')
 ylabel('GDOP')
 legend('Curiosiry','Location','northwest')
 grid minor
-ylim([1.2 2.6])
+
 % viking 1 coord: lon -50 lat 22.5
-subplot(1,2,2)
+subplot(3,1,2)
 T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
 tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', [0.9490    0.4745    0.3137])
-xlabel('Time [hr]')
+plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', 'k')
 ylabel('GDOP')
 legend('Viking 1','Location','northwest')
 grid minor
-ylim([1.2 2.6])
 
-% ba(1).CData = [0.9490    0.4745    0.3137];
-% ba(2).CData = [0.1020    0.6667    0.74120];
-
-
+% Skipper: lon = -167 lat = -81
+subplot(3,1,3)
+T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+tspan = linspace(0, data.N_orbits*T_orb, data.NT);
+plot(tspan/3600, squeeze(GDOP_map(8,10,:)), 'Color', 'k')
+xlabel('Time [hr]')
+ylabel('GDOP')
+legend('Skipper','Location','northwest')
+grid minor
 

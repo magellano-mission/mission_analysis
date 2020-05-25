@@ -5,7 +5,7 @@ data.walk_phas = 2;
 
 data.Nsat = 15;
 data.bw = 40;              % beamwidth [deg]
-data.inc = deg2rad(25);
+data.inc = deg2rad(55);
 data.sma = 10500;
 
 
@@ -20,11 +20,11 @@ data.perturb = false;
 % Parameters
 lon = [-180, 180];          
 lat = [-90, 90];
-disc = [100, 70];             % discretization grid
+disc = [90, 60];             % discretization grid
 data.lon = linspace(lon(1), lon(2), disc(1));
 data.lat = linspace(lat(1), lat(2), disc(2));
 data.alt = 0;                  % altitude at which evaluate the coverage ( ground level = 0)              
-data.N_orbits = 3;             % number of orbits
+data.N_orbits = 2.7177;             % number of orbits
 
 %% Ellipsoid model
 data.mi = astroConstants(14);            % Mars planetary constant

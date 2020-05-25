@@ -1,7 +1,7 @@
 %Conway-based approach
  
 %definition of parameters
-% close all, clear, clc
+close all, clear, clc
 % Figure Initialization    
 load('MagellanoColorMap.mat');
 DefaultOrderColor = get(0, 'DefaultAxesColorOrder');
@@ -43,36 +43,38 @@ lb(9) = 0;% alpha arr
 lb(10) = 0;% beta arr
 %upper boundary 
 ub(1) = date2mjd2000([2027 1 1 0 0 0]);
-ub(2) = 1500;
+ub(2) = 1400;
 ub(3) = 3;
 ub(4) = 8;
 ub(5) = sqrt(9); %v_inf dep
 ub(6) = pi;% alpha dep
 ub(7) = pi;% beta dep
-ub(8) = 0.15;% v_inf arr
+ub(8) = 0.1;% v_inf arr
 ub(9) = pi;% alhpa arr
 ub(10) = pi;% beta arr
  
 Bound = [lb; ub];
 % load('optim1.m')
 %optimization of thrust only
-% options = optimoptions('ga', 'Display', 'Iter', ...
-%                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
-%                        'MaxGenerations', 200, ...%                        'ParetoFraction', 0.35, ...
-%                        'UseParallel', true, 'PopInitRange',Bound);% 'InitialPopulationMatrix', optim1);
-% [SOL,feval,exitflag] = ga(@(x) ga_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
-%multiobj optimization of thrust and mass
 options = optimoptions('ga', 'Display', 'Iter', ...
                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
-                       'MaxGenerations', 200, ...%                        'ParetoFraction', 0.35, ...
-                       'UseParallel', true, 'PopInitRange',Bound);
-[SOL,feval,exitflag] = ga(@(x) gamultiobj_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
+                       'MaxGenerations', 200, ...
+                       'UseParallel', true, 'PopInitRange',Bound);% 'InitialPopulationMatrix', optim1);
+[SOL,feval,exitflag] = ga(@(x) ga_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
+%multiobj optimization of thrust and mass
+% options = optimoptions('gamultiobj', 'Display', 'Iter', ...
+%                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
+%                        'MaxGenerations', 200, ...
+%                        'ParetoFraction', 0.35, ...
+%                        'UseParallel', true, 'PopInitRange',Bound);
+% [SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],options);
+% feval(:,1) = feval(:,1)/10000;
 
-% feval(:,1) = feval(:,1);
-%%
-% plots
+%% plots
 % chosen = paretoplot(SOL, feval);
 chosen = length(feval)
+chosen = find(feval(:,1)==min(feval(:,1)))
+chosen = 1
 data_stacks.n_int = 1000;
 t0         =          SOL(chosen,1); 
 TOF        =          SOL(chosen,2);
