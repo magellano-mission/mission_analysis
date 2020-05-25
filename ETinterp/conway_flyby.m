@@ -34,9 +34,9 @@ delta = acos(dot(V_infm, V_infp));
 e = 1/ sin(delta/2);
 rp = muE/norm(v_infga)^2 *(e-1);
 
-if rp < 1.3*rE
-        y = 999999*(1*rand(2,1));
-else
+    if rp < 1.3*rE
+        y = 1e7*ones(2,1);
+    else
     
     delta_vga = v_infga*(V_infp - V_infm);
     v2 = v2 + delta_vga;
@@ -72,7 +72,7 @@ else
 
     [ m2, T2 ] = Conway(TOF23, N_rev2, q2, r2norm, r3norm, r2vers, r3vers, RCRRv23, RIvcRFv23, v2, v3, muS, data_stacks);
 
-    data_stacks.Mdry = m2(end);
+    data_stacks.Mdry = m2(1);
 
     %TMI maneuver
     V_infdep = v_inf*(sin(beta)*cos(alpha)*r1vers + ...
@@ -85,15 +85,14 @@ else
     %computation of fly-by
 
     if ~isnan(m1)
-        if ~isnan(m2)
-            y(1) = max(max(abs(T1)),max(abs(T2)));
-            y(2) = m1(1) - m2(end);
-        else
-            y = 999999*(1*rand(2,1));
-        end
+            if ~isnan(m2)
+                y(1) = 10000*max(max(abs(T1)),max(abs(T2)));
+                y(2) = m1(1) - m2(end);
+            else
+                y = 1e7*ones(2,1);
+            end
     else
-            y = 999999*(1*rand(2,1));
-    end
+            y = 1e7*ones(2,1);
     end
 end
 

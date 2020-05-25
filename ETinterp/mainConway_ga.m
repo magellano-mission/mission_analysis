@@ -23,7 +23,7 @@ set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
  
-data_stacks.Isp = 5000;                                      % specific impulse [s]
+data_stacks.Isp = 4300;                                      % specific impulse [s]
 data_stacks.Mdry = 2800;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
 %%%%%

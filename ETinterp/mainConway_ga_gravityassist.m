@@ -23,8 +23,8 @@ set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 
-data_stacks.Isp = 3000;                                      % specific impulse [s]
-data_stacks.Mdry = 7000;                                      % Total Mass of the s/c [kg]
+data_stacks.Isp = 5000;                                      % specific impulse [s]
+data_stacks.Mdry = 2800;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
 
 %%%%%
@@ -36,23 +36,23 @@ data_stacks.n_int = 1000;
 %lower boundary
 lb = zeros(1,15); ub = lb;
 lb(1) = date2mjd2000([2024 1 1 0 0 0]);  % t0    
-lb(2) = 200; % TOF12   
+lb(2) = 250; % TOF12   
 lb(3) = 700; % TOF23   
 lb(4) = 0; % N_rev1
 lb(5) = 0; % N_rev2  
 lb(6) = 3; % q1   
 lb(7) = 3; % q2  
 lb(8) = 0;% v_inf 
-lb(9) = -pi;% alpha  
-lb(10) = -pi;% beta  
+lb(9) = 0;% alpha  
+lb(10) = 0;% beta  
 lb(11) = 0;% v_infga
-lb(12) = pi/2;% alphagam
-lb(13) = -pi/2;% alphagap
-lb(14) = pi/2;% betagam
-lb(15) = -pi/2;% betagap
+lb(12) = 0;% alphagam
+lb(13) = 0;% alphagap
+lb(14) = 0;% betagam
+lb(15) = 0;% betagap
 %upper boundary 
 ub(1) = date2mjd2000([2027 1 1 0 0 0]);  % t0  
-ub(2) = 300; % TOF12 
+ub(2) = 400; % TOF12 
 ub(3) = 800; % TOF23
 ub(4) = 3; % N_rev1
 ub(5) = 3;  % N_rev2
@@ -62,24 +62,26 @@ ub(8) = sqrt(11);% v_inf
 ub(9) = pi;% alpha 
 ub(10) = pi;% beta  
 ub(11) = 4;% v_infga
-ub(12) = 3/2*pi;% alphagam
-ub(13) = pi/2;% alphagap
-ub(14) = 3/2*pi;% betagam
-ub(15) = pi/2;% betagap
+ub(12) = 2*pi;% alphagam
+ub(13) = 2*pi;% alphagap
+ub(14) = 2*pi;% betagam
+ub(15) = 2*pi;% betagap
 
 
 Bound = [lb; ub];
 
 options = optimoptions('gamultiobj', 'Display', 'Iter', ...
-                       'PopulationSize', 100, 'StallGenLimit', 200, ... %          
-                       'MaxGenerations', 20, ...
+                       'PopulationSize', 200, 'StallGenLimit', 200, ... %          
+                       'MaxGenerations', 200, ...
                        'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
 [SOL,feval,exitflag] = gamultiobj(@(x) conway_flyby(x,data_stacks), 15,[],[],[],[],lb,ub,options);
+feval(:,1) = feval(:,1)/10000;
 
 %% plots (to be fixed)
 chosen = paretoplot(SOL, feval);
-
+chosen = find(feval(:,1) == min(feval(:,1)))
+%
 t0              = SOL(chosen,1); 
 TOF12           = SOL(chosen,2); 
 TOF23           = SOL(chosen,3);
@@ -117,7 +119,7 @@ e = 1/ sin(delta/2);
 rp = muE/norm(v_infga)^2 *(e-1);
 
 if rp < 1.3*rE
-        printf('Unfeasible solution')
+        fprintf('Unfeasible solution')
 else
     
     delta_vga = v_infga*(V_infp - V_infm);
@@ -128,6 +130,11 @@ else
 
     [R1, v1] = kep2car2(kep1, muS); %km....
     [R3, v3] = kep2car2(kep3, muS);  %km....
+    
+    rE0 = R1;
+    vE0 = v1; 
+    rMend = R3;
+    vMend = v3;
 
     %definition of plane of motion
     r1norm = norm(R1);
@@ -151,10 +158,13 @@ else
     if RIvcRFv23(3) <0
         RCRRv23 = -RCRRv23;
     end
+    
+    data_stack.Mdry = 2800;
+    
   [ m23, T23, r23, z23, s23, vr23, vt23, vz2, acc_inplane23, acc_out23, acc23, TH23, L23, gamma123, gamma223, gamma23, v1perp23, v2perp23, v1tra23, v2tra23, vnorm23, dmdt23, T_inplane23, T_outplane23, time23, TOFr23] = ...
   Conway(TOF23, N_rev2, q2, r2norm, r3norm, r2vers, r3vers, RCRRv23, RIvcRFv23, v2, v3, muS, data_stacks);
 
-    data_stacks.Mdry = m23(end);
+    data_stacks.Mdry = m23(1);
 
     %TMI maneuver
     V_infdep = v_inf*(sin(beta)*cos(alpha)*r1vers + ...
@@ -167,67 +177,75 @@ else
 
 end
   % plots    
-    
+  
 RE = zeros(length(TOFr12) + length(TOFr23), 3);
 RM = RE;
 REnorm = zeros(length(TOFr12) + length(TOFr23),1); 
 RMnorm = REnorm;
 
-TOFr = [TOFr12 TOFr23]; r=[r12 r23]; z=[z12 z23]; vt=[vt12 vt23];  vr=[vr12 vr23]; TH = [TH12 TH23];
+TOFr = [TOFr12 (TOFr12(end) + TOFr23)]; r=[r12 r23]; z=[z12 z23]; vt=[vt12 vt23];  vr=[vr12 vr23]; TH = [TH12 TH23];
+m = [m12 m23]; acc_inplane = [acc_inplane12 acc_inplane23]; acc_out = [acc_out12 acc_out23];
+T = [T12 T23]; T_inplane = [T_inplane12 T_inplane23]; T_outplane = [T_outplane12 T_outplane23];
+acc = [acc12 acc23]; gamma = [gamma12 gamma23];
 rr = RE; vv = rr;
 
-        vers = r1vers;
-        RCRRv = RCRRv12;
-for i =1:length(TOFr)
-    kepE = uplanet(t0+TOFr(i), 3);
-    kepM = uplanet(t0+TOFr(i), 4);
+for i =1:length(TOFr12)
+    kepE = uplanet(t0+TOFr12(i), 3);
+    kepM = uplanet(t0+TOFr12(i), 4);
     RE(i,:) = kep2car2(kepE, muS);
     RM(i,:) = kep2car2(kepM, muS);
     REnorm(i) = norm(RE(i,:));
-    RMnorm(i) = norm(RM(i,:));
-    if i > length(TOFr12)
-        vers = r2vers;
-        RCRRv = RCRRv23;
-    end
-    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), vers, RCRRv);
+    RMnorm(i) = norm(RM(i,:));     
+    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, RCRRv12);
+end
+
+for i =(length(TOFr23)+1):(length(TOFr23) + length(TOFr23))
+    kepE = uplanet(t0+TOFr12(end)+TOFr23(i - length(TOFr23)), 3);
+    kepM = uplanet(t0+TOFr12(end)+TOFr23(i - length(TOFr23)), 4);
+    RE(i,:) = kep2car2(kepE, muS);
+    RM(i,:) = kep2car2(kepM, muS);
+    REnorm(i) = norm(RE(i,:));
+    RMnorm(i) = norm(RM(i,:));     
+    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r2vers, RCRRv23);
 end
 
 % 
-% dirt1 = cross(RCRRv12 , r1vers);
-% dirt3 = cross(RCRRv23 , r3vers);
-% 
-% vr1 = r1vers * vr12(1);
-% vr3 = r3vers * vr23(end);
-% 
-% vt1 = dirt1 * vt12(1);
-% vt3 = dirt3 * vt23(end);
-% 
-% vdep = vr1 + vt1 + v1perp*RCRRv12; varr = vr23 + vt23 + v2perp*RCRRv23;
-% v_inf1 = vdep - vE0; v_inf2 = vMend - varr;
-% 
-% % optimization result
-% datedep=mjd20002date(t0);
-% datega=mjd20002date(t0 + TOF1 );
-% datearr=mjd20002date(t0 + TOF1 + TOF2);
-% fprintf('OPTIMIZATION RESULTS \n')
-% fprintf('Departure Date \t %d %d %d \n', datedep(3), datedep(2),datedep(1));
-% fprintf('Fly-by Date \t %d %d %d \n', datega(3), datega(2),datega(1));
-% fprintf('Arrival Date \t %d %d %d \n', datearr(3), datearr(2),datearr(1));
-% fprintf('%%%%%% Second Arc \n')
-% fprintf('TOF1 \t \t %d days \n', TOF1);
-% fprintf('N_rev1 \t \t %d \n', N_rev1);
-% fprintf('q1 \t \t %d \n', q1);
-% fprintf('%%%%%% Second Arc \n')
-% fprintf('TOF2 \t \t %d days \n', TOF2);
-% fprintf('N_rev2 \t \t %d \n', N_rev2);
-% fprintf('q2 \t \t %d \n', q2);
-% % fprintf('Departure v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf1), norm(v_inf1)^2)
-% % fprintf('Arrival v_inf: \t %d km/s \n', norm(v_inf2))
-% fprintf('Mass ratio: \t %d \n', m2(end)/m1(1))
-% fprintf('Fuel Mass Fraction: \t %d \n', (m1(1) - m2(end))/m1(1))
-% fprintf('Propellant mass: \t %d kg \n', m1(1) - m2(end))
-% fprintf('%%%%%% FLY-BY \n')
-% fprintf('rp: \t %d km \n',rp)
+dirt1 = cross(RCRRv12 , r1vers);
+dirt3 = cross(RCRRv23 , r3vers);
+
+vr1 = r1vers * vr12(1);
+vr3 = r3vers * vr23(end);
+
+vt1 = dirt1 * vt12(1);
+vt3 = dirt3 * vt23(end);
+
+vdep = vr1 + vt1 + v1perp12*RCRRv12; varr = vr23 + vt23 + v2perp23*RCRRv23;
+v_inf1 = vdep - vE0; v_inf2 = vMend - varr;
+
+% optimization result
+datedep=mjd20002date(t0);
+datega=mjd20002date(t0 + TOF12 );
+datearr=mjd20002date(t0 + TOF12 + TOF23);
+fprintf('OPTIMIZATION RESULTS \n')
+fprintf('Departure Date \t %d %d %d \n', datedep(3), datedep(2),datedep(1));
+fprintf('Fly-by Date \t %d %d %d \n', datega(3), datega(2),datega(1));
+fprintf('Arrival Date \t %d %d %d \n', datearr(3), datearr(2),datearr(1));
+fprintf('%%%%%% Second Arc \n')
+fprintf('TOF1 \t \t %d days \n', TOF12);
+fprintf('N_rev1 \t \t %d \n', N_rev1);
+fprintf('q1 \t \t %d \n', q1);
+fprintf('%%%%%% Second Arc \n')
+fprintf('TOF2 \t \t %d days \n', TOF23);
+fprintf('N_rev2 \t \t %d \n', N_rev2);
+fprintf('q2 \t \t %d \n', q2);
+fprintf('Departure v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf1), norm(v_inf1)^2)
+fprintf('Arrival v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf2), norm(v_inf2)^2)
+fprintf('Mass ratio: \t %d \n', m(end)/m(1))
+fprintf('Fuel Mass Fraction: \t %d \n', (m(1) - m(end))/m(1))
+fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
+fprintf('%%%%%% FLY-BY \n')
+fprintf('rp: \t %d km \n',rp)
+fprintf('delta v ga: \t %d km \n', norm(delta_vga))
 
 figure()
 subplot(2,2,[1 3])
@@ -235,35 +253,41 @@ plot3(RM(:,1), RM(:,2), RM(:,3)), hold on,
 plot3(RE(:,1), RE(:,2), RE(:,3)), hold on,
 plot3(rr(:,1), rr(:,2), rr(:,3),'--'), hold on,
 axis equal,  title('complete path')
-%%
+
 subplot(2,2,2), 
 plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
 hold off, title('in-plane motion')
 subplot(2,2,4), 
-plot(TOFr, RM*RCRRv), hold on, plot(TOFr, RE*RCRRv), hold on, plot(TOFr, z), 
+p12M = plot(TOFr(1:length(TOFr12)), RM(1:length(TOFr12),:)*RCRRv12); hold on
+p12E = plot(TOFr(1:length(TOFr12)), RE(1:length(TOFr12),:)*RCRRv12); hold on
+plot(TOFr, z), hold on
+p23M = plot(TOFr(length(TOFr12)+1:(length(TOFr23) + length(TOFr12))), RM(length(TOFr12)+1:(length(TOFr23) + length(TOFr12)),:)*RCRRv23); hold on, ...
+p23E = plot(TOFr(length(TOFr12)+1:(length(TOFr23) + length(TOFr12))), RE(length(TOFr12)+1:(length(TOFr23) + length(TOFr12)),:)*RCRRv23); hold on, ...
+p23M.Color = p12M.Color;
+p23E.Color = p12E.Color;
 hold off, title('out-of-plane motion')
 
 figure()
 sgtitle('Thrust Profile')
-subplot(5,2,1), plot(TOFr, acc_inplane), title('a_{inplane}')
-subplot(5,2,2), plot(TOFr, acc_out), title('a_{outplane}')
-subplot(5,2,3), plot(TOFr, T_inplane), title('T_{inplane}')
-subplot(5,2,4), plot(TOFr, T_outplane), title('T_{outplane}')
-subplot(5,2,[5 6]), plot(TOFr, acc), title('a_{tot}')
-subplot(5,2,[7 8]), plot(TOFr, T), title('T')
-subplot(5,2,[9 10]), plot(TOFr, m), title('m')
+subplot(5,2,1), plot(TOFr, acc_inplane), hold on, xline(TOFr12(end), 'r'); title('a_{inplane}')
+subplot(5,2,2), plot(TOFr, acc_out), hold on, xline(TOFr12(end), 'r'); title('a_{outplane}')
+subplot(5,2,3), plot(TOFr, T_inplane), hold on, xline(TOFr12(end), 'r'); title('T_{inplane}')
+subplot(5,2,4), plot(TOFr, T_outplane), hold on, xline(TOFr12(end), 'r'); title('T_{outplane}')
+subplot(5,2,[5 6]), plot(TOFr, acc), hold on, xline(TOFr12(end), 'r'); title('a_{tot}')
+subplot(5,2,[7 8]), plot(TOFr, T), hold on, xline(TOFr12(end), 'r'); title('T')
+subplot(5,2,[9 10]), plot(TOFr, m), hold on, xline(TOFr12(end), 'r'); title('m')
 
 figure()
 sgtitle('Flight path angle')
 plot(TOFr, gamma,'DisplayName','spacecraft'), hold on 
-yline(gamma1,'DisplayName','Departure'); hold on, yline(gamma2,'DisplayName','Mars');
+yline(gamma112,'DisplayName','Departure'); hold on, yline(gamma223,'DisplayName','Mars');
 legend(),
 
-figure()
-plot(TOFr, vt12,'DisplayName','$v_{t}$'), hold on
-yline(norm(v1tra),'DisplayName','$v^E_\theta$'); hold on, yline(norm(v2tra),'DisplayName','$v^M_\theta$');
-plot(TOFr, v1norm,'DisplayName','$|v|$'), hold on, plot(TOFr, vr, 'DisplayName','$v_{r}$')
-legend()
+% figure()
+% plot(TOFr, vt12,'DisplayName','$v_{t}$'), hold on
+% yline(norm(v1tra),'DisplayName','$v^E_\theta$'); hold on, yline(norm(v2tra),'DisplayName','$v^M_\theta$');
+% plot(TOFr, v1norm,'DisplayName','$|v|$'), hold on, plot(TOFr, vr, 'DisplayName','$v_{r}$')
+% legend()
 
 
 
@@ -282,6 +306,6 @@ for i = 1:length(feval)
             chosen = i;
          end
 end
-plot(feval(chosen,1), feval(chosen,2),'go', 'DisplayName',strcat('Min TOF (', num2str(SOL(chosen,2)),')')); hold off
+plot(feval(chosen,1), feval(chosen,2),'go', 'DisplayName',strcat('Min TOF (', num2str(minTOF),')')); hold off
 xlabel('max(abs(T))'), ylabel('m_P') , legend()
 end
