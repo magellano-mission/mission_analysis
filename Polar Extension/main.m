@@ -37,38 +37,40 @@ end
 close all
 sim_plots(data, Cov_Results, time_map);
 
-% curiosity coord: lon = 137.4 lat = -4.6
-figure()
-subplot(2,1,1)
-T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
-tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-plot(tspan/3600, squeeze(GDOP_map(88,34,:)), 'Color', 'k')
-%xlabel('Time [hr]')
-ylabel('GDOP')
-legend('Curiosiry','Location','northwest')
-grid minor
-ylim([1 2.6])
+if data.study == "DOP"
+    % curiosity coord: lon = 137.4 lat = -4.6
+    figure()
+    subplot(3,1,1)
+    T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+    tspan = linspace(0, data.N_orbits*T_orb, data.NT);
+    plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', 'k')
+    %xlabel('Time [hr]')
+    ylabel('GDOP')
+    legend('Curiosiry','Location','northwest')
+    grid minor
+  
 
-% viking 1 coord: lon -50 lat 22.5
-subplot(2,1,2)
-T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
-tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-plot(tspan/3600, squeeze(GDOP_map(37,44,:)), 'Color', 'k')
-xlabel('Time [hr]')
-ylabel('GDOP')
-legend('Viking 1','Location','northwest')
-grid minor
-ylim([1 2.6])
+    % viking 1 coord: lon -50 lat 22.5
+    subplot(3,1,2)
+    T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+    tspan = linspace(0, data.N_orbits*T_orb, data.NT);
+    plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', 'k')
+    xlabel('Time [hr]')
+    ylabel('GDOP')
+    legend('Viking 1','Location','northwest')
+    grid minor
+   
 
-% Skipper: lon = -167 lat = -81
-figure()
-T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
-tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-plot(tspan/3600, squeeze(GDOP_map(5,4,:)), 'Color', 'k')
-xlabel('Time [hr]')
-ylabel('GDOP')
-legend('Skipper','Location','northwest')
-grid minor
+    % Skipper: lon = -167 lat = -81
+    subplot(3,1,3)
+    T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
+    tspan = linspace(0, data.N_orbits*T_orb, data.NT);
+    plot(tspan/3600, squeeze(GDOP_map(8,10,:)), 'Color', 'k')
+    xlabel('Time [hr]')
+    ylabel('GDOP')
+    legend('Skipper','Location','northwest')
+    grid minor
+end
 
 % Colori Magellano
 % [0.1020    0.6667    0.74120]

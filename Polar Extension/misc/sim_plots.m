@@ -69,8 +69,8 @@ switch data.SimType
             case "mean"  
                 sss = pcolor(data.lon, data.lat, Cov_Results.N_mean'); hold on
         end
-        sss.FaceColor = 'Interp';
-        sss.EdgeColor = 'none';
+%         sss.FaceColor = 'Interp';
+%         sss.EdgeColor = 'none';
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...

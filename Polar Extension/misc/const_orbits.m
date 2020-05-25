@@ -32,27 +32,38 @@ h_user_wlk = zeros(TT, data.NT);
      end
  end
 
-% Polar extension
-YYY_pol = zeros(data.Nsat_pol, 3, data.NT);      % states matrix (3D)
-THETA_pol = zeros(data.Nsat_pol, data.NT);       % matrix containing Earth central angles
-h_sat_pol = zeros(data.Nsat_pol, data.NT);       % surface altitude of the geodetic point
-h_user_pol = zeros(data.Nsat_pol, data.NT);  
+if data.PE == true
+    % Polar extension
+    YYY_pol = zeros(data.Nsat_pol, 3, data.NT);      % states matrix (3D)
+    THETA_pol = zeros(data.Nsat_pol, data.NT);       % matrix containing Earth central angles
+    h_sat_pol = zeros(data.Nsat_pol, data.NT);       % surface altitude of the geodetic point
+    h_user_pol = zeros(data.Nsat_pol, data.NT);  
 
-X02 = [data.sma_pol, 1e-8, data.inc_pol, 0, 0, 0];       % initial condition
+    X02 = [data.sma_pol, 1e-8, data.inc_pol, 0, 0, 0];       % initial condition
 
-n_sat_pol = data.Nsat_pol;
-sma_pol = data.sma_pol;
-for kk = 1 : n_sat_pol
-        X02(6) = (kk - 1) * pi * 2 /n_sat_pol;
-        [T, Y] = trajectory(X02, tspan, data, opt, sma_pol);
-        [theta, h_sat_pol(kk, :), h_user_pol(kk, :)] = footPrintRadius(gamma, Y, data);
-        YYY_pol(kk, :, :) = Y';
-        THETA_pol(kk, :) = theta;
+    n_sat_pol = data.Nsat_pol;
+    sma_pol = data.sma_pol;
+    for kk = 1 : n_sat_pol
+            X02(6) = (kk - 1) * pi * 2 /n_sat_pol;
+            [T, Y] = trajectory(X02, tspan, data, opt, sma_pol);
+            [theta, h_sat_pol(kk, :), h_user_pol(kk, :)] = footPrintRadius(gamma, Y, data);
+            YYY_pol(kk, :, :) = Y';
+            THETA_pol(kk, :) = theta;
+    end
+
+    YYY = [YYY_wlk; YYY_pol];
+    THETA = [THETA_wlk; THETA_pol];
+    h_sat = [h_sat_wlk; h_sat_pol];
+    h_user = [h_user_wlk; h_user_pol];
+
+else
+
+    YYY = YYY_wlk;
+    THETA = THETA_wlk;
+    h_sat = h_sat_wlk;
+    h_user = h_user_wlk;
 end
 
-YYY = [YYY_wlk; YYY_pol];
-THETA = [THETA_wlk; THETA_pol];
-h_sat = [h_sat_wlk; h_sat_pol];
-h_user = [h_user_wlk; h_user_pol];
- 
+    
+
 end

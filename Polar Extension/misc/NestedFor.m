@@ -49,7 +49,7 @@ switch study
                             [YYY, T, THETA, ~, h_user] = const_orbits(curr, data);
                             [time_map, GDOP_map] = time_mapping(curr, YYY, T, THETA, h_user, data);
                             GDOP_max = max(GDOP_map, [], 3);
-                            GDOP_max(GDOP_max == 100) = NaN;
+                            GDOP_max(GDOP_max == 20) = NaN;
 
                         end
                 end
