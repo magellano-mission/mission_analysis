@@ -41,7 +41,7 @@ if ~isnan(m)
         y(1) = max(abs(T));
         
 else
-    y = 1e6*ones(1,1);
+    y = 1e5*ones(1,1);
 end
 end
 

@@ -38,10 +38,10 @@ v2 = v2 + v_infcap*(sin(betacap)*cos(alphacap)*r2vers + ...
 
 if ~isnan(m) 
 
-        y(1) = max(abs(T));
-   
+        y(1) = max(abs(T))*10000;
+        y(2) = m(1) - m(end);
 else
-    y = 1e6*ones(1,1);
+    y = 1e6*ones(2,1);
 end
 end
 
