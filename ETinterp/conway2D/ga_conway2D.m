@@ -1,9 +1,10 @@
-function y = ga_conway(x, data_stacks)
-t0 = x(1);              TOF = x(2);
-N_rev = round(x(3));      q = x(4);
-v_inf = x(5); alpha = x(6); beta = x(7);
-v_infcap = x(8); alphacap = x(9); betacap = x(10);
-
+function y = ga_conway2D(x, data_stacks)
+t0 = x(1);
+TOF = x(2);
+N_rev = round(x(3));  
+v_inf = x(4); alpha = x(5);
+% v_infcap = x(8); alphacap = x(9); betacap = x(10);
+beta = pi/2;
 [kepEarth, muS] = uplanet(t0      ,3);
 [kepMars, ~]    = uplanet(t0 + TOF,4);
 
@@ -29,19 +30,19 @@ v1 = v1 + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
                  sin(beta)*sin(alpha)*cross(RCRRv,r1vers) + ...
                  cos(beta)*RCRRv);
 
-%adding v_inf at Mars capture
-v2 = v2 + v_infcap*(sin(betacap)*cos(alphacap)*r2vers + ...
-                 sin(betacap)*sin(alphacap)*cross(RCRRv,r2vers) + ...
-                 cos(betacap)*RCRRv);
+% %adding v_inf at Mars capture
+% v2 = v2 + v_infcap*(sin(betacap)*cos(alphacap)*r2vers + ...
+%                  sin(betacap)*sin(alphacap)*cross(RCRRv,r2vers) + ...
+%                  cos(betacap)*RCRRv);
              
-[ m, T ] = Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
+[ m, T ] = Conway2D(TOF, N_rev, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
 
 if ~isnan(m) 
 
         y(1) = max(abs(T));
         
 else
-    y = 1e5*ones(1,1);
+    y = 1e6*ones(1,1);
 end
 end
 

@@ -1,27 +1,18 @@
-function [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, time, TOFr] = Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks)
+function [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, theta_dot, time, TOFr] = ...
+    Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, hvers, hh, v1, v2, muS, data_stacks)
 
 n_int = data_stacks.n_int;            
 %decomposition of velocity
-v1perp = dot(v1,RCRRv);
-v2perp = dot(v2,RCRRv);
+v1perp = dot(v1,hvers);
+v2perp = dot(v2,hvers);
 
-v1plan = v1 - v1perp*RCRRv;
-v2plan = v2 - v2perp*RCRRv;
+v1plan = v1 - v1perp*hvers;
+v2plan = v2 - v2perp*hvers;
 
-rivDrfv = dot(r1vers, r2vers);
+phi = acos( max( min( dot(r1vers, r2vers), 1) , -1) );
 
-if norm(RIvcRFv)<1e-10
-    if rivDrfv > 0
-        phi = 0;
-    else 
-        phi = pi;
-    end
-else
-    if  RIvcRFv(3)> 0
-        phi = acos(rivDrfv);
-    else 
-        phi = 2*pi -  acos(rivDrfv);
-    end
+if  hh(3) <= 0
+    phi = 2*pi - phi;
 end
 
 L = phi + 2*pi*N_rev;

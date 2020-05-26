@@ -67,6 +67,11 @@ end
 delete(wbb)
 
 %% porkchop
+open('porkchop1.mat')
+M = ans.M;
+T = ans.T;
+t0range = ans.t0range;
+TOFrange = ans.TOFrange;
 Mfiltered = M;
 Tfiltered = T;
 
@@ -74,7 +79,7 @@ Tfiltered = T;
 for j = 1:length(t0range)
 for i = 1:length(TOFrange)
     
-    if T(i,j)>0.35
+    if T(i,j)>0.3
         Mfiltered(i,j) = NaN; 
         Tfiltered(i,j) = NaN;
     end
@@ -85,10 +90,12 @@ sgtitle(' Required propellant mass')
 s1 = pcolor( t0range, TOFrange, Mfiltered ); hold on
 s1.FaceColor = 'Interp';
 s1.EdgeColor = 'Interp';
+xlabel('Departure'), ylabel('TOF')
 colorbar
 figure()
 sgtitle(' Required trhrust')
 s2 = pcolor(t0range, TOFrange, Tfiltered ); hold on
 s2.FaceColor = 'Interp';
 s2.EdgeColor = 'Interp';
+xlabel('Departure'), ylabel('TOF')
 colorbar
