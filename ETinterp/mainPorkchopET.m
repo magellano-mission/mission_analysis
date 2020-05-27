@@ -1,18 +1,20 @@
 %% porkchop plot ET
 clear all, close all, clc
 %simulation parameters
-data_stacks.Isp = 5000;                                      % specific impulse [s]
-data_stacks.Mdry = 2800;                                      % Total Mass of the s/c [kg]
+data_stacks.Isp = 4300;                                      % specific impulse [s]
+data_stacks.Mdry = 1600;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
-
-TOFrange = (700:5:1500);
+v_inf      =          1.019932213771344;
+alpha      =          1.339209562214939;
+beta       =          2.689364771171173;
+% t0 = 9.618881860211146e+03; 
+TOFrange = (700:5:1300);
 t0 = date2mjd2000([2024 1 1 0 0 0]); 
 tf = date2mjd2000([2029 1 1 0 0 0]); 
 t0range = (t0:5:tf);
-N_rev = 2;  q =  5.656975;
+N_rev = 1;  q = 5.5;
   
-v_inf = 1.026859552871398; alpha = 0.824387529700576; beta = 0.450043526794778;
-v_infcap = 0.099909762134086; alphacap = 2.433978459314456; betacap = 2.079619340341518;
+% v_inf = 1.026859552871398; alpha = 0.824387529700576; beta = 0.450043526794778;
 
 M = zeros(length(TOFrange), length(t0range)); T = M;
 for j = 1:length(t0range)
@@ -46,11 +48,6 @@ for i = 1:length(TOFrange)
                      sin(beta)*sin(alpha)*cross(RCRRv,r1vers) + ...
                      cos(beta)*RCRRv);
 
-    %adding v_inf at Mars capture
-    v2 = v2 + v_infcap*(sin(betacap)*cos(alphacap)*r2vers + ...
-                     sin(betacap)*sin(alphacap)*cross(RCRRv,r2vers) + ...
-                     cos(betacap)*RCRRv);
-
     [ m, t ] = Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, RCRRv, RIvcRFv, v1, v2, muS, data_stacks);
     
         if isnan(m) 
@@ -68,10 +65,10 @@ delete(wbb)
 
 %% porkchop
 open('porkchop1.mat')
-M = ans.M;
-T = ans.T;
-t0range = ans.t0range;
-TOFrange = ans.TOFrange;
+% M = ans.M;
+% T = ans.T;
+% t0range = ans.t0range;
+% TOFrange = ans.TOFrange;
 Mfiltered = M;
 Tfiltered = T;
 
@@ -79,7 +76,7 @@ Tfiltered = T;
 for j = 1:length(t0range)
 for i = 1:length(TOFrange)
     
-    if T(i,j)>0.3
+    if T(i,j)>0.25
         Mfiltered(i,j) = NaN; 
         Tfiltered(i,j) = NaN;
     end

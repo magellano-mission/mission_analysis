@@ -6,8 +6,7 @@ if ~isnan(r)
 [rE0, vE0] = kep2car2(kepEarth, muS);
 [kepMars, muS] = uplanet(t0 + TOF, 4);
 [rMend, vMend] = kep2car2(kepMars, muS);
- 
-    
+  
 r1vers = rE0/norm(rE0);
 r2vers = rMend/norm(rMend) ; 
     
@@ -21,12 +20,12 @@ for i =1:length(TOFr)
     RM(i,:) = kep2car2(kepM, muS);
     REnorm(i) = norm(R1(i,:));
     RMnorm(i) = norm(RM(i,:));
-    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, RCRRv);
+    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, href);
 end
  
  
-dirt1 = cross(RCRRv , r1vers);
-dirt2 = cross(RCRRv , r2vers);
+dirt1 = cross(href , r1vers);
+dirt2 = cross(href , r2vers);
  
 vr1 = r1vers * vr(1);
 vr2 = r2vers * vr(end);
@@ -34,7 +33,7 @@ vr2 = r2vers * vr(end);
 vt1 = dirt1 * vt(1);
 vt2 = dirt2 * vt(end);
  
-v1 = vr1 + vt1 + v1perp*RCRRv; v2 = vr2 + vt2 + v2perp*RCRRv;
+v1 = vr1 + vt1 + v1perp*href; v2 = vr2 + vt2 + v2perp*href;
 v_inf1 = v1 - vE0; v_inf2 = vMend - v2;
  
 % optimization result
@@ -57,24 +56,32 @@ fprintf('max T : \t %d N\n',max(abs(T)))
 
 figure()
 sgtitle('')
-subplot(2,2,[1 2])
+% subplot(2,2,[1 2])
 rmp = plot3(RM(:,1), RM(:,2), RM(:,3),'HandleVisibility','off'); hold on,
 rep = plot3(R1(:,1), R1(:,2), R1(:,3),'HandleVisibility','off'); hold on,
 rrp = plot3(rr(:,1), rr(:,2), rr(:,3),'--','HandleVisibility','off'); hold on,
 rmpend = plot3(RM(end,1), RM(end,2), RM(end,3),'o','DisplayName','Mars @ Arrival'); hold on,
 rep1 = plot3(R1(1,1), R1(1,2), R1(1,3),'o','DisplayName','Earth @ Departure'); hold on,
 rrp1 = plot3(rr(1,1), rr(1,2), rr(1,3),'+','HandleVisibility','off'); hold on,
-rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off'); hold on, legend()
-
+rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off');hold on
+I = imread('Sun.jpg'); RI = imref2d(size(I));
+RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
+rSun = 20*almanac('Sun','Radius','kilometers','sphere');
+[X, Y, Z] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
+planet = surf(X, Y, -Z,'Edgecolor', 'none','HandleVisibility','off'); hold on
+set(planet,'FaceColor','texturemap','Cdata',I), axis equal
+legend()
 rmpend.Color = rmp.Color; rep1.Color = rep.Color; rrp1.Color = rrp.Color; rrpend.Color = rrp.Color;
-axis equal,  title('complete path')
- 
-subplot(2,2,3), 
+axis equal,  %title('$omplete path$')
+grid off, set(gca, 'visible','off'), axis equal
+
+figure()
+subplot(2,1,1), 
 plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
-hold off, title('in-plane motion')
-subplot(2,2,4), 
-plot(TOFr, RM*RCRRv), hold on, plot(TOFr, R1*RCRRv), hold on, plot(TOFr, z), 
-hold off, title('out-of-plane motion')
+hold off, title('In-plane motion')
+subplot(2,1,2), 
+plot(TOFr, RM*href), hold on, plot(TOFr, R1*href), hold on, plot(TOFr, z), 
+hold off, title('Out-of-plane motion')
 
 figure()
 sgtitle('Thrust Profile')

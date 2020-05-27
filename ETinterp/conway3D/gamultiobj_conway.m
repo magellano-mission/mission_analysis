@@ -1,7 +1,12 @@
 function y = gamultiobj_conway(x, data_stacks)
-t0 = x(1);              TOF = x(2);
-N_rev = round(x(3));      q = x(4);
-v_inf = x(5); alpha = x(6); beta = x(7);
+% t0 = x(1);              TOF = x(2);
+% N_rev = round(x(3));      q = x(4);
+% v_inf = x(5); alpha = x(6); beta = x(7);
+N_rev = round(x(1));      q = x(2);
+v_inf      =          1.019932213771344;
+alpha      =          1.339209562214939;
+beta       =          2.689364771171173;
+t0 = 9.618881860211146e+03; TOF = 9.084518115422542e+02 + 3;
 
 [kepEarth, muS] = uplanet(t0      ,3);
 [kepMars, ~]    = uplanet(t0 + TOF,4);
