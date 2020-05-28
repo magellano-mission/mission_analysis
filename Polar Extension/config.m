@@ -22,8 +22,8 @@ if data.PE == true
     data.sma_pol = data.sma + 100;      % still have to understand how to avoid 
 end                                     % sats collisions between wlk and polar
 
-% data.mask = 12;                  % minimum elevation angle [deg] for ground users
-data.mask = 0;                     % minimum elevation angle [deg] for satellites
+data.mask = 12;                  % minimum elevation angle [deg] for ground users
+% data.mask = 0;                     % minimum elevation angle [deg] for satellites
 data.trashold = 4; 
 data.perturb = false;              % false/true --> perturbations off/on
 
@@ -31,18 +31,18 @@ data.perturb = false;              % false/true --> perturbations off/on
 lon = [-180, 180];                 % [deg]  
 lat = [-90, 90];                   % [deg]
 
-% data.alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)              
+data.alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)              
 % data.alt = 1.5150e+003;          % RS altitude
-data.alt = 4.0150e+003;
+% data.alt = 4.0150e+003;
 data.N_orbits = 2.1435;            % number of orbits in the simulation
 
-% data.study = "DOP";
-data.study = "coverage";
+data.study = "DOP";
+% data.study = "coverage";
 
 if data.study == "DOP"
     disc = [180, 180];             % discretization grid
 else
-    disc = [70, 50]; 
+    disc = [90, 90]; 
 end
 
 data.lon = linspace(lon(1), lon(2), disc(1));

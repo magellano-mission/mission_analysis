@@ -43,7 +43,7 @@ if data.study == "DOP"
     subplot(3,1,1)
     T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
     tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-    plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', 'k')
+    plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', [0.1020, 0.6667, 0.74120])
     %xlabel('Time [hr]')
     ylabel('GDOP')
     legend('Curiosiry','Location','northwest')
@@ -54,8 +54,7 @@ if data.study == "DOP"
     subplot(3,1,2)
     T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
     tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-    plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', 'k')
-    xlabel('Time [hr]')
+    plot(tspan/3600, squeeze(GDOP_map(65,113,:)), 'Color', [155/255, 155/255, 155/255])
     ylabel('GDOP')
     legend('Viking 1','Location','northwest')
     grid minor
@@ -65,7 +64,7 @@ if data.study == "DOP"
     subplot(3,1,3)
     T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
     tspan = linspace(0, data.N_orbits*T_orb, data.NT);
-    plot(tspan/3600, squeeze(GDOP_map(8,10,:)), 'Color', 'k')
+    plot(tspan/3600, squeeze(GDOP_map(8,10,:)), 'Color', [0.9490,0.4745,0.3137])
     xlabel('Time [hr]')
     ylabel('GDOP')
     legend('Skipper','Location','northwest')
