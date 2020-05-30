@@ -67,21 +67,20 @@ rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off');hol
 I = imread('Sun.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
 rSun = 20*almanac('Sun','Radius','kilometers','sphere');
-[X, Y, Z] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
-planet = surf(X, Y, -Z,'Edgecolor', 'none','HandleVisibility','off'); hold on
+[XSun, YSun, ZSun] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
+planet = surf(XSun, YSun, -ZSun,'Edgecolor', 'none','HandleVisibility','off'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 legend()
 rmpend.Color = rmp.Color; rep1.Color = rep.Color; rrp1.Color = rrp.Color; rrpend.Color = rrp.Color;
 axis equal,  %title('$omplete path$')
-grid off, set(gca, 'visible','off'), axis equal
 
 figure()
 subplot(2,1,1), 
 plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
-hold off, title('In-plane motion')
+hold off, title('In-plane motion'), xlabel('TOF [days]'), ylabel('r [km]')
 subplot(2,1,2), 
 plot(TOFr, RM*href), hold on, plot(TOFr, R1*href), hold on, plot(TOFr, z), 
-hold off, title('Out-of-plane motion')
+hold off, title('Out-of-plane motion'), xlabel('TOF [days]'), ylabel('z [km]')
 
 figure()
 sgtitle('Thrust Profile')

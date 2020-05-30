@@ -1,7 +1,7 @@
 %Conway-based approach
  
 %definition of parameters
-% close all, clear, clc
+close all, clear, clc
 % Figure Initialization    
 run('PlotsInitialization.m')
 
@@ -50,22 +50,22 @@ options = optimoptions('gamultiobj', 'Display', 'Iter', ...
 feval(:,1) = feval(:,1)/10000;
 %% solution choice 
 data_stacks.Tmax = 0.2; % N
-% chosen = paretoplot(SOL, feval,data_stacks); %min TOF chosen
+chosen = paretoplot(SOL, feval,data_stacks); %min TOF chosen
 % chosen = length(feval) %last value chosen
 % chosen = find(feval(:,1)==min(feval(:,1))) %min T chosen
 % chosen = find(feval(:,2)==min(feval(:,2))) %min T chosen
-data_stacks.n_int = 50;
-% t0         =          SOL(chosen,1); 
-% TOF        =          SOL(chosen,2);
-% N_rev      =    round(SOL(chosen,3));
-% q          =          SOL(chosen,4);
-% v_inf      =          SOL(chosen,5);
-% alpha      =          SOL(chosen,6);
-% beta       =          SOL(chosen,7);
-v_inf      =          1.357743849128209;
-alpha      =          1.525909238312854;
-beta       =          2.228132410825825;
-t0 = 9.619974167516721e+03; TOF = 8.361779091278747e+02; q = 5.5; N_rev = 1;
+data_stacks.n_int = 100;
+t0         =          SOL(chosen,1); 
+TOF        =          SOL(chosen,2);
+N_rev      =    round(SOL(chosen,3));
+q          =          SOL(chosen,4);
+v_inf      =          SOL(chosen,5);
+alpha      =          SOL(chosen,6);
+beta       =          SOL(chosen,7);
+% v_inf      =          1.357743849128209;
+% alpha      =          1.525909238312854;
+% beta       =          2.228132410825825;
+% t0 = 9.619974167516721e+03; TOF = 8.361779091278747e+02;
 % 
 % %% starting from NS departure
 % v_inf      =          1.019932213771344;
@@ -109,6 +109,11 @@ v1 = v1 + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
 
 if ~isnan(r) 
     X0 = [r(1), TH(1), z(1), vr(1), th_dot(1), vz(1), m(1)];
+    %adimensionalization
+    X0(1) = X0(1) / DU;
+    X0(3) = X0(3) / DU;
+    X0(4) = X0(4) / DU*TU;
+    X0(4) = X0(4) / DU*TU;
     X = zeros(length(TH), 7);
     X(1,:) = X0;
     %RK4 forward integration
