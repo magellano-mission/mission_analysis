@@ -1,7 +1,7 @@
 %Conway-based approach
 
 %definition of parameters
-close all, clear, clc
+% close all, clear, clc
 % Figure Initialization    
 load('MagellanoColorMap.mat');
 DefaultOrderColor = get(0, 'DefaultAxesColorOrder');
@@ -22,7 +22,7 @@ set(0, 'DefaultAxesXGrid', 'on')
 set(0, 'DefaultAxesYGrid', 'on')
 set(0, 'defaultLegendInterpreter', 'latex');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
-
+%%
 %definition of interplanetary arc
 TOF = 878;%[days]
 N_rev = 1; %max 2-3 for Conway hp on convergence

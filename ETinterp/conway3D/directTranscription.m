@@ -3,13 +3,13 @@
 options = optimoptions('fmincon','Display','iter', ... %                        'MaxFunctionEvaluations',1e4, ...
                         'Algorithm','interior-point', ...
                         'MaxIter',50000, ...
-                        'MaxFunEvals', 50000);
+                        'MaxFunEvals', 500000);
 
 data = data_stacks;
 N = data.n_int;
 DU = astroConstants(2);
 TU = (DU^3/muS).^0.5;
-
+MU = data.Mdry;
 XX0 = zeros(1, N*10);
 Xad = zeros(N,7); Xd = Xad;
 %adimensionalization of initial conditions
@@ -19,22 +19,22 @@ Xad(:,3) = X(:,3)/DU;
 Xad(:,4) = X(:,4)/DU*TU; 
 Xad(:,5) = X(:,5)*TU; 
 Xad(:,6) = X(:,6)/DU*TU;
-Xad(:,7) = X(:,7);
+Xad(:,7) = X(:,7)/MU;
 
 ubeta = atan(T_outplane./T_inplane);
 ualpha = gamma;
 
 data.xi = Xad(1,:);
 data.xf = Xad(end,:);
-data.time = timead;
 data.muS = muS;   
 
-Xprop = zeros(N, 7);
-Xprop(1,:) = Xad(1,:); %first value equal
+Xpropad = zeros(N, 7);
+Xpropad(1,:) = Xad(1,:); %first value equal
 timead = time/TU;
+data.time = timead;
     %RK4 forward integration (in each interval of delta t)
     for k = 1:N-1
-        xx = Xprop(k,:);
+        xx = Xpropad(k,:);
 %         xx = x(k,:);
 
         hhh = timead(k+1) - timead(k);
@@ -44,43 +44,46 @@ timead = time/TU;
         K4 = polar_ad(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
 
 %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-        Xprop(k+1,:) = Xprop(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
+        Xpropad(k+1,:) = Xpropad(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
     end
-Xd(:,1) = Xprop(:,1)*DU;
-Xd(:,2) = Xprop(:,2); %already adimensional
-Xd(:,3) = Xprop(:,3)*DU;
-Xd(:,4) = Xprop(:,4)*DU/TU; 
-Xd(:,5) = Xprop(:,5)/TU; 
-Xd(:,6) = Xprop(:,6)*DU/TU;
-Xd(:,7) = Xprop(:,7);
+Xd(:,1) = Xpropad(:,1)*DU;
+Xd(:,2) = Xpropad(:,2); %already adimensional
+Xd(:,3) = Xpropad(:,3)*DU;
+Xd(:,4) = Xpropad(:,4)*DU/TU; 
+Xd(:,5) = Xpropad(:,5)/TU; 
+Xd(:,6) = Xpropad(:,6)*DU/TU;
+Xd(:,7) = Xpropad(:,7)*MU;
 
 figure()
-subplot(7,2,1), plot(Xad(:,1)), subplot(7,2,2), plot(Xprop(:,1))
-subplot(7,2,3), plot(Xad(:,2)), subplot(7,2,4), plot(Xprop(:,2))
-subplot(7,2,5), plot(Xad(:,3)), subplot(7,2,6), plot(Xprop(:,3))
-subplot(7,2,7), plot(Xad(:,4)), subplot(7,2,8), plot(Xprop(:,4))
-subplot(7,2,9), plot(Xad(:,5)), subplot(7,2,10), plot(Xprop(:,5))
-subplot(7,2,11), plot(Xad(:,6)), subplot(7,2,12), plot(Xprop(:,6))
-subplot(7,2,13), plot(Xad(:,7)), subplot(7,2,14), plot(Xprop(:,7))
+subplot(7,2,1), plot(Xad(:,1)-Xpropad(:,1))
+subplot(7,2,3), plot(Xad(:,2)-Xpropad(:,2))
+subplot(7,2,5), plot(Xad(:,3)-Xpropad(:,3))
+subplot(7,2,7), plot(Xad(:,4)-Xpropad(:,4))
+subplot(7,2,9), plot(Xad(:,5)-Xpropad(:,5))
+subplot(7,2,11), plot(Xad(:,6)-Xpropad(:,6))
+subplot(7,2,13), plot(Xad(:,7)-Xpropad(:,7))
 
 %already adimensional
-data.xi = Xad(1,:);
-data.xf = Xad(end,:);
+data.xi = Xpropad(1,:);
+data.xf = Xpropad(end,:);
 %% Adimensionalization of variables
-ubeta = acos((T_inplane)./(T));
-figure(),subplot(4,1,1), plot(rad2deg(ubeta))
-subplot(4,1,2), plot(T_inplane),
-subplot(4,1,3), plot(T_outplane),
-subplot(4,1,4), plot(T)
+ubeta = atan( max( min( (T_outplane )./(T_inplane), 1) , -1) );
+
+figure(),subplot(5,1,1), plot(rad2deg(ubeta)), title('Beta'), grid on
+subplot(5,1,2), plot(T_inplane), title('T inplane'), grid on
+subplot(5,1,3), plot(T_outplane), title('T outplane'), grid on
+subplot(5,1,4), plot(T), title('T'), grid on
 ualpha = gamma;
 %definition of the initial guess (sub-optimal conway solution)
 for ii = 1:N
-    XX0((ii-1)*10 +1: (ii-1)*10+10) = [Xprop(ii,:) T(ii) ualpha(ii) ubeta(ii)];
+    XX0((ii-1)*10 +1: (ii-1)*10+10) = [Xpropad(ii,:) T(ii) ualpha(ii) ubeta(ii)];
 end
 %%
 %definition of upper boundary and lower boundary
-[LB, UB] = LBUB(Xad, data);
-[c, ceq] = EoM(XX0, data);
+[LB, UB] = LBUB(XX0, data);
+
+find(XX0 < LB)
+% [c, ceq] = EoM(XX0, data);
 %%
 [XSOL,fval,exitflag,output,lambda,grad,hessian] = fmincon(@DTmethod, XX0,[],[],[],[],LB,UB,@EoM, options, data);
 %%
@@ -97,7 +100,7 @@ for ii = 1:length(TH)
      XHS(ii,4) = XHS(ii,4) * DU/TU;
      XHS(ii,5) = XHS(ii,5) / TU;
      XHS(ii,6) = XHS(ii,6) * DU/TU;
-     XHS(ii,7) = XHS(ii,7) / TU;
+     XHS(ii,7) = XHS(ii,7) * MU;
     [THS(ii)] = XSOL((ii-1)*10+8);
     [alphaHS(ii)] = XSOL((ii-1)*10+9);
     [betaHS(ii)] = XSOL((ii-1)*10+10);
@@ -117,15 +120,17 @@ function J = DTmethod(X, data)
     N =data.n_int;
     m = zeros(1, N);
     x = zeros(N,7);
-    T = m; alpha = m; beta = m;
-    time = data.time;
+    T = m;
+        time = data.time;
+% alpha = m; beta = m;
+
 
     for k=1:N
         x(k,:) = X((k-1)*10 + 1:(k-1)*10+7);
         m(k) = x(k,7);
         T(k) = X((k-1)*10+8); 
-        alpha(k) = X((k-1)*10+9);
-        beta(k) = X((k-1)*10+10);
+%         alpha(k) = X((k-1)*10+9);
+%         beta(k) = X((k-1)*10+10);
     end
     
     J = 0;
@@ -156,23 +161,25 @@ function [c, ceq] = EoM(X, data)
         x(k,:) = X((k-1)*10 + 1:(k-1)*10+7);
         % dimensional variables
         T(k) = X((k-1)*10+8); 
-        ualpha(k) = X((k-1)*10+9); ubeta(k) = X((k-1)*10+10); 
+        ualpha(k) = X((k-1)*10+9);
+        ubeta(k) = X((k-1)*10+10); 
+        
         m(k) = x(k,7);
     end
-%  
-%     %initial and final states
+ 
+    %initial and final states
     xi = data.xi;
     xf = data.xf;
     BCi = xi(1:6) - x(1,1:6);
     BCf = xf(1:6) - x(end,1:6);
-%     
+    
     Xprop = zeros(N, 7);
     Xprop(1,:) = x(1,:); %first value equal
     
-    %RK4 forward integration (in each interval of delta t)
+    %RK4 backward integration (in each interval of delta t)
     for k = 1:N-1
-        xx = Xprop(k,:);
-%         xx = x(k,:);
+%         xx = Xprop(k,:);
+        xx = x(k,:);
 
         hhh = time(k+1) - time(k);
         K1 = polar_ad(time(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
@@ -180,10 +187,22 @@ function [c, ceq] = EoM(X, data)
         K3 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
         K4 = polar_ad(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
 
-%         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
+%         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
     end
-
+%     for k = N:-1:2
+%         xx = Xprop(k,:);
+% %         xx = x(k,:);
+% 
+%         hhh = time(k) - time(k-1);
+%         K1 = polar_ad(time(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
+%         K2 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
+%         K3 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
+%         K4 = polar_ad(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k-1), ubeta(k-1), muS, data);    
+% 
+% %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
+%         Xprop(k-1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
+%     end
     csi = zeros(1, (N-1)*7);
     %definition of the initial guess (sub-optimal conway solution)
     for ii = 1:N-1
@@ -218,39 +237,43 @@ function [c, ceq] = EoM(X, data)
 %     c = [];
 end
 
-function [lb, ub] = LBUB(X0, data)
+function [lb, ub] = LBUB(XX0, data)
 %X0 vector of propagated ODE45
     N = data.n_int;
     T_lb = 0;
     T_ub = data.Tmax;
-    alpha_lb = -pi/2;
-    alpha_ub = pi/2;
-    beta_lb = 0;
-    beta_ub = 2*pi;
+    alpha_lb = 0;
+    alpha_ub = 2*pi;
+    beta_lb = -pi/2;
+    beta_ub = pi/2;
     
     %limits definition
     ub = zeros(1,10*N);
     lb = zeros(1,10*N);
-
+    
     %r
-    r_ub = max(X0(:,1)) + 0.2*abs(max(X0(:,1)));
-    r_lb = min(X0(:,1)) - 0.2*abs(min(X0(:,1)));
+    r_ub = 2;
+    r_lb = 0.8;
 
     %theta
     th_ub = Inf;
     th_lb = 0;
     %z
-    z_ub =  max(X0(:,3)) + 0.2*abs(max(X0(:,3)));
-    z_lb =  min(X0(:,3)) - 0.2*abs(min(X0(:,3)));
+    z_ub =  0.05;
+    z_lb =  -0.05;
     %vr
-    vr_ub = max(X0(:,4)) + 0.2*abs(max(X0(:,4)));
-    vr_lb = min(X0(:,4)) - 0.2*abs(min(X0(:,4)));
+    vr_ub = 2;
+    vr_lb = -2;
     %theta_dot
     thd_ub = Inf;
     thd_lb = -Inf;
     %vz
-    vz_ub = max(X0(:,6)) + 0.2*abs(max(X0(:,6)));
-    vz_lb = min(X0(:,6)) - 0.2*abs(min(X0(:,6)));
+    vz_ub = 1;
+    vz_lb = -1;
+    
+    %
+    m_ub = XX0(7)*1.1;
+    m_lb = 0.98;
     
     for k = 2:N-1
         ub((k-1)*10 +1) = r_ub;
@@ -259,7 +282,7 @@ function [lb, ub] = LBUB(X0, data)
         ub((k-1)*10 +4) = vr_ub;
         ub((k-1)*10 +5) = thd_ub;
         ub((k-1)*10 +6) = vz_ub;
-        ub((k-1)*10 +7) = X0(1,7);
+        ub((k-1)*10 +7) = m_ub;
         ub((k-1)*10 +8) = T_ub;
         ub((k-1)*10 +9) = alpha_ub;
         ub((k-1)*10 +10) = beta_ub;
@@ -270,21 +293,25 @@ function [lb, ub] = LBUB(X0, data)
         lb((k-1)*10 +4) = vr_lb;
         lb((k-1)*10 +5) = thd_lb;
         lb((k-1)*10 +6) = vz_lb;
-        lb((k-1)*10 +7) = data.Mdry;
+        lb((k-1)*10 +7) = m_lb;%data.Mdry;
         lb((k-1)*10 +8) = T_lb;
         lb((k-1)*10 +9) = alpha_lb;
         lb((k-1)*10 +10) = beta_lb;
     end
     
     %Initial condition
-    ub(1:10) = X0(1:10); 
-    ub(8) = 0; ub(9) = alpha_ub; ub(10) = beta_ub;
-    lb(1:10) = X0(1:10); 
+    ub(1:10) = XX0(1:10); 
+    ub(8) = T_ub; ub(9) = alpha_ub; ub(10) = beta_ub;
+    ub(7) = m_ub;
+    lb(1:10) = XX0(1:10); 
+    lb(7) = m_lb;
     lb(8) = 0; lb(9) = alpha_lb; lb(10) = beta_lb;
     
     %Final condition
-    ub(end-9:end) = X0(end-9:end); 
-    ub(end-2) = 0; ub(end-1) = alpha_ub; ub(end) = beta_ub;
-    lb(end-9:end) = X0(end-9:end);
-    lb(end-2) = 0; lb(end-1) = alpha_lb; lb(end) = beta_lb;
+    ub(end-9:end) = XX0(end-9:end);
+    ub(end-2)=T_ub; ub(end-1)=alpha_ub; ub(end)=beta_ub;
+    ub(end-3) = m_ub;
+    lb(end-9:end) = XX0(end-9:end);
+    lb(end-2)=0; lb(end-1)=alpha_lb; lb(end)=beta_lb;
+    lb(end-3) = m_lb;
 end
