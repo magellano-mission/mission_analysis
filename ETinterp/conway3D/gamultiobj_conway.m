@@ -1,14 +1,24 @@
 function y = gamultiobj_conway(x, data_stacks)
-t0 = x(1);              TOF = x(2);
-N_rev = round(x(3));      q = x(4);
-v_inf = x(5); alpha = x(6); beta = x(7);
+%variables
+% t0 = x(1);              TOF = x(2);
+% N_rev = round(x(3));      q = x(4);
+% v_inf = x(5); alpha = x(6); beta = x(7);
+
+%variables
+% %arrival at the date of the first plus 6 months
+% tf = 9.619974167516721e+03 + 8.361779091278747e+02 + 360;  TOF = x(1);
+% t0 = tf - TOF;
+% N_rev = round(x(2));      q = x(3);
+% v_inf = x(4); alpha = x(5); beta = x(6);
+
+%variables
 % N_rev = round(x(1));      q = x(2);
 % v_inf      =          1.019932213771344;
 % alpha      =          1.339209562214939;
 % beta       =          2.689364771171173;
-% t0 = 9.618881860211146e+03; TOF = 9.084518115422542e+02 + 3;
+% t0 = 9.618881860211146e+03 + 6; TOF = 9.084518115422542e+02;
 
-[kepEarth, muS] = uplanet(t0      ,3);
+[kepEarth, muS] = uplanet(t0,3);
 [kepMars, ~]    = uplanet(t0 + TOF,4);
 
 [R1, v1] = kep2car2(kepEarth, muS); %km....

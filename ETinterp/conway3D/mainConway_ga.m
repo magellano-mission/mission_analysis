@@ -1,34 +1,49 @@
 %Conway-based approach
- 
-%definition of parameters
-% close all, clear, clc
-% Figure Initialization    
-run('PlotsInitialization.m')
-
+run('MatlabSetup.m')
+%% SPACECRAFT CHARACTERISTICS
 data_stacks.Isp = 4300;                                       % specific impulse [s]
 data_stacks.Mdry = 1600;                                      % Total Mass of the s/c [kg]
 data_stacks.n_int = 1000;
-%% %%%%
+%% BOUNDARIES
 % t0, TOF, N_rev, q, v_inf, alpha, beta, v_infcap, alphacap, betacap 
 %%%%%
 %lower boundary
-lb = zeros(1,7); ub = lb;
-lb(1) = date2mjd2000([2024 1 1 0 0 0]); %t0
-lb(2) = 600; %TOF
-lb(3) = 0; %N_rev
-lb(4) = 3;% q
-lb(5) = 0;% v_inf dep
-lb(6) = 0;% alpha dep
-lb(7) = 0;% beta dep
-% lb(1) = 0; lb(2) = 3;
+% lb = zeros(1,7); ub = lb;
+% lb(1) = date2mjd2000([2024 1 1 0 0 0]); %t0
+% lb(2) = 600; %TOF
+% lb(3) = 0; %N_rev
+% lb(4) = 3;% q
+% lb(5) = 0;% v_inf dep
+% lb(6) = 0;% alpha dep
+% lb(7) = 0;% beta dep
 %upper boundary 
-ub(1) = date2mjd2000([2027 1 1 0 0 0]);
-ub(2) = 1000;
-ub(3) = 2;
-ub(4) = 8;
-ub(5) = sqrt(9); %v_inf dep
-ub(6) = pi;% alpha dep
-ub(7) = pi;% beta dep
+% ub(1) = date2mjd2000([2027 1 1 0 0 0]);
+% ub(2) = 1000;
+% ub(3) = 2;
+% ub(4) = 8;
+% ub(5) = sqrt(9); %v_inf dep
+% ub(6) = pi;% alpha dep
+% ub(7) = pi;% beta dep
+
+%lower boundary
+lb = zeros(1,6); ub = lb;
+lb(1) = 600; %TOF
+lb(2) = 0; %N_rev
+lb(3) = 3;% q
+lb(4) = 0;% v_inf dep
+lb(5) = 0;% alpha dep
+lb(6) = 0;% beta dep
+%upper boundary 
+ub(1) = 1000;
+ub(2) = 2;
+ub(3) = 8;
+ub(4) = sqrt(9); %v_inf dep
+ub(5) = pi;% alpha dep
+ub(6) = pi;% beta dep
+
+%lower boundary
+% lb(1) = 0; lb(2) = 3;
+%upper boundary
 % ub(1) = 3; ub(2) = 8;
  
 Bound = [lb; ub];
@@ -39,22 +54,25 @@ Bound = [lb; ub];
 %                        'MaxGenerations', 200, ...
 %                        'UseParallel', true, 'PopInitRange',Bound);% 'InitialPopulationMatrix', optim1);
 % [SOL,feval,exitflag] = ga(@(x) ga_conway(x,data_stacks), 10,[],[],[],[],lb,ub,[],[],options);
-
+%% GENETIC ALGORITHM
 % %%multiobj optimization of thrust and mass
 options = optimoptions('gamultiobj', 'Display', 'Iter', ...
                        'PopulationSize', 200, 'StallGenLimit', 200, ... %          
                        'MaxGenerations', 200, ...
                        'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
-[SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway(x,data_stacks), 7,[],[],[],[],lb,ub,[],options);
+[SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway(x,data_stacks), 6,[],[],[],[],lb,ub,[],options);
 feval(:,1) = feval(:,1)/10000;
-%% solution choice 
+%% SOLUTIONS
 data_stacks.Tmax = 0.2; % N
-% chosen = paretoplot(SOL, feval,data_stacks); %min TOF chosen
+chosen = paretoplot(SOL, feval,data_stacks); %min TOF chosen
 % chosen = length(feval) %last value chosen
-% chosen = find(feval(:,1)==min(feval(:,1))) %min T chosen
-% chosen = find(feval(:,2)==min(feval(:,2))) %min T chosen
-data_stacks.n_int = 50;
+chosen = find(feval(:,1)==min(feval(:,1))) %min T chosen
+% chosen = find(feval(:,2)==min(feval(:,2))) %min mP chosen
+% chosen = 1
+%%
+data_stacks.n_int = 1000;
+%results
 % t0         =          SOL(chosen,1); 
 % TOF        =          SOL(chosen,2);
 % N_rev      =    round(SOL(chosen,3));
@@ -62,24 +80,50 @@ data_stacks.n_int = 50;
 % v_inf      =          SOL(chosen,5);
 % alpha      =          SOL(chosen,6);
 % beta       =          SOL(chosen,7);
-v_inf      =          1.357743849128209;
-alpha      =          1.525909238312854;
-beta       =          2.228132410825825;
-t0 = 9.619974167516721e+03; TOF = 8.361779091278747e+02; q = 5.5; N_rev = 1;
-% 
+
+% %results NS2
+% TOF        =          SOL(chosen,1);
+% N_rev      =    round(SOL(chosen,2));
+% q          =          SOL(chosen,3);
+% v_inf      =          SOL(chosen,4);
+% alpha      =          SOL(chosen,5);
+% beta       =          SOL(chosen,6);
+% tf = 9.619974167516721e+03 + 8.361779091278747e+02 + 180; 
+% t0 = tf - TOF;
+
+% %results NS3
+% TOF        =          SOL(chosen,1);
+% N_rev      =    round(SOL(chosen,2));
+% q          =          SOL(chosen,3);
+% v_inf      =          SOL(chosen,4);
+% alpha      =          SOL(chosen,5);
+% beta       =          SOL(chosen,6);
+% tf = 9.619974167516721e+03 + 8.361779091278747e+02 + 360; 
+% t0 = tf - TOF;
+
+%results NS (presentation)
+v_inf      =          1.019932213771344;
+alpha      =          1.339209562214939;
+beta       =          2.689364771171173;
+t0 = 9.618881860211146e+03; TOF = 9.084518115422542e+02;
+q = 5.140866; N_rev = 1;
+
 % %% starting from NS departure
 % v_inf      =          1.019932213771344;
 % alpha      =          1.339209562214939;
 % beta       =          2.689364771171173;
-% t0 = 9.618881860211146e+03; TOF = 9.084518115422542e+02 + 6;
+% 
+% N_rev      =    round(SOL(chosen,1));
+% q          =          SOL(chosen,2);
+% % N_rev = 1;
+% % q = 6.652955;
+% t0 = 9.618881860211146e+03;
+%TOF = 9.084518115422542e+02;
 % % 
-% % N_rev      =    round(SOL(chosen,1));
-% % q          =          SOL(chosen,2);
-% N_rev = 1;
-% q = 6.652955;
+
 %% propagation to check that the computed states are compliant
 
-[kepEarth, muS] = uplanet(t0      ,3);
+[kepEarth, muS] = uplanet(t0,3);
 [kepMars, ~]    = uplanet(t0 + TOF,4);
  
 [R1, v1] = kep2car2(kepEarth, muS); %km....
@@ -128,15 +172,27 @@ TX_inplane = acc_inplane .*X(:,7)' * 1000;
 TX_outplane = acc_out .*X(:,7)' * 1000;
 TX = (TX_inplane.^2 + TX_outplane.^2).^0.5;
 figure()
-sgtitle('states validation')
-subplot(8,2,1), plot(TOFr, r,':'),       subplot(8,2,2),plot(TOFr, X(:,1),':'), hold on
-subplot(8,2,3), plot(TOFr, TH, ':'),     subplot(8,2,4), plot(TOFr, X(:,2),':'), hold on
-subplot(8,2,5), plot(TOFr, z, ':'),      subplot(8,2,6), plot(TOFr, X(:,3),':'), hold on
-subplot(8,2,7), plot(TOFr, vr, ':'),     subplot(8,2,8), plot(TOFr, X(:,4), ':'), hold on
-subplot(8,2,9), plot(TOFr, th_dot, ':'), subplot(8,2,10), plot(TOFr, X(:,5), ':'), hold on
-subplot(8,2,11), plot(TOFr, vz, ':'),    subplot(8,2,12), plot(TOFr, X(:,6), ':'), hold on
-subplot(8,2,13), plot(TOFr, m, ':'),     subplot(8,2,14), plot(TOFr, X(:,7), ':'), hold on
-subplot(8,2,15), plot(TOFr, T, ':'),     subplot(8,2,16), plot(TOFr, TX, ':'), hold on
+sgtitle('States validation - Dynamics states')
+subplot(6,2,1), plot(TOFr, r,'k:'), ylabel('r [km]'), title('Conway Solution')
+subplot(6,2,2), plot(TOFr, X(:,1),'k:'), ylabel('r [km]'), title('Propagated Solution')
+subplot(6,2,3), plot(TOFr, TH, 'k:'), ylabel('$\theta$ [km]'), 
+subplot(6,2,4), plot(TOFr, X(:,2),'k:'), ylabel('$\theta$ [km]')
+subplot(6,2,5), plot(TOFr, z, 'k:'),  ylabel('z[km]')
+subplot(6,2,6), plot(TOFr, X(:,3),'k:'), ylabel('z[km]')
+subplot(6,2,7), plot(TOFr, vr, 'k:'), ylabel('$v_r$ [km]')
+subplot(6,2,8), plot(TOFr, X(:,4), 'k:'), ylabel('$v_r$ [km]')
+subplot(6,2,9), plot(TOFr, th_dot, 'k:'),  ylabel('$\dot{\theta}$ [km]')
+subplot(6,2,10), plot(TOFr, X(:,5), 'k:'), ylabel('$\dot{\theta}$[km]')
+subplot(6,2,11), plot(TOFr, vz, 'k:'),  xlabel('TOFr [days]'), ylabel('$v_z$ [km]') 
+subplot(6,2,12), plot(TOFr, X(:,6), 'k:'),xlabel('TOFr [days]'), ylabel('$v_z$ [km]')
+
+figure(), sgtitle('States validation - Mass and Thrust')
+subplot(2,2,1), plot(TOFr, m, 'k:'), xlabel('TOF [days]'), ylabel('Spacecraft Mass [kg]')
+title('Conway Solution'), 
+subplot(2,2,2), plot(TOFr, X(:,7), 'k:'), xlabel('TOF [days]'), ylabel('Spacecraft Mass [kg]')
+title('Propagated Solution')
+subplot(2,2,3), plot(TOFr, T, 'k:'),  xlabel('TOF [days]'), ylabel('Thrust [N]')
+subplot(2,2,4), plot(TOFr, TX, 'k:'),  xlabel('TOF [days]'), ylabel('Thrust [N]')
 else
     fprintf('No real solution coming from Conway algorithm \n')
 end
@@ -162,6 +218,6 @@ for i = 1:length(feval)
 end
 chosenT = find(feval(:,1) == min(feval(:,1)));
 plot(feval(chosen,1), feval(chosen,2),'go', 'DisplayName',strcat('Min TOF (', num2str(SOL(chosen,2)),'days )')); hold on
-plot(feval(chosenT,1), feval(chosenT,2),'bo', 'DisplayName',strcat('Min(max(T(t))) (', num2str(feval(chosenT,1)),'N )')); hold off
-xline(data.Tmax,'r','DisplayName','Max Thrust'), xlabel('max(|T(t)|) [N]'), ylabel('m_P [kg]') , legend()
+plot(feval(chosenT,1), feval(chosenT,2),'bo', 'DisplayName',strcat('Min ( max(T(t))) (', num2str(feval(chosenT,1)),'N )')); hold off
+xline(data.Tmax,'r','DisplayName','Max Thrust < 0.2 N'), xlabel('max(|T(t)|) [N]'), ylabel('m_P [kg]') , legend()
 end

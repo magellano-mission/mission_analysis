@@ -1,4 +1,6 @@
 %conway 3d plots
+DU = astroConstants(2);
+TU = (DU^3/muS)^0.5;
 
 if ~isnan(r)   
     
@@ -57,60 +59,68 @@ fprintf('max T : \t %d N\n',max(abs(T)))
 figure()
 sgtitle('')
 % subplot(2,2,[1 2])
-rmp = plot3(RM(:,1), RM(:,2), RM(:,3),'HandleVisibility','off'); hold on,
-rep = plot3(R1(:,1), R1(:,2), R1(:,3),'HandleVisibility','off'); hold on,
-rrp = plot3(rr(:,1), rr(:,2), rr(:,3),'--','HandleVisibility','off'); hold on,
-rmpend = plot3(RM(end,1), RM(end,2), RM(end,3),'o','DisplayName','Mars @ Arrival'); hold on,
-rep1 = plot3(R1(1,1), R1(1,2), R1(1,3),'o','DisplayName','Earth @ Departure'); hold on,
-rrp1 = plot3(rr(1,1), rr(1,2), rr(1,3),'+','HandleVisibility','off'); hold on,
-rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off');hold on
+rmp = plot3(RM(:,1)/DU, RM(:,2)/DU, RM(:,3)/DU,'HandleVisibility','off'); hold on,
+rep = plot3(R1(:,1)/DU, R1(:,2)/DU, R1(:,3)/DU,'HandleVisibility','off'); hold on,
+rrp = plot3(rr(:,1)/DU, rr(:,2)/DU, rr(:,3)/DU,'--','HandleVisibility','off'); hold on,
+rmpend = plot3(RM(end,1)/DU, RM(end,2)/DU, RM(end,3)/DU,'o','DisplayName','Mars @ Arrival'); hold on,
+rep1 = plot3(R1(1,1)/DU, R1(1,2)/DU, R1(1,3)/DU,'o','DisplayName','Earth @ Departure'); hold on,
+rrp1 = plot3(rr(1,1)/DU, rr(1,2)/DU, rr(1,3)/DU,'+','HandleVisibility','off'); hold on,
+rrpend = plot3(rr(end,1)/DU, rr(end,2)/DU, rr(end,3)/DU,'+','HandleVisibility','off');hold on
 I = imread('Sun.jpg'); RI = imref2d(size(I));
 RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
 rSun = 20*almanac('Sun','Radius','kilometers','sphere');
 [XSun, YSun, ZSun] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
-planet = surf(XSun, YSun, -ZSun,'Edgecolor', 'none','HandleVisibility','off'); hold on
+planet = surf(XSun/DU, YSun/DU, -ZSun/DU,'Edgecolor', 'none','HandleVisibility','off'); hold on
 set(planet,'FaceColor','texturemap','Cdata',I), axis equal
 legend()
 rmpend.Color = rmp.Color; rep1.Color = rep.Color; rrp1.Color = rrp.Color; rrpend.Color = rrp.Color;
-axis equal,  %title('$omplete path$')
+axis equal,  xlabel('x [AU]'), ylabel('y [AU]'), zlabel('z [AU]')
 
 figure()
 subplot(2,1,1), 
-plot(TOFr, RMnorm), hold on, plot(TOFr, REnorm), hold on, plot(TOFr, r), 
-hold off, title('In-plane motion'), xlabel('TOF [days]'), ylabel('r [km]')
+cM = plot(TOFr, RMnorm/DU,'Displayname','$r_{Mars}$'); hold on, 
+cE = plot(TOFr, REnorm/DU, 'Displayname','$r_{Earth}$'); hold on, 
+cS = plot(TOFr, r/DU,'Displayname','$r_{Mars}$');  hold off, 
+title('In-plane motion'), xlabel('TOF [days]'), ylabel('r [AU]')
 subplot(2,1,2), 
-plot(TOFr, RM*href), hold on, plot(TOFr, R1*href), hold on, plot(TOFr, z), 
-hold off, title('Out-of-plane motion'), xlabel('TOF [days]'), ylabel('z [km]')
+plot(TOFr, RM*href/DU), hold on, plot(TOFr, R1*href/DU), hold on, plot(TOFr, z/DU), 
+hold off, title('Out-of-plane motion'), xlabel('TOF [days]'), ylabel('z [AU]')
 
 figure()
 sgtitle('Thrust Profile')
-subplot(5,2,1), plot(TOFr, acc_inplane), title('a_{inplane}')
-subplot(5,2,2), plot(TOFr, acc_out), title('a_{outplane}')
-subplot(5,2,3), plot(TOFr, T_inplane), title('T_{inplane}')
-subplot(5,2,4), plot(TOFr, T_outplane), title('T_{outplane}')
-subplot(5,2,[5 6]), plot(TOFr, acc), title('a_{tot}')
-subplot(5,2,[7 8]), plot(TOFr, T), title('T')
-subplot(5,2,[9 10]), plot(TOFr, m), title('m')
+subplot(5,2,1), plot(TOFr, acc_inplane), title('$a_{inplane}$')
+subplot(5,2,2), plot(TOFr, acc_out), title('$a_{outplane}$')
+subplot(5,2,3), plot(TOFr, T_inplane), title('$T_{inplane}$')
+subplot(5,2,4), plot(TOFr, T_outplane), title('$T_{outplane}$')
+subplot(5,2,[5 6]), plot(TOFr, acc), title('$a_{tot}$')
+subplot(5,2,[7 8]), plot(TOFr, T), title('$T$')
+subplot(5,2,[9 10]), plot(TOFr, m), title('$m$')
 
 figure()
-sgtitle('Flight path angle')
-plot(TOFr, gamma,'DisplayName','spacecraft'), hold on 
-yline(gamma1,'DisplayName','Departure'); hold on, yline(gamma2,'DisplayName','Mars');
-legend(),
+sgtitle('Boundary Conditions')
+subplot(2,1,1),
+gs = plot(TOFr, rad2deg(gamma),'DisplayName','spacecraft'); hold on 
+ge = yline(rad2deg(gamma1),'DisplayName','Earth Departure'); hold on, 
+gm = yline(rad2deg(gamma2),'DisplayName','Mars Arrival'); hold off
+gs.Color = cS.Color;
+gm.Color = cM.Color;
+ge.Color = cE.Color;
+legend(), title('Flight path angle')
 
-figure()
-plot(TOFr, vt,'DisplayName','$v_{t}$'), hold on
-yline(norm(v1tra),'DisplayName','$v^E_\theta$'); hold on, yline(norm(v2tra),'DisplayName','$v^M_\theta$');
-plot(TOFr, vnorm,'DisplayName','$|v|$'), hold on, plot(TOFr, vr, 'DisplayName','$v_{r}$')
-legend()
-%  annotation(gcf,'textbox',...
-%     [0.15 0.75 0.29 0.15],...
-%     'String',{strcat('Dep :',num2str(datedep(3)),'.', num2str(datedep(2)),'.', num2str(datedep(1)), '...', ...
-%                      'Arr :', num2str(datearr(3)),'.', num2str(datearr(2)),'.', num2str(datearr(1))), ...
-%               strcat('Nrev :',num2str(N_rev),'...','TOF :',num2str(TOF),'days'), ...
-%               strcat('v_{inf} dep :', num2str(v_inf1),'km/s', 'v_{inf} arr :',num2str(v_inf2), 'km/s'), ...
-%               strcat('max|T| :', num2str(max(abs(T))),'N','...','Isp :',num2str(data_stacks.Isp),'s','...','Mdry :', num2str(data_stacks.Mdry),'kg')},...
-%     'FitBoxToText','on');
+
+subplot(2,1,2)
+vts = plot(TOFr, vt,'DisplayName','$v_{t}$'); hold on
+vte = yline(norm(v1tra),'DisplayName','$v^E_\theta$'); hold on, 
+vtm = yline(norm(v2tra),'DisplayName','$v^M_\theta$'); hold on,
+vsn = plot(TOFr, vnorm,'DisplayName','$|v|$'); hold on, 
+vr = plot(TOFr, vr, 'DisplayName','$v_{r}$'); hold on,
+vte.Color = cE.Color;
+vtm.Color = cM.Color;
+vsn.Color = cS.Color;
+vts.Color = cS.Color;
+legend(), title('Velocity Components')
+
+
 else
     fprintf('No real solution for Conway algorithm \n')
 end
