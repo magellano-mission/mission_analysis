@@ -6,7 +6,7 @@ data.InitDay = date2mjd2000(InitData);    % initial day
 % Propulsion parameter
 data.Isp = 4300;                          % specific impulse [s]   
 data.g0 = 9.807;                          % [m/s^2]      
-data.M = 2300;                            % s/c mass at arrival [kg] (SET)
+data.M = 1100;                            % s/c mass at arrival [kg] (SET)
 
 % Planetary parameter
 data.mi = astroConstants(14);             % planetary constant [km^3/s^2]

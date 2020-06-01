@@ -74,23 +74,23 @@ switch data.SimType
         sss.FaceAlpha = 0.4;
         
         Rovers = {'Viking 1', 'Viking 2', 'Opportunity', 'Spirit', 'InSight', ...
-            'Curiosity', 'Mars Polar Lander', 'ExoMars', 'Skipper (Mars-Penguin)'};
-        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3, -167];
-        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1, -81];
-        Text_lon = [-30, 3, 3, -21, 3, -33, -67, 3, 3]; Text_lon = Text_lon + Rov_lon;
-        Text_lat = [-3, -3, -3, -3, 3, -3, 3, -3, 3]; Text_lat = Text_lat + Rov_lat;
+            'Curiosity', 'Mars Polar Lander', 'ExoMars'};
+        Rov_lon = [-49.97, 134.29, -6, 175.47, 135.6, 137.4, 165.2, -24.3];
+        Rov_lat = [22.5, 47.6, -1.95, -14.57, 4.5, -4.6, -76.57, 18.1];
+        Text_lon = [-30, 3, 3, -21, 3, -33, -67, 3]; Text_lon = Text_lon + Rov_lon;
+        Text_lat = [-3, -3, -3, -3, 3, -3, 3, -3]; Text_lat = Text_lat + Rov_lat;
         
         for i = 1:length(Rovers)
             plot(Rov_lon(i), Rov_lat(i), 'wo', 'MarkerFace', 'r')        % Skipper (Mars-Penguin)
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        switch data.SubType
-            case "min"
-                title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
-            case "mean"  
-                title('Mean satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
-        end
+%         switch data.SubType
+%             case "min"
+%                 title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+%             case "mean"  
+%                 title('Mean satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+%         end
         
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
@@ -308,7 +308,7 @@ switch data.SimType
         lat = data.lat;
         GDOP_max = Cov_Results.GDOP_max;
         sss = pcolor(lon, lat, GDOP_max'); hold on
-%         sss.FaceColor = 'Interp';
+        sss.FaceColor = 'Interp';
         sss.EdgeColor = 'interp';
         sss.FaceAlpha = 0.6;
         
@@ -324,7 +324,7 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        title('Geometric Dilution of Precision', 'interpreter', 'latex', 'FontSize', 20)
+%         title('Geometric Dilution of Precision', 'interpreter', 'latex', 'FontSize', 20)
         
         xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
         ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)

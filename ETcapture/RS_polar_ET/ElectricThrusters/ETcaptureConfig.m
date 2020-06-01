@@ -6,7 +6,7 @@ data.InitDay = date2mjd2000(InitData);    % initial day
 % Propulsion parameter
 data.Isp = 4300;                          % specific impulse [s]   
 data.g0 = 9.807;                          % [m/s^2]      
-data.M = 1300;                            % s/c mass at arrival [kg] (SET)
+data.M = 1100;                            % s/c mass at arrival [kg] (SET)
 
 % Planetary parameter
 data.mi = astroConstants(14);             % planetary constant [km^3/s^2]
@@ -21,7 +21,7 @@ data.R_pl = nthroot(3*V/(4*pi), 3);       % Mars equivalent radius [km]
 data.R_SOI = 570000;                      % SOI radius [km] (from Curtis)
 
 % Orbit parameters: SOI entry
-rp = 47800;                               % pericenter of arrival hyp [km] (SET)
+rp = 44500;                               % pericenter of arrival hyp [km] (SET)
 Vinf = 0.001;                             % velocity at infinite [km/s]
 e = 1 + rp*Vinf^2/data.mi;                % eccentricity of the hyp
 p = rp*(e + 1);                           % semilatum rectus [km]
@@ -30,14 +30,14 @@ data.th0 = -acos((p/data.R_SOI - 1)/e);   % theta infinite
 % Initial conditions
 data.e_hyp = e;                           % eccentricity
 data.sma = p/(data.e_hyp^2 - 1);          % semi-major axis [km] 
-data.i = 0*pi/180;                       % inclination [rad] (SET)
+data.i = 90*pi/180;                       % inclination [rad] (SET)
 Kep0 = [data.sma, data.e_hyp, data.i, 0, 0, data.th0];     
 [R0, V0] = kep2car(Kep0, data.mi);        % cartesian IC
 M0 = data.M;
 data.Y0 = [R0; V0; M0];
 
 % Stop conditions
-data.r_final = 7400;                      % RS polar final radius (SET)
+data.r_final = 4900;                      % RS polar final radius (SET)
 
 % ODE options
 % data.opt1 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10, 'Event', @ETParab2EllipseEvent);

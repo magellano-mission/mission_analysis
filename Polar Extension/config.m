@@ -36,11 +36,11 @@ data.alt = 0;                    % altitude at which evaluate the coverage ( gro
 % data.alt = 4.0150e+003;
 data.N_orbits = 2.1435;            % number of orbits in the simulation
 
-data.study = "DOP";
-% data.study = "coverage";
+% data.study = "DOP";
+data.study = "coverage";
 
 if data.study == "DOP"
-    disc = [180, 180];             % discretization grid
+    disc = [160, 150];             % discretization grid
 else
     disc = [90, 90]; 
 end

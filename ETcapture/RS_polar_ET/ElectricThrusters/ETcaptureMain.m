@@ -44,7 +44,7 @@ hold on
 set(planet,'FaceColor','texturemap','Cdata',I)
 %set(gca,'Color','black')
 plot3(Y1(:, 1), Y1(:, 2), Y1(:, 3),'Color',[0.9490,0.4745,0.3137]), axis equal, hold on
-set(gca,'Visible','Off')
+% set(gca,'Visible','Off')
 
 % Mass decrease
 hold off

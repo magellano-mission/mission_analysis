@@ -6,7 +6,7 @@ data.InitDay = date2mjd2000(InitData);    % initial day
 % Propulsion parameter
 data.Isp = 4300;                          % specific impulse [s]   
 data.g0 = 9.807;                          % [m/s^2]      
-data.M = 2400;                            % s/c mass at arrival [kg]
+data.M = 1600;                            % s/c mass at arrival [kg]
 
 % Planetary parameter
 data.mi = astroConstants(14);             % planetary constant [km^3/s^2]
@@ -21,7 +21,7 @@ data.R_pl = nthroot(3*V/(4*pi), 3);       % Mars equivalent radius [km]
 data.R_SOI = 570000;                      % SOI radius [km] (from Curtis)
 
 % Orbit parameters: SOI entry
-rp = 65500;                               % pericenter of arrival hyp [km]
+rp = 59900;                               % pericenter of arrival hyp [km]
 Vinf = 0.001;                             % velocity at infinite [km/s]
 e = 1 + rp*Vinf^2/data.mi;                % eccentricity of the hyp
 p = rp*(e + 1);                           % semilatum rectus [km]
@@ -30,15 +30,15 @@ data.th0 = -acos((p/data.R_SOI - 1)/e);   % theta infinite
 % Initial conditions
 data.e_hyp = e;                           % eccentricity
 data.sma = p/(data.e_hyp^2 - 1);          % semi-major axis [km] 
-data.i = 1.3265;                          % inclination [rad] (from GA)
+data.i = 903.3809e-003;                          % inclination [rad] (from GA)
 Kep0 = [data.sma, data.e_hyp, data.i, 0, 0, data.th0];     
 [R0, V0] = kep2car(Kep0, data.mi);        % cartesian IC
 M0 = data.M;
 data.Y0 = [R0; V0; M0];
 
 % Stop conditions
-data.thetaStop = 4.542;                   % [rad] (from GA)
-data.timeStop = 4.7915e6;                 % [s] (from GA)
+data.thetaStop = 2.2991e+000;                   % [rad] (from GA)
+data.timeStop = 4.4092e+006;                 % [s] (from GA)
 data.r_final = 12300;                     % NS final radius
 
 % ODE options
@@ -47,12 +47,6 @@ data.opt2 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10, 'Event', @ETCorrectionEvent
 data.opt3 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10);
 data.opt4 = odeset('RelTol', 1e-10, 'AbsTol', 1e-10, 'Event', @ETfinalEvent);
 
-%% Configuration parameters for DAG
-data.sma_t = 12300;
-data.e_t = 0;
-data.i_t = 45*pi/180;
-data.RAAN_t = 120*pi/180; 
-data.flag = 0;
 clearvars -except data Kep0
 
 

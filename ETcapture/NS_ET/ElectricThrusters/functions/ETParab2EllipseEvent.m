@@ -25,7 +25,7 @@ mi = data.mi;
 E = ((v^2 - mi/r)*R - (dot(R, V)*V))/mi;
 e = norm(E);
 
-value(1) = e - 0.90;
+value(1) = e - 0.93;
 
 if t > 1
     isterminal(1) = 1;

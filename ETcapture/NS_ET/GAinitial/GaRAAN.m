@@ -5,12 +5,12 @@ orbit.T = -0.2;
 
 orbit.Om0 = 6.2832;
 orbit.iF = 45*pi/180;
-orbit.DOm = 120*pi/180;
+orbit.DOm = 240*pi/180;
 
-orbit.a = 516.3436e+003;
-orbit.e = 0.90;
-orbit.om = 347.2118e-003;
-orbit.m0 = 1.5962e+003;
+orbit.a = 563.7788e+003;
+orbit.e = 0.93;
+orbit.om = 277.6965e-003;
+orbit.m0 = 1.5965e+003;
 
 
 % Output: SOL --> th0, i0, Dt
