@@ -49,6 +49,12 @@ ub(17) = sqrt(9); %v_inf dep
 ub(18) = pi;% alpha dep
 ub(19) = pi;% beta dep
 
+% %flexibility margins
+% lb(20) = -5;
+% lb(21) = -5;
+
+% ub(20) = 5;
+% ub(21) = 5;
  
 Bound = [lb; ub];
 %% GENETIC ALGORITHM
@@ -59,9 +65,7 @@ options = optimoptions('gamultiobj', 'Display', 'Iter', ...
                        'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
 [SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway_3NSlaunches(x,data_stacks), 19,[],[],[],[],lb,ub,[],options);
-feval(:,1) = feval(:,1)/10000;
-feval(:,3) = feval(:,3)/10000;
-feval(:,5) = feval(:,5)/10000;
+
 %% SOLUTIONS
 data_stacks.Tmax = 0.2; % N
 [chosen, chosenT] = paretoplot(SOL, feval,data_stacks); %min TOF chosen
@@ -97,6 +101,11 @@ v_inf3 = SOL(chosen, 17);
 alpha3 = SOL(chosen, 18); 
 beta3 = SOL(chosen, 19);
 t03 = t01 + TOF1 + 372 - TOF3;
+
+%flexiblity 
+delta1 = SOL(chosen,20);
+delta2 = SOL(chosen,21);
+
 %first launch
 [kepEarth_1, muS] = uplanet(t01,3);
 [kepMars_1, ~]    = uplanet(t01 + TOF1,4);
@@ -188,28 +197,6 @@ v1_3 = v1_3 + v_inf3*(sin(beta3)*cos(alpha3)*r1vers_3 + ...
              
 [ m3, T3 ] = Conway(TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, muS, data_stacks);
 
-y = ones(6,1);
-if ~isnan(m1) 
-
-        y(1) = max(abs(T1))*10000;
-        y(2) = m1(1) - m1(end);
-else
-    y = 1e7*ones(6,1);
-end
-if ~isnan(m2) 
-
-        y(3) = max(abs(T2))*10000;
-        y(4) = m2(1) - m2(end);
-else
-    y = 1e7*ones(6,1);
-end
-if ~isnan(m3) 
-
-        y(5) = max(abs(T3))*10000;
-        y(6) = m3(1) - m3(end);
-else
-    y = 1e7*ones(6,1);
-end
  
 % % optimization result
 datedep1=mjd20002date(t01);
@@ -279,8 +266,8 @@ for i = 1:length(feval)
          end
 end
 minmaxT1 = feval(find(feval(:,1) == min(feval(:,1))),1) ;
-minmaxT2 = feval(find(feval(:,3) == min(feval(:,3))),1) ;
-minmaxT3 = feval(find(feval(:,5) == min(feval(:,5))),1) ;
+minmaxT2 = feval(find(feval(:,3) == min(feval(:,3))),3) ;
+minmaxT3 = feval(find(feval(:,5) == min(feval(:,5))),5) ;
 if minmaxT1 > minmaxT2 && minmaxT1 > minmaxT3
     chosenT = find(feval(:,1) == min(feval(:,1)));
 end

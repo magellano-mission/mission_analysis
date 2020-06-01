@@ -107,27 +107,24 @@ v1_3 = v1_3 + v_inf3*(sin(beta3)*cos(alpha3)*r1vers_3 + ...
              
 [ m3, T3 ] = Conway(TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, muS, data_stacks);
 
-y = ones(6,1);
+y = ones(3,1);
 if ~isnan(m1) 
 
-        y(1) = max(abs(T1))*10000;
-        y(2) = m1(1) - m1(end);
+        y(1) = max(abs(T1));
 else
-    y = 1e7*ones(6,1);
+    y(1) = 1e7;
 end
 if ~isnan(m2) 
 
-        y(3) = max(abs(T2))*10000;
-        y(4) = m2(1) - m2(end);
+        y(2) = max(abs(T2));
 else
-    y = 1e7*ones(6,1);
+    y(2) = 1e7;
 end
 if ~isnan(m3) 
 
-        y(5) = max(abs(T3))*10000;
-        y(6) = m3(1) - m3(end);
+        y(3) = max(abs(T3));
 else
-    y = 1e7*ones(6,1);
+    y(3) = 1e7;
 end
 end
 
