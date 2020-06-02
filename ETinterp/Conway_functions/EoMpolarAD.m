@@ -1,4 +1,4 @@
-function [y] = polar_ad(t, x, T, alpha, beta, muS, data)
+function [y] = EoMpolarAD(t, x, T, alpha, beta, muS, data)
 r = x(1); th = x(2); z = x(3); vr = x(4); thd = x(5); vz = x(6); m = x(7);
 s = (r^2 + z^2)^0.5;
 DU = 149597870.7;

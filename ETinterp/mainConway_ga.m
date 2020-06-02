@@ -1,9 +1,9 @@
 %Conway-based approach
 run('MatlabSetup.m')
 %% SPACECRAFT CHARACTERISTICS
-data_stacks.Isp = 4300;                                       % specific impulse [s]
-data_stacks.Mdry = 1600;                                      % Total Mass of the s/c [kg]
-data_stacks.n_int = 1000;
+data.Isp = 4300;                                       % specific impulse [s]
+data.Mdry = 1600;                                      % Total Mass of the s/c [kg]
+data.n_int = 1000;
 %% BOUNDARIES
 % t0, TOF, N_rev, q, v_inf, alpha, beta, v_infcap, alphacap, betacap 
 %%%%%
@@ -61,17 +61,17 @@ options = optimoptions('gamultiobj', 'Display', 'Iter', ...
                        'MaxGenerations', 200, ...
                        'ParetoFraction', 0.35, ...
                        'UseParallel', true, 'PopInitRange',Bound);
-[SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway(x,data_stacks), 6,[],[],[],[],lb,ub,[],options);
+[SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway(x,data), 6,[],[],[],[],lb,ub,[],options);
 feval(:,1) = feval(:,1)/10000;
 %% SOLUTIONS
-data_stacks.Tmax = 0.2; % N
-chosen = paretoplot(SOL, feval,data_stacks); %min TOF chosen
+data.Tmax = 0.2; % N
+chosen = paretoplot(SOL, feval,data); %min TOF chosen
 % chosen = length(feval) %last value chosen
 chosen = find(feval(:,1)==min(feval(:,1))) %min T chosen
 % chosen = find(feval(:,2)==min(feval(:,2))) %min mP chosen
 % chosen = 1
 %%
-data_stacks.n_int = 1000;
+data.n_int = 1000;
 %results
 % t0         =          SOL(chosen,1); 
 % TOF        =          SOL(chosen,2);
@@ -149,55 +149,16 @@ v1 = v1 + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
                  cos(beta)*href);          
              
 [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, th_dot, time, TOFr] = ...
-    Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, href, hh, v1, v2, muS, data_stacks);
+    Conway(TOF, N_rev, q, r1norm, r2norm, r1vers, r2vers, href, hh, v1, v2, muS, data);
 
 if ~isnan(r) 
     X0 = [r(1), TH(1), z(1), vr(1), th_dot(1), vz(1), m(1)];
-    X = zeros(length(TH), 7);
-    X(1,:) = X0;
-    %RK4 forward integration
-    for k = 1:length(TH)-1
-        x = X(k,:);
-        
-        hhh = time(k+1) - time(k);
-        K1 = propagate_conway(time(k), x, acc_inplane(k), acc_out(k), muS, data_stacks);
-        K2 = propagate_conway(time(k)+ hhh/2, x + hhh/2*K1, 0.5*(acc_inplane(k+1) + acc_inplane(k)), 0.5*(acc_out(k+1) + acc_out(k)), muS, data_stacks);
-        K3 = propagate_conway(time(k)+ hhh/2, x + hhh/2*K2, 0.5*(acc_inplane(k+1) + acc_inplane(k)), 0.5*(acc_out(k+1) + acc_out(k)), muS, data_stacks);
-        K4 = propagate_conway(time(k)+ hhh, x + hhh*K3, acc_inplane(k+1), acc_out(k+1), muS, data_stacks);    
-        
-        X(k+1,:) = X(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-    end
-    
-TX_inplane = acc_inplane .*X(:,7)' * 1000;
-TX_outplane = acc_out .*X(:,7)' * 1000;
-TX = (TX_inplane.^2 + TX_outplane.^2).^0.5;
-figure()
-sgtitle('States validation - Dynamics states')
-subplot(6,2,1), plot(TOFr, r,'k:'), ylabel('r [km]'), title('Conway Solution')
-subplot(6,2,2), plot(TOFr, X(:,1),'k:'), ylabel('r [km]'), title('Propagated Solution')
-subplot(6,2,3), plot(TOFr, TH, 'k:'), ylabel('$\theta$ [km]'), 
-subplot(6,2,4), plot(TOFr, X(:,2),'k:'), ylabel('$\theta$ [km]')
-subplot(6,2,5), plot(TOFr, z, 'k:'),  ylabel('z[km]')
-subplot(6,2,6), plot(TOFr, X(:,3),'k:'), ylabel('z[km]')
-subplot(6,2,7), plot(TOFr, vr, 'k:'), ylabel('$v_r$ [km]')
-subplot(6,2,8), plot(TOFr, X(:,4), 'k:'), ylabel('$v_r$ [km]')
-subplot(6,2,9), plot(TOFr, th_dot, 'k:'),  ylabel('$\dot{\theta}$ [km]')
-subplot(6,2,10), plot(TOFr, X(:,5), 'k:'), ylabel('$\dot{\theta}$[km]')
-subplot(6,2,11), plot(TOFr, vz, 'k:'),  xlabel('TOFr [days]'), ylabel('$v_z$ [km]') 
-subplot(6,2,12), plot(TOFr, X(:,6), 'k:'),xlabel('TOFr [days]'), ylabel('$v_z$ [km]')
-
-figure(), sgtitle('States validation - Mass and Thrust')
-subplot(2,2,1), plot(TOFr, m, 'k:'), xlabel('TOF [days]'), ylabel('Spacecraft Mass [kg]')
-title('Conway Solution'), 
-subplot(2,2,2), plot(TOFr, X(:,7), 'k:'), xlabel('TOF [days]'), ylabel('Spacecraft Mass [kg]')
-title('Propagated Solution')
-subplot(2,2,3), plot(TOFr, T, 'k:'),  xlabel('TOF [days]'), ylabel('Thrust [N]')
-subplot(2,2,4), plot(TOFr, TX, 'k:'),  xlabel('TOF [days]'), ylabel('Thrust [N]')
+   [X] = EoMpropRK4(X0, a_in, a_out, muS, data, 1);
 else
     fprintf('No real solution coming from Conway algorithm \n')
 end
 %% plots
-run('conway3Dplots.m')
+conway3Dplots(t0, TOF, href, N_rev, q,  m, T, r, z, vr, vt, vz, acc_inplane, acc_out, acc, TH, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, T_inplane, T_outplane, TOFr, data);
 %% Direct Transcript Method
 run('directTranscription.m')
 %%

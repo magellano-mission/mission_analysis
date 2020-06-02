@@ -1,19 +1,19 @@
-function y = gamultiobj_conway_3NSlaunches(x, data_stacks)
+function [y, T1, T2, T3, m1, m2, m3] = ga_conway_3NSlaunches(x, data_stacks)
 %%% variables
 %first launch
 t01 = x(1);              TOF1 = x(2);
-N_rev1 = round(x(3));      q1 = x(4);
+N_rev1 = (x(3));      q1 = x(4);
 v_inf1 = x(5); alpha1 = x(6); beta1 = x(7);
 
 %second launch
 TOF2 = x(8);
-N_rev2 = round(x(9));      q2 = x(10);
+N_rev2 = (x(9));      q2 = x(10);
 v_inf2 = x(11); alpha2 = x(12); beta2 = x(13);
 t02 = t01 + TOF1 + 186 - TOF2 + x(20);
 
 %third launch
 TOF3 = x(14);
-N_rev3 = round(x(15));      q3 = x(16);
+N_rev3 = (x(15));      q3 = x(16);
 v_inf3 = x(17); alpha3 = x(18); beta3 = x(19);
 t03 = t01 + TOF1 + 372 - TOF3 + x(21);
 
@@ -48,7 +48,7 @@ v1_1 = v1_1 + v_inf1*(sin(beta1)*cos(alpha1)*r1vers_1 + ...
 
 
 %second launch
-[kepEarth_2, ~] = uplanet(t02,3);
+[kepEarth_2, ~]   = uplanet(t02       ,3);
 [kepMars_2, ~]    = uplanet(t02 + TOF2,4);
 
 [R1_2, v1_2] = kep2car2(kepEarth_2, muS); %km....
@@ -107,24 +107,12 @@ v1_3 = v1_3 + v_inf3*(sin(beta3)*cos(alpha3)*r1vers_3 + ...
              
 [ m3, T3 ] = Conway(TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, muS, data_stacks);
 
-y = ones(3,1);
-if ~isnan(m1) 
-
-        y(1) = max(abs(T1));
-else
-    y(1) = 1e7;
+if ~all(isnan([m1, m2, m3]))
+    t1 = max(abs(T1)); t2 = max(abs(T2)); t3 = max(abs(T3));
+    y = t1 + 1.2*t2 + 1.5*t3;
+else 
+    y = inf;
 end
-if ~isnan(m2) 
 
-        y(2) = max(abs(T2));
-else
-    y(2) = 1e7;
-end
-if ~isnan(m3) 
-
-        y(3) = max(abs(T3));
-else
-    y(3) = 1e7;
-end
 end
 

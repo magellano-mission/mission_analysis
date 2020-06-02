@@ -1,4 +1,4 @@
-function [y] = propagate_conway(t, x, a_in, a_out, muS, data)
+function [y] = EoMpolar(t, x, a_in, a_out, muS, data)
 r = x(1); th = x(2); z = x(3); vr = x(4); thd = x(5); vz = x(6); m = x(7);
 
 vt = r*thd;

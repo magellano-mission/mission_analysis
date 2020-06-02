@@ -1,14 +1,17 @@
-%conway 3d plots
-DU = astroConstants(2);
-TU = (DU^3/muS)^0.5;
 
+function [rr, vv] = conway3Dplots(t0, TOF, href, N_rev, q, m, T, r, z, vr, vt, vz, acc_inplane, acc_out, acc, TH, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, T_inplane, T_outplane, TOFr, data)
+%output: cartesian components of states
+%conway 3d plots
 if ~isnan(r)   
     
 [kepEarth, muS] = uplanet(t0, 3);
 [rE0, vE0] = kep2car2(kepEarth, muS);
 [kepMars, muS] = uplanet(t0 + TOF, 4);
 [rMend, vMend] = kep2car2(kepMars, muS);
-  
+
+AU = astroConstants(2);
+TU = (AU^3/muS).^0.5;
+
 r1vers = rE0/norm(rE0);
 r2vers = rMend/norm(rMend) ; 
     
@@ -22,10 +25,10 @@ for i =1:length(TOFr)
     RM(i,:) = kep2car2(kepM, muS);
     REnorm(i) = norm(R1(i,:));
     RMnorm(i) = norm(RM(i,:));
-    [rr(i,:), vv(i,:)] = refplane2car( r(i), z(i),  vt(i), vr(i), TH(i), r1vers, href);
+    [rr(i,:), vv(i,:)] = refplane2car(r(i), z(i),  vt(i), vr(i), vz(i), TH(i), r1vers, href);
 end
- 
- 
+
+
 dirt1 = cross(href , r1vers);
 dirt2 = cross(href , r2vers);
  
@@ -49,8 +52,8 @@ fprintf('N_rev \t \t %d \n', N_rev);
 fprintf('q \t \t %d \n \n', q);
 fprintf('Departure v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf1), norm(v_inf1)^2)
 fprintf('Arrival v_inf: \t %d km/s (C3 = %d km^2/s^2)   \n \n', norm(v_inf2), norm(v_inf2)^2)
-fprintf('Isp: \t %d s\n', data_stacks.Isp)
-fprintf('Mdry: \t %d kg\n', data_stacks.Mdry)
+fprintf('Isp: \t %d s\n', data.Isp)
+fprintf('Mdry: \t %d kg\n', data.Mdry)
 fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
 fprintf('Mass ratio: \t %d \n', m(end)/m(1))
 fprintf('Fuel Mass Fraction: \t %d \n', (m(1) - m(end))/m(1))
@@ -59,31 +62,33 @@ fprintf('max T : \t %d N\n',max(abs(T)))
 figure()
 sgtitle('')
 % subplot(2,2,[1 2])
-rmp = plot3(RM(:,1)/DU, RM(:,2)/DU, RM(:,3)/DU,'HandleVisibility','off'); hold on,
-rep = plot3(R1(:,1)/DU, R1(:,2)/DU, R1(:,3)/DU,'HandleVisibility','off'); hold on,
-rrp = plot3(rr(:,1)/DU, rr(:,2)/DU, rr(:,3)/DU,'--','HandleVisibility','off'); hold on,
-rmpend = plot3(RM(end,1)/DU, RM(end,2)/DU, RM(end,3)/DU,'o','DisplayName','Mars @ Arrival'); hold on,
-rep1 = plot3(R1(1,1)/DU, R1(1,2)/DU, R1(1,3)/DU,'o','DisplayName','Earth @ Departure'); hold on,
-rrp1 = plot3(rr(1,1)/DU, rr(1,2)/DU, rr(1,3)/DU,'+','HandleVisibility','off'); hold on,
-rrpend = plot3(rr(end,1)/DU, rr(end,2)/DU, rr(end,3)/DU,'+','HandleVisibility','off');hold on
-I = imread('Sun.jpg'); RI = imref2d(size(I));
-RI.XWorldLimits = [-180 180];  RI.YWorldLimits = [-90 90]; 
-rSun = 20*almanac('Sun','Radius','kilometers','sphere');
-[XSun, YSun, ZSun] = ellipsoid(0, 0, 0, rSun, rSun, rSun, 100); % spheric centered Mars
-planet = surf(XSun/DU, YSun/DU, -ZSun/DU,'Edgecolor', 'none','HandleVisibility','off'); hold on
-set(planet,'FaceColor','texturemap','Cdata',I), axis equal
+rmp = plot3(RM(:,1), RM(:,2), RM(:,3),'HandleVisibility','off'); hold on,
+rep = plot3(R1(:,1), R1(:,2), R1(:,3),'HandleVisibility','off'); hold on,
+rrp = plot3(rr(:,1), rr(:,2), rr(:,3),'--','HandleVisibility','off'); hold on,
+rmpend = plot3(RM(end,1), RM(end,2), RM(end,3),'o','DisplayName','Mars @ Arrival'); hold on,
+rep1 = plot3(R1(1,1), R1(1,2), R1(1,3),'o','DisplayName','Earth @ Departure'); hold on,
+rrp1 = plot3(rr(1,1), rr(1,2), rr(1,3),'+','HandleVisibility','off'); hold on,
+rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off');hold on
+
+%velocity plot
+for i = 1:20:length(TOFr)
+    quiver3(rr(i,1), rr(i,2), rr(i,3), vv(i,1), vv(i,2), vv(i,3), 2e6, 'Color','k', 'HandleVisibility','off'); hold on
+end
+
+plotSun()
 legend()
 rmpend.Color = rmp.Color; rep1.Color = rep.Color; rrp1.Color = rrp.Color; rrpend.Color = rrp.Color;
 axis equal,  xlabel('x [AU]'), ylabel('y [AU]'), zlabel('z [AU]')
 
+
 figure()
 subplot(2,1,1), 
-cM = plot(TOFr, RMnorm/DU,'Displayname','$r_{Mars}$'); hold on, 
-cE = plot(TOFr, REnorm/DU, 'Displayname','$r_{Earth}$'); hold on, 
-cS = plot(TOFr, r/DU,'Displayname','$r_{Mars}$');  hold off, 
+cM = plot(TOFr, RMnorm/AU,'Displayname','$r_{Mars}$'); hold on, 
+cE = plot(TOFr, REnorm/AU, 'Displayname','$r_{Earth}$'); hold on, 
+cS = plot(TOFr, r/AU,'Displayname','$r_{Mars}$');  hold off, 
 title('In-plane motion'), xlabel('TOF [days]'), ylabel('r [AU]')
 subplot(2,1,2), 
-plot(TOFr, RM*href/DU), hold on, plot(TOFr, R1*href/DU), hold on, plot(TOFr, z/DU), 
+plot(TOFr, RM*href/AU), hold on, plot(TOFr, R1*href/AU), hold on, plot(TOFr, z/AU), 
 hold off, title('Out-of-plane motion'), xlabel('TOF [days]'), ylabel('z [AU]')
 
 figure()
@@ -113,7 +118,7 @@ vts = plot(TOFr, vt,'DisplayName','$v_{t}$'); hold on
 vte = yline(norm(v1tra),'DisplayName','$v^E_\theta$'); hold on, 
 vtm = yline(norm(v2tra),'DisplayName','$v^M_\theta$'); hold on,
 vsn = plot(TOFr, vnorm,'DisplayName','$|v|$'); hold on, 
-vr = plot(TOFr, vr, 'DisplayName','$v_{r}$'); hold on,
+vrplot = plot(TOFr, vr, 'DisplayName','$v_{r}$'); hold on,
 vte.Color = cE.Color;
 vtm.Color = cM.Color;
 vsn.Color = cS.Color;
@@ -124,4 +129,4 @@ legend(), title('Velocity Components')
 else
     fprintf('No real solution for Conway algorithm \n')
 end
- 
+end
