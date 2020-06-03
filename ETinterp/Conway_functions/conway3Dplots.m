@@ -1,5 +1,4 @@
-
-function [rr, vv] = conway3Dplots(t0, TOF, href, N_rev, q, m, T, r, z, vr, vt, vz, acc_inplane, acc_out, acc, TH, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, T_inplane, T_outplane, TOFr, data)
+function [rr, vv, T_cart] = conway3Dplots(t0, TOF, href, N_rev, q, m, T, r, z, vr, vt, vz, acc_inplane, acc_out, acc, TH, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, T_inplane, T_outplane, TOFr, data)
 %output: cartesian components of states
 %conway 3d plots
 if ~isnan(r)   
@@ -17,7 +16,7 @@ r2vers = rMend/norm(rMend) ;
     
 R1 = zeros(length(TOFr), 3); RM = R1;
 REnorm = zeros(length(TOFr),1); RMnorm = REnorm;
-rr = R1; vv = rr;
+rr = R1; vv = rr; T_cart = rr;
 for i =1:length(TOFr)
     kepE = uplanet(t0+TOFr(i), 3);
     kepM = uplanet(t0+TOFr(i), 4);
@@ -26,8 +25,8 @@ for i =1:length(TOFr)
     REnorm(i) = norm(R1(i,:));
     RMnorm(i) = norm(RM(i,:));
     [rr(i,:), vv(i,:)] = refplane2car(r(i), z(i),  vt(i), vr(i), vz(i), TH(i), r1vers, href);
+    [T_cart(i,:)] = thrust_cart( T_inplane(i), T_outplane(i), gamma(i), TH(i), r1vers, href);
 end
-
 
 dirt1 = cross(href , r1vers);
 dirt2 = cross(href , r2vers);
@@ -72,8 +71,14 @@ rrpend = plot3(rr(end,1), rr(end,2), rr(end,3),'+','HandleVisibility','off');hol
 
 %velocity plot
 for i = 1:20:length(TOFr)
-    quiver3(rr(i,1), rr(i,2), rr(i,3), vv(i,1), vv(i,2), vv(i,3), 2e6, 'Color','k', 'HandleVisibility','off'); hold on
+    quivV= quiver3(rr(i,1), rr(i,2), rr(i,3), vv(i,1), vv(i,2), vv(i,3), 2e6, 'Color','k', 'HandleVisibility','off'); hold on
+    quivT = quiver3(rr(i,1), rr(i,2), rr(i,3), T_cart(i,1), T_cart(i,2), T_cart(i,3), 2e8,'Color','r', 'HandleVisibility','off'); hold on
+
 end
+quivV.HandleVisibility = 'on';
+quivV.DisplayName = 'Velocity Direction';
+quivT.HandleVisibility = 'on';
+quivT.DisplayName = 'Thrust Direction';
 
 plotSun()
 legend()

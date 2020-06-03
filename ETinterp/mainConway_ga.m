@@ -153,7 +153,7 @@ v1 = v1 + v_inf*(sin(beta)*cos(alpha)*r1vers + ...
 
 if ~isnan(r) 
     X0 = [r(1), TH(1), z(1), vr(1), th_dot(1), vz(1), m(1)];
-   [X] = EoMpropRK4(X0, a_in, a_out, muS, data, 1);
+   [X] =  EoMpropRK4(X0, time, acc_inplane, acc_out, muS, data, 1, r, TH, z, vr, th_dot, vz, m, T, TOFr);
 else
     fprintf('No real solution coming from Conway algorithm \n')
 end

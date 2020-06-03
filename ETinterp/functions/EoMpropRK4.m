@@ -1,4 +1,4 @@
-function [X] = EoMpropRK4(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m)
+function [X] = EoMpropRK4(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m, T, TOFr)
 %propagation of function
     if nargin == 6
        plotsflag = 0; 
@@ -24,18 +24,12 @@ function [X] = EoMpropRK4(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z,
         TX = (TX_inplane.^2 + TX_outplane.^2).^0.5;
         figure()
         sgtitle('States validation - Dynamics states')
-        subplot(6,2,1), plot(TOFr, r,'k:'), ylabel('r [km]'), title('Conway Solution')
-        subplot(6,2,2), plot(TOFr, X(:,1),'k:'), ylabel('r [km]'), title('Propagated Solution')
-        subplot(6,2,3), plot(TOFr, TH, 'k:'), ylabel('$\theta$ [km]'), 
-        subplot(6,2,4), plot(TOFr, X(:,2),'k:'), ylabel('$\theta$ [km]')
-        subplot(6,2,5), plot(TOFr, z, 'k:'),  ylabel('z[km]')
-        subplot(6,2,6), plot(TOFr, X(:,3),'k:'), ylabel('z[km]')
-        subplot(6,2,7), plot(TOFr, vr, 'k:'), ylabel('$v_r$ [km]')
-        subplot(6,2,8), plot(TOFr, X(:,4), 'k:'), ylabel('$v_r$ [km]')
-        subplot(6,2,9), plot(TOFr, r.*th_dot, 'k:'),  ylabel('$\dot{\theta}$ [km]')
-        subplot(6,2,10), plot(TOFr, X(:,1).*X(:,5), 'k:'), ylabel('$\dot{\theta}$[km]')
-        subplot(6,2,11), plot(TOFr, vz, 'k:'),  xlabel('TOFr [days]'), ylabel('$v_z$ [km]') 
-        subplot(6,2,12), plot(TOFr, X(:,6), 'k:'),xlabel('TOFr [days]'), ylabel('$v_z$ [km]')
+        subplot(6,1,1), plot(TOFr, r'- X(:,1),'k:'), ylabel('r [km]'), title('Propagated Solution')
+        subplot(6,1,2), plot(TOFr, TH'- X(:,2),'k:'), ylabel('$\theta$ [km]')
+        subplot(6,1,3), plot(TOFr, z'- X(:,3),'k:'), ylabel('z[km]')
+        subplot(6,1,4), plot(TOFr, vr'- X(:,4), 'k:'), ylabel('$v_r$ [km]')
+        subplot(6,1,5), plot(TOFr, (r.*th_dot)'- X(:,1).*X(:,5), 'k:'), ylabel('$\dot{\theta}$[km]')
+        subplot(6,1,6), plot(TOFr, vz'- X(:,6), 'k:'),xlabel('TOFr [days]'), ylabel('$v_z$ [km]')
 
         figure(), sgtitle('States validation - Mass and Thrust')
         subplot(2,2,1), plot(TOFr, m, 'k:'), xlabel('TOF [days]'), ylabel('Spacecraft Mass [kg]')

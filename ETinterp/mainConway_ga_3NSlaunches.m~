@@ -62,7 +62,7 @@ ub(21) = 5;
 Bound = [lb; ub];
 
 %% choose optimization method
-optimization_method = menu('Remember to set boudaries... \n optimization method:','ga','gamultiboj','particleswarm');
+optimization_method = menu('Ok! Remember to set boudaries... \n Choose the optimization method','ga','gamultiboj','particleswarm');
 
 switch optimization_method
     case 1
@@ -129,31 +129,44 @@ delta2 = SOL(chosen,21);
 t03 = t01 + TOF1 + 372 - TOF3 + delta2;
 
 %% first launch
-diary results
-fprintf('\n %%%%%%%%%%%%%%%%%%%%%%%%%')
-fprintf('\n')
-
 run ('launch1_3NS.m') 
 
-diary off
-fprintf('\n press any button to continue... \n')
-pause()
 %% second launch
-diary on
-
 run('launch2_3NS.m')
 
-diary off
-fprintf('\n press any button to continue... \n')
-pause()
 %% third launch
-diary on
-
 run('launch3_3NS.m')
+%%
+fprintf('\n %%%%%%%%%%%%%%%%%%%%%%%%%')
+fprintf('\n')
+
+fprintf('\n %%%%%% FIRST LAUNCH (NS)\n \n')
+[rrNS1, vvNS1, TNS1] = conway3Dplots(t01, TOF1, hvers_1, N_rev1, q1, m1, T1, r1, z1, vr1, vt1, vz1, acc_inplane1, acc_out1, acc1, TH1, gamma11, gamma21, gamma1, v1perp1, v2perp1, v1tra1, v2tra1, vnorm1, T_inplane1, T_outplane1, TOFr1, dataNS);
+
+fprintf('\n %%%%%%  (RS equatorial) \n \n')
+[rrRS1, vvRS1, TRS1] = conway3Dplots(t01, TOFRS1, hvers_RS1, N_rev1, q1, mRS1, TRS1, rRS1, zRS1, vrRS1, vtRS1, vzRS1, acc_inplaneRS1, acc_outRS1, acc_totRS1, THRS1, gamma1RS1, gamma2RS1, gammaRS1, v1perpRS1, v2perpRS1, v1traRS1, v2traRS1, vnormRS1, T_inplaneRS1, T_outplaneRS1, TOFrRS1, dataRS1);
+
+fprintf('\n press ENTER to continue... \n')
+pause()
+
+fprintf('\n %%%%%% SECOND LAUNCH (NS) \n \n')
+[rrNS2, vvNS2, TNS2] = conway3Dplots(t02, TOF2, hvers_2, N_rev2, q2, m2, T2, r2, z2, vr2, vt2, vz2, acc_inplane2, acc_out2, acc2, TH2, gamma12, gamma22, gamma2, v1perp2, v2perp2, v1tra2, v2tra2, vnorm2, T_inplane2, T_outplane2, TOFr2, dataNS);
+
+fprintf('\n %%%%%% (RS polar) \n \n')
+[rrRS2, vvRS2, TRS2] = conway3Dplots(t02, TOFRS2, hvers_RS2, N_rev2, q2, mRS2, TRS2, rRS2, zRS2, vrRS2, vtRS2, vzRS2, acc_inplaneRS2, acc_outRS2, accRS2, THRS2, gamma1RS2, gamma2RS2, gammaRS2, v1perpRS2, v2perpRS2, v1traRS2, v2traRS2, vnormRS2, T_inplaneRS2, T_outplaneRS2, TOFrRS2, dataRS2);
+
+
+fprintf('\n press ENTER to continue... \n')
+pause()
+
+fprintf('\n %%%%%% THIRD LAUNCH \n \n')
+[rrNS3, vvNS3, TNS3] = conway3Dplots(t03, TOF3, hvers_3, N_rev3, q3, m3, T3, r3, z3, vr3, vt3, vz3, acc_inplane3, acc_out3, acc3, TH3, gamma13, gamma23, gamma3, v1perp3, v2perp3, v1tra3, v2tra3, vnorm3, T_inplane3, T_outplane3, TOFr3, dataNS);
+
+fprintf('\n press ENTER to continue... \n')
 
 fprintf('\n %%%%%%%%%%%%%%%%%%%%%%%%%')
 fprintf('\n')
-diary off
+
 %% LOCAL UTILITY FUNCTIONS
 
 function [chosen, chosenT] = paretoplot(SOL, feval, data)

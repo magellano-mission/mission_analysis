@@ -2,7 +2,8 @@ function [y] = EoMpolar(t, x, a_in, a_out, muS, data)
 r = x(1); th = x(2); z = x(3); vr = x(4); thd = x(5); vz = x(6); m = x(7);
 
 vt = r*thd;
-gamma = atan(vr/vt);
+gamma = atan(max( min( vr/vt, 1) , -1));
+
 T_inplane = a_in .*m * 1000;
 T_outplane = a_out .*m * 1000;
 T = (T_inplane.^2 + T_outplane.^2).^0.5;

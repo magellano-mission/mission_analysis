@@ -1,15 +1,23 @@
-%direct transcription
+%% DIRECT TRANSCRIPTION
+data.n_int = 1000;
+[ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, theta_dot, time, TOFr] = ...
+    Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, dataNS);
 
+X = [r', TH', z', vr', theta_dot', vz', m'];
 options = optimoptions('fmincon','Display','iter', ... %                        'MaxFunctionEvaluations',1e4, ...
                         'Algorithm','interior-point', ...
                         'MaxIter',50000, ...
                         'MaxFunEvals', 500000);
 
-data = data_stacks;
-N = data.n_int;
+N = dataNS.n_int;
 DU = astroConstants(2);
 TU = (DU^3/muS).^0.5;
-MU = data.Mdry;
+MU = dataNS.Mdry;
+% 
+% DU = 1;
+% TU = 1;
+% MU = 1;
+
 XX0 = zeros(1, N*10);
 Xad = zeros(N,7); Xd = Xad;
 %adimensionalization of initial conditions
@@ -21,7 +29,10 @@ Xad(:,5) = X(:,5)*TU;
 Xad(:,6) = X(:,6)/DU*TU;
 Xad(:,7) = X(:,7)/MU;
 
-ubeta = atan(T_outplane./T_inplane);
+thr = 1e-3;
+% ubeta = atan2((T_outplane < thr).*thr + (T_outplane > thr).*T_outplane, T_inplane);
+% ubeta = atan2(T_outplane, T_inplane);
+ubeta = asin(T_outplane./ T);
 ualpha = gamma;
 
 data.xi = Xad(1,:);
@@ -38,10 +49,10 @@ data.time = timead;
 %         xx = x(k,:);
 
         hhh = timead(k+1) - timead(k);
-        K1 = polar_ad(timead(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
-        K2 = polar_ad(timead(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
-        K3 = polar_ad(timead(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
-        K4 = polar_ad(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
+        K1 = EoMpolarAD(timead(k), xx, T(k), ualpha(k), ubeta(k), muS, dataNS);
+        K2 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, dataNS);
+        K3 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, dataNS);
+        K4 = EoMpolarAD(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, dataNS);    
 
 %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
         Xpropad(k+1,:) = Xpropad(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
@@ -55,37 +66,66 @@ Xd(:,6) = Xpropad(:,6)*DU/TU;
 Xd(:,7) = Xpropad(:,7)*MU;
 
 figure()
-subplot(7,2,1), plot(Xad(:,1)-Xpropad(:,1))
-subplot(7,2,3), plot(Xad(:,2)-Xpropad(:,2))
-subplot(7,2,5), plot(Xad(:,3)-Xpropad(:,3))
-subplot(7,2,7), plot(Xad(:,4)-Xpropad(:,4))
-subplot(7,2,9), plot(Xad(:,5)-Xpropad(:,5))
-subplot(7,2,11), plot(Xad(:,6)-Xpropad(:,6))
-subplot(7,2,13), plot(Xad(:,7)-Xpropad(:,7))
+subplot(7,1,1), plot(Xad(:,1)), hold on, plot(Xpropad(:,1))
+subplot(7,1,2), plot(Xad(:,2)), hold on, plot(Xpropad(:,2))
+subplot(7,1,3), plot(Xad(:,3)), hold on, plot(Xpropad(:,3))
+subplot(7,1,4), plot(Xad(:,4)), hold on, plot(Xpropad(:,4))
+subplot(7,1,5), plot(Xad(:,5)), hold on, plot(Xpropad(:,5))
+subplot(7,1,6), plot(Xad(:,6)), hold on, plot(Xpropad(:,6))
+subplot(7,1,7), plot(Xad(:,7)), hold on, plot(Xpropad(:,7)), legend('ad','prop')
 
 %already adimensional
-data.xi = Xpropad(1,:);
-data.xf = Xpropad(end,:);
-%% Adimensionalization of variables
-ubeta = atan( max( min( (T_outplane )./(T_inplane), 1) , -1) );
+dataNS.xi = X(1,:);
+dataNS.xf = X(end,:);
 
+% Adimensionalization of variables
 figure(),subplot(5,1,1), plot(rad2deg(ubeta)), title('Beta'), grid on
 subplot(5,1,2), plot(T_inplane), title('T inplane'), grid on
 subplot(5,1,3), plot(T_outplane), title('T outplane'), grid on
 subplot(5,1,4), plot(T), title('T'), grid on
-ualpha = gamma;
+subplot(5,1,5), plot((T_outplane )./(T_inplane))
 %definition of the initial guess (sub-optimal conway solution)
 for ii = 1:N
     XX0((ii-1)*10 +1: (ii-1)*10+10) = [Xpropad(ii,:) T(ii) ualpha(ii) ubeta(ii)];
 end
+
+[kepEarth, muS] = uplanet(t03,3);
+[kepMars, ~]    = uplanet(t03 + TOF3,4);
+ 
+[R1, v1] = kep2car2(kepEarth, muS); %km....
+[R2, v2] = kep2car2(kepMars, muS);  %km....
+ 
+%definition of plane of motion
+r1norm = norm(R1);
+r2norm = norm(R2);
+ 
+r1vers = R1/r1norm;
+r2vers = R2/r2norm;
+ 
+hh = cross(r1vers, r2vers);
+href = hh/norm(hh);
+ 
+if hh(3) <0
+    href = -href;
+end
+ 
+%adding TMI maneuver
+v1 = v1 + v_inf3*(sin(beta3)*cos(alpha3)*r1vers + ...
+                 sin(beta3)*sin(alpha3)*cross(href,r1vers) + ...
+                 cos(beta3)*href);          
+
+%%
+kepMtry = uplanet(t03 + TOF3,4);
+rMtry = kep2car2(kepMtry, muS);
+R = refplane2car( X(end,1), X(end,3),  X(end,1)*X(end,5), X(end,4), X(end,6), X(end,2), r1vers, href);
+rMtry - R
 %%
 %definition of upper boundary and lower boundary
-[LB, UB] = LBUB(XX0, data);
-
+[LB, UB] = LBUB(XX0, Xad,  dataNS);
 find(XX0 < LB)
-% [c, ceq] = EoM(XX0, data);
+% [c, ceq] = EoM(XX0, dataNS);
 %%
-[XSOL,fval,exitflag,output,lambda,grad,hessian] = fmincon(@DTmethod, XX0,[],[],[],[],LB,UB,@EoM, options, data);
+[XSOL,fval,exitflag,output,lambda,grad,hessian] = fmincon(@DTmethod, XX0,[],[],[],[],LB,UB,@EoM, options, dataNS);
 %%
 XHS = zeros(N, 7);
 THS = zeros(1,N);
@@ -115,13 +155,13 @@ subplot(3,1,3), plot(timead, rad2deg(betaHS)), hold on, plot(timead, rad2deg(ube
 figure()
 plot(timead, rHS), hold on, plot(timead, r), hold on,
 %%
-function J = DTmethod(X, data)
+function J = DTmethod(X, dataNS)
 
-    N =data.n_int;
+    N =dataNS.n_int;
     m = zeros(1, N);
     x = zeros(N,7);
     T = m;
-        time = data.time;
+        time = dataNS.time;
 % alpha = m; beta = m;
 
 
@@ -147,10 +187,10 @@ function J = DTmethod(X, data)
 
 end
 
-function [c, ceq] = EoM(X, data)
-    muS = data.muS;
-    time = data.time;
-    N = data.n_int;
+function [c, ceq] = EoM(X, dataNS)
+    muS = dataNS.muS;
+    time = dataNS.time;
+    N = dataNS.n_int;
         
     x = zeros(N,7);
     m = zeros(1, N);
@@ -168,8 +208,8 @@ function [c, ceq] = EoM(X, data)
     end
  
     %initial and final states
-    xi = data.xi;
-    xf = data.xf;
+    xi = dataNS.xi;
+    xf = dataNS.xf;
     BCi = xi(1:6) - x(1,1:6);
     BCf = xf(1:6) - x(end,1:6);
     
@@ -182,10 +222,10 @@ function [c, ceq] = EoM(X, data)
         xx = x(k,:);
 
         hhh = time(k+1) - time(k);
-        K1 = polar_ad(time(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
-        K2 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
-        K3 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
-        K4 = polar_ad(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
+        K1 = EoMpolarAD(time(k), xx, T(k), ualpha(k), ubeta(k), muS, dataNS);
+        K2 = EoMpolarAD(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, dataNS);
+        K3 = EoMpolarAD(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, dataNS);
+        K4 = EoMpolarAD(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, dataNS);    
 
         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
 %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
@@ -195,10 +235,10 @@ function [c, ceq] = EoM(X, data)
 % %         xx = x(k,:);
 % 
 %         hhh = time(k) - time(k-1);
-%         K1 = polar_ad(time(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
-%         K2 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
-%         K3 = polar_ad(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
-%         K4 = polar_ad(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k-1), ubeta(k-1), muS, data);    
+%         K1 = EoMpolarAD(time(k), xx, T(k), ualpha(k), ubeta(k), muS, dataNS);
+%         K2 = EoMpolarAD(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, dataNS);
+%         K3 = EoMpolarAD(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k-1) + T(k)), 0.5*(ualpha(k-1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, dataNS);
+%         K4 = EoMpolarAD(time(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k-1), ubeta(k-1), muS, dataNS);    
 % 
 % %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
 %         Xprop(k-1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
@@ -219,13 +259,13 @@ function [c, ceq] = EoM(X, data)
 
         xk = x(k,:); 
         xkk = x(k+1,:); 
-        yk  = polar_ad(time(k), xk, T(k), ualpha(k), ubeta(k), muS, data);
-        ykk  = polar_ad(time(k+1), xkk, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);
+        yk  = EoMpolarAD(time(k), xk, T(k), ualpha(k), ubeta(k), muS, dataNS);
+        ykk  = EoMpolarAD(time(k+1), xkk, T(k+1), ualpha(k+1), ubeta(k+1), muS, dataNS);
 
         xc = 0.5*(xk + xkk) + h/8*(yk-ykk);    
         uc = ([T(k) ualpha(k) ubeta(k)] + [T(k+1) ualpha(k+1) ubeta(k+1)])/2;
         
-        yc = polar_ad(time(k+1), xc, uc(1), uc(2), uc(3), muS, data);
+        yc = EoMpolarAD(time(k+1), xc, uc(1), uc(2), uc(3), muS, dataNS);
 
         DDD((k-1)*7 + 1:(k-1)*7 + 7) =  xk - xkk + h/6*(yk + 4*yc + ykk);
     
@@ -237,11 +277,11 @@ function [c, ceq] = EoM(X, data)
 %     c = [];
 end
 
-function [lb, ub] = LBUB(XX0, data)
+function [lb, ub] = LBUB(XX0, X,  dataNS)
 %X0 vector of propagated ODE45
-    N = data.n_int;
+    N = dataNS.n_int;
     T_lb = 0;
-    T_ub = data.Tmax;
+    T_ub = dataNS.Tmax;
     alpha_lb = 0;
     alpha_ub = 2*pi;
     beta_lb = -pi/2;
@@ -250,7 +290,7 @@ function [lb, ub] = LBUB(XX0, data)
     %limits definition
     ub = zeros(1,10*N);
     lb = zeros(1,10*N);
-    
+        
     %r
     r_ub = 2;
     r_lb = 0.8;
@@ -272,8 +312,8 @@ function [lb, ub] = LBUB(XX0, data)
     vz_lb = -1;
     
     %
-    m_ub = XX0(7)*1.1;
-    m_lb = 0.98;
+    m_ub = X(1,7)*1.1;
+    m_lb = 1;
     
     for k = 2:N-1
         ub((k-1)*10 +1) = r_ub;
@@ -293,7 +333,7 @@ function [lb, ub] = LBUB(XX0, data)
         lb((k-1)*10 +4) = vr_lb;
         lb((k-1)*10 +5) = thd_lb;
         lb((k-1)*10 +6) = vz_lb;
-        lb((k-1)*10 +7) = m_lb;%data.Mdry;
+        lb((k-1)*10 +7) = m_lb;%dataNS.Mdry;
         lb((k-1)*10 +8) = T_lb;
         lb((k-1)*10 +9) = alpha_lb;
         lb((k-1)*10 +10) = beta_lb;
@@ -310,7 +350,7 @@ function [lb, ub] = LBUB(XX0, data)
     %Final condition
     ub(end-9:end) = XX0(end-9:end);
     ub(end-2)=T_ub; ub(end-1)=alpha_ub; ub(end)=beta_ub;
-    ub(end-3) = m_ub;
+    ub(end-3) = m_lb;
     lb(end-9:end) = XX0(end-9:end);
     lb(end-2)=0; lb(end-1)=alpha_lb; lb(end)=beta_lb;
     lb(end-3) = m_lb;
