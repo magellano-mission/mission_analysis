@@ -35,19 +35,19 @@ lb(19)  = 0;% beta dep
 ub(1) = date2mjd2000([2026 1 1 0 0 0]);
 ub(2) = 1000;
 ub(3) = 3;
-ub(4) = 8;
+ub(4) = 1e2;
 ub(5) = 3; %v_inf dep
 ub(6) = pi;% alpha dep
 ub(7) = pi;% beta dep
 ub(8) = 1000;
 ub(9) = 3;
-ub(10) = 8;
+ub(10) = 1e2;
 ub(11) = 3; %v_inf dep
 ub(12) = pi;% alpha dep
 ub(13) = pi;% beta dep
 ub(14) = 1100;
 ub(15) = 3;
-ub(16) = 8;
+ub(16) = 1e2;
 ub(17) = 3; %v_inf dep
 ub(18) = pi;% alpha dep
 ub(19) = pi;% beta dep
@@ -80,18 +80,18 @@ switch optimization_method
                            'UseParallel', true, 'PopInitRange',Bound);
     [SOL,feval,exitflag] = gamultiobj(@(x) gamultiobj_conway_3NSlaunches(x,dataNS), 21,[],[],[],[],lb,ub,[],options);
     [chosen, chosenT] = paretoplot(SOL, feval,dataNS); %min TOF chosen
-    chosen = chosenT;
+    chosen = size(SOL,1);
     case 3
     options = optimoptions('particleswarm', 'SwarmSize', 1000, 'MaxIterations', 20, 'Display', 'Iter','UseParallel', true);
     [SOL,feval,exitflag] = particleswarm(@(x) ga_conway_3NSlaunches(x, dataNS), 21, lb, ub, options);
     chosen = 1;
     case 0
         fprintf('\n loaded a solution... \n')
-    load('SOLbest.mat')
+    load('SOLpartwarm.mat')
     chosen = 1;
 end
 else
-    load('SOLbest.mat')
+    load('SOLpartswarm.mat')
     chosen = 1;
 end
 clear choice
