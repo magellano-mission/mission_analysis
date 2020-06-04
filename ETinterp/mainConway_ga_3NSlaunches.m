@@ -11,44 +11,44 @@ if choice == 1 || choice == 0
 %%%%%
 % lower boundary
 lb = zeros(1,21); ub = lb;
-lb(1) = date2mjd2000([2024 1 1 0 0 0]); %t0
-lb(2) = 900; %TOF
-lb(3) = 1; %N_rev
-lb(4) = 3;% q
-lb(5) = 0;% v_inf dep
-lb(6) = 0;% alpha dep
-lb(7) = 0;% beta dep
-lb(8) = 900; %TOF
-lb(9) = 1; %N_rev
-lb(10) = 3;% q
-lb(11) = 0;% v_inf dep
-lb(12) = 0;% alpha dep
-lb(13) = 0;% beta dep
-lb(14) = 1000; %TOF
-lb(15) = 1; %N_rev
-lb(16) = 3;% q
-lb(17) = 0;% v_inf dep
-lb(18) = 0;% alpha dep
-lb(19) = 0;% beta dep
+lb(1)   = date2mjd2000([2024 1 1 0 0 0]); %t0
+lb(2)   = 700; %TOF
+lb(3)   = 0; %N_rev
+lb(4)   = 3;% q
+lb(5)   = 0;% v_inf dep
+lb(6)   = 0;% alpha dep
+lb(7)   = 0;% beta dep
+lb(8)   = 700; %TOF
+lb(9)   = 0; %N_rev
+lb(10)  = 3;% q
+lb(11)  = 0;% v_inf dep
+lb(12)  = 0;% alpha dep
+lb(13)  = 0;% beta dep
+lb(14)  = 700; %TOF
+lb(15)  = 0; %N_rev
+lb(16)  = 3;% q
+lb(17)  = 0;% v_inf dep
+lb(18)  = 0;% alpha dep
+lb(19)  = 0;% beta dep
 
 % upper boundary 
 ub(1) = date2mjd2000([2026 1 1 0 0 0]);
 ub(2) = 1000;
 ub(3) = 3;
 ub(4) = 8;
-ub(5) = 0.5; %v_inf dep
+ub(5) = 3; %v_inf dep
 ub(6) = pi;% alpha dep
 ub(7) = pi;% beta dep
 ub(8) = 1000;
 ub(9) = 3;
 ub(10) = 8;
-ub(11) = 1.5; %v_inf dep
+ub(11) = 3; %v_inf dep
 ub(12) = pi;% alpha dep
 ub(13) = pi;% beta dep
 ub(14) = 1100;
 ub(15) = 3;
 ub(16) = 8;
-ub(17) = 1.5; %v_inf dep
+ub(17) = 3; %v_inf dep
 ub(18) = pi;% alpha dep
 ub(19) = pi;% beta dep
 
@@ -87,11 +87,11 @@ switch optimization_method
     chosen = 1;
     case 0
         fprintf('\n loaded a solution... \n')
-    load('SOLpartswarm2.mat')
+    load('SOLbest.mat')
     chosen = 1;
 end
 else
-    load('SOLpartswarm2.mat')
+    load('SOLbest.mat')
     chosen = 1;
 end
 clear choice

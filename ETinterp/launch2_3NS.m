@@ -1,9 +1,9 @@
 %% second launch
 [kepEarth_2, ~] = uplanet(t02,3);
-[kepMars_RS2, ~]    = uplanet(t02 + TOF2,4);
+[kepMars_RS1, ~]    = uplanet(t02 + TOF2,4);
 
 [R1_2, v1_2] = kep2car2(kepEarth_2, muS); %km....
-[R2_2, v2_2] = kep2car2(kepMars_RS2, muS);  %km....
+[R2_2, v2_2] = kep2car2(kepMars_RS1, muS);  %km....
 
 %definition of plane of motion
 r1norm_2 = norm(R1_2);
@@ -29,8 +29,10 @@ v1_2 = v1_2 + v_inf2*(sin(beta2)*cos(alpha2)*r1vers_2 + ...
 [ m2, T2, r2, z2, ~, vr2, vt2, vz2, acc_inplane2, acc_out2, acc2, TH2, ~, gamma12, gamma22, gamma2, v1perp2, v2perp2, v1tra2, v2tra2, vnorm2, ~, T_inplane2, T_outplane2, theta_dot2, ~, TOFr2] = ...
     Conway(TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS);
 
-%% RS2 polar
+%% (RS polar)
+
 deltaRS2 = 3; %days
+
 TOFRS2 = TOF2 + deltaRS2; 
 
 [kepMars_RS2, ~]    = uplanet(t02 + TOFRS2,4);
@@ -49,15 +51,15 @@ end
 
 %vinf @ Mars = 0;
              
-[ mRS2, TRS2, rRS2, zRS2, ~, vrRS2, vtRS2, vzRS2, acc_inplaneRS2, acc_outRS2, accRS2, THRS2, ~, gamma1RS2, gamma2RS2, gammaRS2, v1perpRS2, v2perpRS2, v1traRS2, v2traRS2, vnormRS2, ~, T_inplaneRS2, T_outplaneRS2, theta_dotRS2, ~, TOFrRS2] = ...
+[ mRS2, TRS2, rRS2, zRS2, ~, vrRS2, vtRS2, vzRS2, acc_inplaneRS2, acc_outRS2, acc_totRS2, THRS2, ~, gamma1RS2, gamma2RS2, gammaRS2, v1perpRS2, v2perpRS2, v1traRS2, v2traRS2, vnormRS2, ~, T_inplaneRS2, T_outplaneRS2, theta_dot2, timeRS2, TOFrRS2] = ... 
     Conway(TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, muS, dataRS2);
 
 %% output
 fprintf('\n %%%%%% SECOND LAUNCH (NS) \n \n')
 [rrNS2, vvNS2, TNS2] = conway3Dplots(t02, TOF2, hvers_2, N_rev2, q2, m2, T2, r2, z2, vr2, vt2, vz2, acc_inplane2, acc_out2, acc2, TH2, gamma12, gamma22, gamma2, v1perp2, v2perp2, v1tra2, v2tra2, vnorm2, T_inplane2, T_outplane2, TOFr2, dataNS);
 
-fprintf('\n %%%%%% (RS polar) \n \n')
-[rrRS2, vvRS2, TRS2cart] = conway3Dplots(t02, TOFRS2, hvers_RS2, N_rev2, q2, mRS2, TRS2, rRS2, zRS2, vrRS2, vtRS2, vzRS2, acc_inplaneRS2, acc_outRS2, accRS2, THRS2, gamma1RS2, gamma2RS2, gammaRS2, v1perpRS2, v2perpRS2, v1traRS2, v2traRS2, vnormRS2, T_inplaneRS2, T_outplaneRS2, TOFrRS2, dataRS2);
+fprintf('\n %%%%%%  (RS polar) \n \n')
+[rrRS2, vvRS2, TRS2cart] = conway3Dplots(t02, TOFRS2, hvers_RS2, N_rev2, q2, mRS2, TRS2, rRS2, zRS2, vrRS2, vtRS2, vzRS2, acc_inplaneRS2, acc_outRS2, acc_totRS2, THRS2, gamma1RS2, gamma2RS2, gammaRS2, v1perpRS2, v2perpRS2, v1traRS2, v2traRS2, vnormRS2, T_inplaneRS2, T_outplaneRS2, TOFrRS2, dataRS2);
 
 %% struct
 dataNS2.t0MJD2000           = t02;

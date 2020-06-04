@@ -1,0 +1,597 @@
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%% SECOND LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 13 12 2028 
+TOF 	 	 9.900096e+02 days (2.712355e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 8.905411e-14 km/s (C3 = 7.930635e-27 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.491358e+02 kg 
+Mass ratio: 	 8.652690e-01 
+Fuel Mass Fraction: 	 1.347310e-01 
+max T : 	 1.962049e-01 N
+{Operation terminated by user during matlab.graphics.chart.primitive.Quiver/doSetup
+
+
+In matlab.graphics.chart.primitive.Quiver
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('quiver3', '/Applications/MATLAB_R2019b.app/toolbox/matlab/specgraph/quiver3.m', 63)" style="font-weight:bold">quiver3</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2019b.app/toolbox/matlab/specgraph/quiver3.m',63,0)">line 63</a>)
+h = matlab.graphics.chart.primitive.Quiver;
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('conway3Dplots', '/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/Conway_functions/conway3Dplots.m', 74)" style="font-weight:bold">conway3Dplots</a> (<a href="matlab: opentoline('/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/Conway_functions/conway3Dplots.m',74,0)">line 74</a>)
+    quivV= quiver3(rr(i,1), rr(i,2), rr(i,3), vv(i,1), vv(i,2), vv(i,3), 2e6, 'Color','k', 'HandleVisibility','off'); hold on
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('launch2_3NS', '/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/launch2_3NS.m', 57)" style="font-weight:bold">launch2_3NS</a> (<a href="matlab: opentoline('/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/launch2_3NS.m',57,0)">line 57</a>)
+[rrNS2, vvNS2, TNS2] = conway3Dplots(t02, TOF2, hvers_2, N_rev2, q2, m2, T2, r2, z2, vr2, vt2, vz2, acc_inplane2, acc_out2,
+acc2, TH2, gamma12, gamma22, gamma2, v1perp2, v2perp2, v1tra2, v2tra2, vnorm2, T_inplane2, T_outplane2, TOFr2, dataNS);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('run', '/Applications/MATLAB_R2019b.app/toolbox/matlab/lang/run.m', 91)" style="font-weight:bold">run</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2019b.app/toolbox/matlab/lang/run.m',91,0)">line 91</a>)
+evalin('caller', strcat(script, ';'));
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('mainConway_ga_3NSlaunches', '/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/mainConway_ga_3NSlaunches.m', 144)" style="font-weight:bold">mainConway_ga_3NSlaunches</a> (<a href="matlab: opentoline('/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/mainConway_ga_3NSlaunches.m',144,0)">line 144</a>)
+run('launch2_3NS.m')
+} 
+launch1_3NS
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+directTranscription
+{Unrecognized function or variable 'v2_1'.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('directTranscription', '/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/conway3D/directTranscription.m', 11)" style="font-weight:bold">directTranscription</a> (<a href="matlab: opentoline('/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/conway3D/directTranscription.m',11,0)">line 11</a>)
+    Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, data);
+} 
+opentoline('/Users/albertochiaradia/Documents/GitHub/mission_analysis/ETinterp/conway3D/directTranscription.m',11,0)
+mainConway_ga_3NSlaunches
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%% SECOND LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 13 12 2028 
+TOF 	 	 9.900096e+02 days (2.712355e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 8.905411e-14 km/s (C3 = 7.930635e-27 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.491358e+02 kg 
+Mass ratio: 	 8.652690e-01 
+Fuel Mass Fraction: 	 1.347310e-01 
+max T : 	 1.962049e-01 N
+
+ %%% (RS equatorial) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 16 12 2028 
+TOF 	 	 9.930096e+02 days (2.720574e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 2.362140e-13 km/s (C3 = 5.579703e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.672202e+02 kg 
+Mass ratio: 	 8.680417e-01 
+Fuel Mass Fraction: 	 1.319583e-01 
+max T : 	 1.337533e-01 N
+
+ %%% THIRD LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 18 6 2026 
+Arrival Date 	 22 6 2029 
+TOF 	 	 1100 days (3.013699e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.912937e+00 
+ 
+Departure v_inf: 	 1.345005e+00 km/s (C3 = 1.809038e+00 km^2/s^2) 
+Arrival v_inf: 	 1.772358e-12 km/s (C3 = 3.141254e-24 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.669407e+02 kg 
+Mass ratio: 	 8.570171e-01 
+Fuel Mass Fraction: 	 1.429829e-01 
+max T : 	 1.828988e-01 N
+
+ %%%  (RS polar) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 18 6 2026 
+Arrival Date 	 25 6 2029 
+TOF 	 	 1103 days (3.021918e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.912937e+00 
+ 
+Departure v_inf: 	 1.345005e+00 km/s (C3 = 1.809038e+00 km^2/s^2) 
+Arrival v_inf: 	 3.808391e-12 km/s (C3 = 1.450384e-23 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.832231e+02 kg 
+Mass ratio: 	 8.572165e-01 
+Fuel Mass Fraction: 	 1.427835e-01 
+max T : 	 1.267021e-01 N
+
+ %%%%%%%%%%%%
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%% SECOND LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 13 12 2028 
+TOF 	 	 9.900096e+02 days (2.712355e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 8.905411e-14 km/s (C3 = 7.930635e-27 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.491358e+02 kg 
+Mass ratio: 	 8.652690e-01 
+Fuel Mass Fraction: 	 1.347310e-01 
+max T : 	 1.962049e-01 N
+
+ %%% (RS equatorial) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 16 12 2028 
+TOF 	 	 9.930096e+02 days (2.720574e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 2.362140e-13 km/s (C3 = 5.579703e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.672202e+02 kg 
+Mass ratio: 	 8.680417e-01 
+Fuel Mass Fraction: 	 1.319583e-01 
+max T : 	 1.337533e-01 N
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% (RS equatorial) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.776615e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.370756e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%% SECOND LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 13 12 2028 
+TOF 	 	 9.900096e+02 days (2.712355e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 8.905411e-14 km/s (C3 = 7.930635e-27 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.491358e+02 kg 
+Mass ratio: 	 8.652690e-01 
+Fuel Mass Fraction: 	 1.347310e-01 
+max T : 	 1.962049e-01 N
+
+ %%%  (RS polar) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 16 12 2028 
+TOF 	 	 9.930096e+02 days (2.720574e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 2.362140e-13 km/s (C3 = 5.579703e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.672202e+02 kg 
+Mass ratio: 	 8.680417e-01 
+Fuel Mass Fraction: 	 1.319583e-01 
+max T : 	 1.337533e-01 N
+
+ %%% THIRD LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 18 6 2026 
+Arrival Date 	 22 6 2029 
+TOF 	 	 1100 days (3.013699e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.912937e+00 
+ 
+Departure v_inf: 	 1.345005e+00 km/s (C3 = 1.809038e+00 km^2/s^2) 
+Arrival v_inf: 	 1.772358e-12 km/s (C3 = 3.141254e-24 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.669407e+02 kg 
+Mass ratio: 	 8.570171e-01 
+Fuel Mass Fraction: 	 1.429829e-01 
+max T : 	 1.828988e-01 N
+
+ %%%%%%%%%%%%
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% (RS equatorial) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.776615e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.370756e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%%%%%%%%%%%
+
+ %%% FIRST LAUNCH (NS)
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 12 6 2028 
+TOF 	 	 9.028179e+02 days (2.473474e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 1.089821e-13 km/s (C3 = 1.187709e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.656847e+02 kg 
+Mass ratio: 	 8.575940e-01 
+Fuel Mass Fraction: 	 1.424060e-01 
+max T : 	 1.941106e-01 N
+
+ %%% (RS equatorial) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.776615e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.370756e-01 N
+
+ %%% FIRST LAUNCH (ECS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 22 12 2025 
+Arrival Date 	 15 6 2028 
+TOF 	 	 9.058179e+02 days (2.481693e+00 yrs)
+N_rev 	 	 1 
+q 	 	 6.001315e+00 
+ 
+Departure v_inf: 	 1.046331e-02 km/s (C3 = 1.094809e-04 km^2/s^2) 
+Arrival v_inf: 	 4.892581e-13 km/s (C3 = 2.393734e-25 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1300 kg
+Propellant mass: 	 2.099636e+02 kg 
+Mass ratio: 	 8.609479e-01 
+Fuel Mass Fraction: 	 1.390521e-01 
+max T : 	 1.619984e-01 N
+
+ %%% SECOND LAUNCH (NS) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 13 12 2028 
+TOF 	 	 9.900096e+02 days (2.712355e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 8.905411e-14 km/s (C3 = 7.930635e-27 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1600 kg
+Propellant mass: 	 2.491358e+02 kg 
+Mass ratio: 	 8.652690e-01 
+Fuel Mass Fraction: 	 1.347310e-01 
+max T : 	 1.962049e-01 N
+
+ %%%  (RS polar) 
+ 
+OPTIMIZATION RESULTS 
+Departure Date 	 29 3 2026 
+Arrival Date 	 16 12 2028 
+TOF 	 	 9.930096e+02 days (2.720574e+00 yrs)
+N_rev 	 	 1 
+q 	 	 7.575692e+00 
+ 
+Departure v_inf: 	 1.438756e+00 km/s (C3 = 2.070018e+00 km^2/s^2) 
+Arrival v_inf: 	 2.362140e-13 km/s (C3 = 5.579703e-26 km^2/s^2)   
+ 
+Isp: 	 4300 s
+Mdry: 	 1100 kg
+Propellant mass: 	 1.672202e+02 kg 
+Mass ratio: 	 8.680417e-01 
+Fuel Mass Fraction: 	 1.319583e-01 
+max T : 	 1.337533e-01 N
