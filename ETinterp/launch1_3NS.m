@@ -30,7 +30,7 @@ v1_1 = v1_1 + v_inf1*(sin(beta1)*cos(alpha1)*r1vers_1 + ...
     Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, dataNS);
 
 %% RS2 equatorial
-deltaRS1 = 3; %days
+deltaRS1 = 2; %days
 TOFRS1 = TOF1 + deltaRS1; 
 
 [kepMars_RS1, ~] = uplanet(t01 + TOFRS1,4);
@@ -54,7 +54,7 @@ end
 
 
 %% ECS
-deltaECS = 3; %days
+deltaECS = 4; %days
 TOFECS = TOF1 + deltaECS;
 
 [kepMars_ECS, ~]    = uplanet(t01 + TOFECS,4);

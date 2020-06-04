@@ -109,7 +109,7 @@ v1_3 = v1_3 + v_inf3*(sin(beta3)*cos(alpha3)*r1vers_3 + ...
 
 if ~all(isnan([m1, m2, m3]))
     t1 = max(abs(T1)); t2 = max(abs(T2)); t3 = max(abs(T3));
-    y = t1 + 1.2*t2 + 1.5*t3;
+    y = t1 + t2 + t3;
 else 
     y = inf;
 end

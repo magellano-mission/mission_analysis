@@ -1,36 +1,24 @@
-function [X] = EoMpropRK4_2(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m, T, TOFr)
+function [X] = EoMpropRK4_2(X0, time, T, alpha, beta, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m, TOFr)
 %propagation of function
-    if nargin == 6
+    if nargin == 7
        plotsflag = 0; 
     end
     X = zeros(data.n_int, 7);
     X(1,:) = X0;
+    N = data.n_int;
     %RK4 forward integration
-    for k = 1:data.n_int-1
-        x = X(k,:);
-        
-        hhh = time(k+1) - time(k);
-        K1 = EoMpolar(time(k), x, a_in(k), a_out(k), muS, data);
-        K2 = EoMpolar(time(k)+ hhh/2, x + hhh/2*K1, 0.5*(a_in(k+1) + a_in(k)), 0.5*(a_out(k+1) + a_out(k)), muS, data);
-        K3 = EoMpolar(time(k)+ hhh/2, x + hhh/2*K2, 0.5*(a_in(k+1) + a_in(k)), 0.5*(a_out(k+1) + a_out(k)), muS, data);
-        K4 = EoMpolar(time(k)+ hhh, x + hhh*K3, a_in(k+1), a_out(k+1), muS, data);    
-        
-        X(k+1,:) = X(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-    end
-    
-    
-        for k = 1:N-1
-        xx = Xpropad(k,:);
+    for k = 1:N-1
+        xx = X(k,:);
 %         xx = x(k,:);
 
-        hhh = timead(k+1) - timead(k);
-        K1 = EoMpolarAD(timead(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
-        K2 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
-        K3 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
-        K4 = EoMpolarAD(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
+        hhh = time(k+1) - time(k);
+        K1 = EoMpolar2(time(k), xx, T(k), alpha(k), beta(k), muS, data);
+        K2 = EoMpolar2(time(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(alpha(k+1) + alpha(k)), 0.5*(beta(k)+beta(k+1)), muS, data);
+        K3 = EoMpolar2(time(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(alpha(k+1) + alpha(k)), 0.5*(beta(k)+beta(k+1)),  muS, data);
+        K4 = EoMpolar2(time(k)+ hhh, xx + hhh*K3, T(k+1), alpha(k+1), beta(k+1), muS, data);    
 
 %         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-        Xpropad(k+1,:) = Xpropad(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
+        X(k+1,:) = X(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
     end
 
     if plotsflag

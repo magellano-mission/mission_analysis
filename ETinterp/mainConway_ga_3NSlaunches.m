@@ -32,32 +32,32 @@ lb(18)  = 0;% alpha dep
 lb(19)  = 0;% beta dep
 
 % upper boundary 
-ub(1) = date2mjd2000([2026 1 1 0 0 0]);
-ub(2) = 1000;
-ub(3) = 3;
-ub(4) = 8;
-ub(5) = 3; %v_inf dep
-ub(6) = pi;% alpha dep
-ub(7) = pi;% beta dep
-ub(8) = 1000;
-ub(9) = 3;
-ub(10) = 8;
-ub(11) = 3; %v_inf dep
-ub(12) = pi;% alpha dep
-ub(13) = pi;% beta dep
-ub(14) = 1100;
-ub(15) = 3;
-ub(16) = 8;
-ub(17) = 3; %v_inf dep
-ub(18) = pi;% alpha dep
-ub(19) = pi;% beta dep
+ub(1)   = date2mjd2000([2026 1 1 0 0 0]);
+ub(2)   = 1000;
+ub(3)   = 3;
+ub(4)   = 8;
+ub(5)   = 3; %v_inf dep
+ub(6)   = pi;% alpha dep
+ub(7)   = pi;% beta dep
+ub(8)   = 1000;
+ub(9)   = 3;
+ub(10)  = 8;
+ub(11)  = 3; %v_inf dep
+ub(12)  = pi;% alpha dep
+ub(13)  = pi;% beta dep
+ub(14)  = 1100;
+ub(15)  = 3;
+ub(16)  = 8;
+ub(17)  = 3; %v_inf dep
+ub(18)  = pi;% alpha dep
+ub(19)  = pi;% beta dep
 
 %flexibility margins
-lb(20) = -5;
-lb(21) = -5;
+lb(20)  = -5;
+lb(21)  = -5;
 
-ub(20) = 5;
-ub(21) = 5;
+ub(20)  = 5;
+ub(21)  = 5;
  
 Bound = [lb; ub];
 
@@ -87,11 +87,11 @@ switch optimization_method
     chosen = 1;
     case 0
         fprintf('\n loaded a solution... \n')
-    load('SOLbest.mat')
+    load('SOLpartswarm2.mat')
     chosen = 1;
 end
 else
-    load('SOLbest.mat')
+    load('SOLpartswarm2.mat')
     chosen = 1;
 end
 clear choice
@@ -154,6 +154,8 @@ run('launch3_3NS.m')
 fprintf('\n %%%%%%%%%%%%%%%%%%%%%%%%%')
 fprintf('\n')
 diary off
+
+
 %% LOCAL UTILITY FUNCTIONS
 
 function [chosen, chosenT] = paretoplot(SOL, feval, data)
