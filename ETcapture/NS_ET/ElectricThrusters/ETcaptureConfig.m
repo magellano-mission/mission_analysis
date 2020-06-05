@@ -1,6 +1,6 @@
 %% Setup of the Electric Thrust capture
 % Time
-InitData = [2027 04 25 0 0 0 ];           % initial date
+InitData = [2028 06 04 0 0 0 ];           % initial date
 data.InitDay = date2mjd2000(InitData);    % initial day
 
 % Propulsion parameter
@@ -21,7 +21,7 @@ data.R_pl = nthroot(3*V/(4*pi), 3);       % Mars equivalent radius [km]
 data.R_SOI = 570000;                      % SOI radius [km] (from Curtis)
 
 % Orbit parameters: SOI entry
-rp = 59900;                               % pericenter of arrival hyp [km]
+rp = 59300;                               % pericenter of arrival hyp [km]
 Vinf = 0.001;                             % velocity at infinite [km/s]
 e = 1 + rp*Vinf^2/data.mi;                % eccentricity of the hyp
 p = rp*(e + 1);                           % semilatum rectus [km]
@@ -30,7 +30,7 @@ data.th0 = -acos((p/data.R_SOI - 1)/e);   % theta infinite
 % Initial conditions
 data.e_hyp = e;                           % eccentricity
 data.sma = p/(data.e_hyp^2 - 1);          % semi-major axis [km] 
-data.i = 903.3809e-003;                          % inclination [rad] (from GA)
+data.i = 45*pi/180;                       % inclination [rad] (from GA)
 Kep0 = [data.sma, data.e_hyp, data.i, 0, 0, data.th0];     
 [R0, V0] = kep2car(Kep0, data.mi);        % cartesian IC
 M0 = data.M;

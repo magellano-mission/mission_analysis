@@ -20,64 +20,39 @@ run('ETcaptureConfig.m')
 %% Computations
 tic
 TT = 56.8800e+006;                     % long period, Event function inside the ode
-data.T = -0.2;                % [N] (for clearness the Thrust is here)
+data.T = -0.196;                % [N] (for clearness the Thrust is here)
 data.flag = 0;
 
-%% Try for the GA and set of the initial conditions
-% data.direction = "tangential";
-% [T, Y] = ode113(@ETcaptIntegration, [0, TT], data.Y0, data.opt4, data);
-% parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi)
-% r_fin = norm(Y(end,1:3))
-% mass = Y(end,7)
-
-%% Integration until ellipse
+% NS capture maneuver
 data.direction = "tangential";
-[T1, Y1] = ode113(@ETcaptIntegration, [0, TT], data.Y0, data.opt1, data);
-
-%% Integration until reach descending or ascending node
-data.T = 0;           % coasting maneuver, thrust is off
-kepDesc = car2kep(Y1(end,1:3),Y1(end,4:6), data.mi);
-kepDesc(7) = Y1(end,7);
-[T2, Y2] = ode113(@GaussIntegration, [T1(end), TT], kepDesc, data.opt2, data);
-
-%% Integration for the change of RAAN
-data.direction = "perpendicular";
-data.T = -0.2; 
-kepChangeRAAN = Y2(end,:);
-kepChangeRAAN(7) = Y2(end,7);
-[T3, Y3] = ode113(@GaussIntegration, [T2(end), T2(end) + data.timeStop], kepChangeRAAN, data.opt3, data);
-
-% data.T = 0;           % coasting maneuver, thrust is off
-% [Ttry, Ytry] = ode113(@GaussIntegration, [T3(end), TT], Y3(end,:), data.opt2, data);
-
-
-%% Integration until close the orbit
-data.direction = "tangential";
-data.T = -0.2;
-[RR, VV] = kep2car(Y3(end,1:6),data.mi);
-cartIC = [RR; VV; Y3(end,7)];
-[T4, Y4] = ode113(@ETcaptIntegration, [T3(end), TT], cartIC, data.opt4, data);
+[T, Y] = ode113(@ETcaptIntegration, [0, TT], data.Y0, data.opt4, data);
+parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi)
+r_fin = norm(Y(end,1:3))
+mass = Y(end,7)
 
 %% Post-process
-% r_fin = norm(Y1(end,1:3))
+vecDates = data.InitDay +  T/86400;
 
-Y2kep = Y2(:,1:6);
-Y2cart = zeros(length(T2),3);
-for kk = 1: length(T2)
-    Y2cart(kk,:) = kep2car(Y2kep(kk,:), data.mi);
+vecSun = zeros(length(vecDates),3);
+for kk = 1:length(vecDates)
+   vecSun1 = uplanet(vecDates(kk),4); 
+   [vecSun(kk,:), ~] = kep2car(vecSun1,data.mi);
 end
 
-Y3kep = Y3(:,1:6);
-Y3cart = zeros(length(T3),3);
-for kk = 1: length(T3)
-    Y3cart(kk,:) = kep2car(Y3kep(kk,:), data.mi);
+incMars = 1.85061*pi/180;   % [rad]
+A = [cos(incMars) sin(incMars) 0
+     -sin(incMars) cos(incMars) 0
+     0 0 1];
+
+Sun2Mars = zeros(length(T),3);
+for jj = 1:length(T)
+    Sun2Mars(jj,:) = A*vecSun(jj,1:3)';
 end
 
-Ytrykep = Ytry(:,1:6);
-Ytrycart = zeros(length(Ttry),3);
-for kk = 1: length(Ttry)
-    Ytrycart(kk,:) = kep2car(Ytrykep(kk,:), data.mi);
-end
+Mars2sc = Y(:,1:3);
+
+SunDirection = - (Mars2sc + Sun2Mars);
+
 
 %% Graphs
 % Orbit
@@ -93,56 +68,50 @@ hold on
 set(planet,'FaceColor','texturemap','Cdata',I)
 set(get(get(planet,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 %set(gca,'Color','black')
-plot3(Y1(:, 1), Y1(:, 2), Y1(:, 3),'Colo',[155/255, 155/255, 155/255]), hold on, axis equal
-plot3(Y2cart(:, 1), Y2cart(:, 2), Y2cart(:, 3),'k')
-plot3(Y3cart(:, 1), Y3cart(:, 2), Y3cart(:, 3),'Color',[0.1020, 0.6667, 0.74120])
-plot3(Ytrycart(:, 1), Ytrycart(:, 2), Ytrycart(:, 3),'k')
-plot3(Y4(:, 1), Y4(:, 2), Y4(:, 3),'Color', [0.9490,0.4745,0.3137])
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
-legend('Tangential','Coasting','Perpendicular','Coasting','Tangential')
 
+plot3(Y(:, 1), Y(:, 2), Y(:, 3),'Color',[155/255, 155/255, 155/255]), hold on, axis equal
+xlabel('X [km]')
+ylabel('Y [km]')
+zlabel('Z [km]')
 % [0.9490, 0.4745, 0.3137]
 % 
 % [0.1020, 0.6667, 0.74120]
 % 
 % [155/255, 155/255, 155/255]
-% Mass decrease
-% hold off
-% figure()
-% plot(T_tot,mass)
-    
+
 % other stuff for check
 
-Y4k = zeros(length(Y4),6);
-for kk = 1:length(T4)
-    Y4k(kk,1:6) = car2kep(Y4(kk,1:3),Y4(kk,4:6),data.mi);
+Yk = zeros(length(Y),6);
+for kk = 1:length(T)
+    Yk(kk,1:6) = car2kep(Y(kk,1:3),Y(kk,4:6),data.mi);
 end
 
 figure()
 subplot(2,3,1)
-plot(T4,Y4k(:,1))
+plot(T,Yk(:,1))
 ylabel('SMA')
 
 subplot(2,3,2)
-plot(T4,Y4k(:,2))
+plot(T,Yk(:,2))
 ylabel('ecc')
 
 subplot(2,3,3)
-plot(T4,Y4k(:,3)*180/pi)
+plot(T,Yk(:,3)*180/pi)
 ylabel('incl')
 
 subplot(2,3,4)
-plot(T4,Y4k(:,4)*180/pi)
+plot(T,Yk(:,4)*180/pi)
 ylabel('RAAN')
 
 subplot(2,3,5)
-plot(T4,Y4k(:,5)*180/pi)
+plot(T,Yk(:,5)*180/pi)
 ylabel('omeghino')
 
 subplot(2,3,6)
-plot(T4,Y4k(:,6)*180/pi)
+plot(T,Yk(:,6)*180/pi)
 ylabel('theta')
 
 

@@ -21,7 +21,7 @@ data.R_pl = nthroot(3*V/(4*pi), 3);       % Mars equivalent radius [km]
 data.R_SOI = 570000;                      % SOI radius [km] (from Curtis)
 
 % Orbit parameters: SOI entry
-rp = 35000;                               % pericenter of arrival hyp [km] (SET)
+rp = 39000;                               % pericenter of arrival hyp [km] (SET)
 Vinf = 0.001;                             % velocity at infinite [km/s]
 e = 1 + rp*Vinf^2/data.mi;                % eccentricity of the hyp
 p = rp*(e + 1);                           % semilatum rectus [km]
