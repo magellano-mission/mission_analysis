@@ -152,8 +152,8 @@ runDirectTranscription(t02, TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, 
 %%
 dataNS3.n_int = 70;
 
-Bounds.alpha_lb = deg2rad(-45);%-pi;
-Bounds.alpha_ub = deg2rad(45);%pi;
+Bounds.alpha_lb = deg2rad(-35);%-pi;
+Bounds.alpha_ub = deg2rad(35);%pi;
 Bounds.beta_lb = deg2rad(-45);%-pi/4;
 Bounds.beta_ub = deg2rad(45);%pi/4;
 %r
