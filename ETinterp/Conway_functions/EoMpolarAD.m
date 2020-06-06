@@ -6,10 +6,6 @@ TU = (DU^3/muS).^0.5;
 MU = data.Mdry;
 muS = 1;
 
-% DU = 1; 
-% TU = 1;
-% MU = 1;
-
 m = m*MU;
 
 y(1) = vr;

@@ -6,11 +6,11 @@ function maxT = d2T(s)
 % T : maximum thrust available [N]
 
 % Parameters
-AU = 149597870.7;   % 1 AU [km]
+% AU = 149597870.7;   % 1 AU [km]
 A = 51.2534;        % Solar panels surface [m2]
 
 % Total available power
-P = DistArray(s/AU, A);
+P = DistArray(s, A);
 
 % ?% Available power for propulsion
 P = P/1.2 - 220;

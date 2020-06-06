@@ -8,7 +8,7 @@ y(3) = vz;
 y(4) = -muS/s^3 * r + r*thd^2 + T/1000/m*cos(beta)*sin(alpha);
 y(5) = 1/r*(T/1000/m*cos(beta)*cos(alpha) - 2*vr*thd);
 y(6) = -muS/(s)^(3) * z + T/1000/m*sin(beta);
-y(7) = (-T/(data.Isp*9.81)); 
+y(7) = (-T/(data.Isp(T)*9.81)); 
 
 end
 

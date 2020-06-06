@@ -30,8 +30,8 @@ Xad(:,7) = X(:,7)/MU;
 
 % thr = 1e-3;
 % ubeta = atan2((T_outplane < thr).*thr + (T_outplane > thr).*T_outplane, T_inplane);
-ubeta = atan2(T_outplane, T_inplane);
-% ubeta = asin(T_outplane./ T);
+% ubeta = atan2(T_outplane, T_inplane);
+ubeta = asin(T_outplane./ T);
 ualpha = gamma;
 
 data.xi = Xad(1,:);
@@ -48,7 +48,6 @@ Xpropad(1,:) = Xad(1,:); %first value equal
   %RK4 forward integration (in each interval of delta t)
     for k = 1:N-1
         xx = Xpropad(k,:);
-%         xx = x(k,:);
 
         hhh = timead(k+1) - timead(k);
         K1 = EoMpolarAD(timead(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
@@ -56,7 +55,6 @@ Xpropad(1,:) = Xad(1,:); %first value equal
         K3 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
         K4 = EoMpolarAD(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
 
-%         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
         Xpropad(k+1,:) = Xpropad(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
     end
 Xd(:,1) = Xpropad(:,1)*DU;
@@ -68,6 +66,7 @@ Xd(:,6) = Xpropad(:,6)*DU/TU;
 Xd(:,7) = Xpropad(:,7)*MU;
 
 figure()
+sgtitle('confrontatio of propagated and adimensional states..')
 subplot(7,1,1), plot(Xad(:,1)), hold on, plot(Xpropad(:,1))
 subplot(7,1,2), plot(Xad(:,2)), hold on, plot(Xpropad(:,2))
 subplot(7,1,3), plot(Xad(:,3)), hold on, plot(Xpropad(:,3))
@@ -86,16 +85,16 @@ data.xf = Xad(end,:);
 % Adimensionalization of variables
 figure(),
 sgtitle('Conway Control'),
-subplot(4,2,[1 2]), plot(rad2deg(ubeta),'HandleVisibility','off'), hold on, 
+subplot(4,2,[1 2]), plot(timead, rad2deg(ubeta),'HandleVisibility','off'), hold on, xlabel('time [TU]')
 yline(rad2deg(Bounds.beta_ub),'r','DisplayName','UB'); hold on, yline(rad2deg(Bounds.beta_lb),'b','DisplayName','LB'),
 title('$\beta$'), grid on, legend()
-subplot(4,2,[3 4]), plot(rad2deg(gamma),'HandleVisibility','off'), hold on
+subplot(4,2,[3 4]), plot(timead, rad2deg(gamma),'HandleVisibility','off'), hold on, xlabel('time [TU]')
 yline(rad2deg(Bounds.alpha_ub),'r','DisplayName','UB'); hold on, yline(rad2deg(Bounds.alpha_lb),'b','DisplayName','LB'),
 title('$\alpha$'), grid on, legend()
-subplot(4,2,[5 6]),  plot(T,'HandleVisibility','off'), title('T'), grid on
+subplot(4,2,[5 6]),  plot(timead, T,'HandleVisibility','off'), title('T'), grid on, xlabel('time [TU]')
 yline(data.Tmax,'r','DisplayName','UB'); hold on, yline(0,'b','DisplayName','LB'), legend()
-subplot(4,2,7), plot(T_inplane,'HandleVisibility','off'), title('T inplane'), grid on, 
-subplot(4,2,8),  plot(T_outplane,'HandleVisibility','off'), title('T outplane'), grid on
+subplot(4,2,7), plot(timead, T_inplane,'HandleVisibility','off'), title('T inplane'), grid on, xlabel('time [TU]')
+subplot(4,2,8),  plot(timead, T_outplane,'HandleVisibility','off'), title('T outplane'), grid on, xlabel('time [TU]')
  
 %definition of the initial guess (sub-optimal conway solution)
 for ii = 1:N
@@ -138,14 +137,14 @@ rHS = XHS(:,1); thHS = XHS(:,2); zHS = XHS(:,3); vrHS = XHS(:,4);
 thdHS = XHS(:,5); vzHS = XHS(:,6); mHS = XHS(:,7); 
 
 sHS = (rHS.^2 + zHS.^2).^0.5;
-maxT = d2T (sHS);
+maxT = d2T (sHS/DU);
 maxT = 0.25*(maxT >= 0.25) + maxT.*(maxT < 0.25);
 
 
 figure()
 sgtitle('Optimal Control')
 subplot(3,1,1), plot(timead, THS, 'DisplayName', 'Optimal control'), hold on, plot(timead, T,  'DisplayName', 'Conway Solution'), hold on, 
-plot(timead, maxT, 'b:'), title('T'), ylabel('T [N]'), xlabel('t [TU]'), legend()
+plot(timead, maxT, 'b:','DisplayName','max available T'), title('T'), ylabel('T [N]'), xlabel('t [TU]'), legend()
 subplot(3,1,2), plot(timead, rad2deg(alphaHS),'DisplayName', 'Optimal control'), hold on, plot(timead, rad2deg(ualpha),  'DisplayName', 'Conway Solution'), hold on, title('$\alpha$'), ylabel('$\alpha$ [deg]'), xlabel('t [TU]'), legend()
 subplot(3,1,3), plot(timead, rad2deg(betaHS),'DisplayName', 'Optimal control'), hold on, plot(timead, rad2deg(ubeta),  'DisplayName', 'Conway Solution'), hold on, title('$\beta$'), ylabel('$\beta$ [deg]'), xlabel('t [TU]'), legend()
 
@@ -158,8 +157,8 @@ subplot(4,2,4), plot(timead, vrHS,'DisplayName', 'Optimal control'), hold on, pl
 subplot(4,2,5), plot(timead, thdHS,'DisplayName', 'Optimal control'), hold on, plot(timead, theta_dot,  'DisplayName', 'Conway Solution'), hold on,ylabel('$\theta_dot$ [km]')
 subplot(4,2,6), plot(timead, vzHS,'DisplayName', 'Optimal control'), hold on, plot(timead, vz,  'DisplayName', 'Conway Solution'), hold on,ylabel('$v_z$ [km/s]')
 subplot(4,2,7), plot(timead, mHS,'DisplayName', 'Optimal control'), hold on, plot(timead, m,  'DisplayName', 'Conway Solution'), hold on,ylabel('m [kg]')
-subplot(4,2,8), plot(timead, THS,'DisplayName', 'Optimal control'), hold on, plot(timead, T,  'DisplayName', 'Conway Solution'), hold on,ylabel('T [N]')
-
+subplot(4,2,8), plot(timead, THS,'DisplayName', 'Optimal control'), hold on, plot(timead, T,  'HandleVisibility','off'), hold on,ylabel('T [N]')
+plot(timead, maxT, 'b:','DisplayName','max available T')
 
 end
 
