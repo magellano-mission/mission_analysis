@@ -29,7 +29,7 @@ v1_1 = v1_1 + v_inf1*(sin(beta1)*cos(alpha1)*r1vers_1 + ...
 [ m1, T1, r1, z1, ~, vr1, vt1, vz1, acc_inplane1, acc_out1, acc1, TH1, ~, gamma11, gamma21, gamma1, v1perp1, v2perp1, v1tra1, v2tra1, vnorm1, ~, T_inplane1, T_outplane1, theta_dot1, time1, TOFr1] = ... 
     Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, dataNS);
 
-%% RS2 equatorial
+%% RS1 equatorial
 deltaRS1 = 2; %days
 TOFRS1 = TOF1 + deltaRS1; 
 

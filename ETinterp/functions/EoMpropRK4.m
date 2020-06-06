@@ -1,4 +1,4 @@
-function [X] = EoMpropRK4_2(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m, T, TOFr)
+function [X] = EoMpropRK4(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, z, vr, th_dot, vz, m, T, TOFr)
 %propagation of function
     if nargin == 6
        plotsflag = 0; 
@@ -18,21 +18,6 @@ function [X] = EoMpropRK4_2(X0, time, a_in, a_out, muS, data, plotsflag, r, TH, 
         X(k+1,:) = X(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
     end
     
-    
-        for k = 1:N-1
-        xx = Xpropad(k,:);
-%         xx = x(k,:);
-
-        hhh = timead(k+1) - timead(k);
-        K1 = EoMpolarAD(timead(k), xx, T(k), ualpha(k), ubeta(k), muS, data);
-        K2 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K1, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)), muS, data);
-        K3 = EoMpolarAD(timead(k)+ hhh/2, xx + hhh/2*K2, 0.5*(T(k+1) + T(k)), 0.5*(ualpha(k+1) + ualpha(k)), 0.5*(ubeta(k)+ubeta(k+1)),  muS, data);
-        K4 = EoMpolarAD(timead(k)+ hhh, xx + hhh*K3, T(k+1), ualpha(k+1), ubeta(k+1), muS, data);    
-
-%         Xprop(k+1,:) = xx + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-        Xpropad(k+1,:) = Xpropad(k,:) + hhh/6*(K1 + 2*K2 + 2*K3 + K4);
-    end
-
     if plotsflag
         TX_inplane = a_in .*X(:,7)' * 1000;
         TX_outplane = a_out .*X(:,7)' * 1000;

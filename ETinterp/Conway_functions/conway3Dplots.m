@@ -51,7 +51,7 @@ fprintf('N_rev \t \t %d \n', N_rev);
 fprintf('q \t \t %d \n \n', q);
 fprintf('Departure v_inf: \t %d km/s (C3 = %d km^2/s^2) \n', norm(v_inf1), norm(v_inf1)^2)
 fprintf('Arrival v_inf: \t %d km/s (C3 = %d km^2/s^2)   \n \n', norm(v_inf2), norm(v_inf2)^2)
-fprintf('Isp: \t %d s\n', data.Isp)
+% fprintf('Isp: \t %d s\n', data.Isp)
 fprintf('Mdry: \t %d kg\n', data.Mdry)
 fprintf('Propellant mass: \t %d kg \n', m(1) - m(end))
 fprintf('Mass ratio: \t %d \n', m(end)/m(1))

@@ -1,9 +1,9 @@
 %% second launch
 [kepEarth_2, ~] = uplanet(t02,3);
-[kepMars_RS1, ~]    = uplanet(t02 + TOF2,4);
+[kepMars_RS2, ~]    = uplanet(t02 + TOF2,4);
 
 [R1_2, v1_2] = kep2car2(kepEarth_2, muS); %km....
-[R2_2, v2_2] = kep2car2(kepMars_RS1, muS);  %km....
+[R2_2, v2_2] = kep2car2(kepMars_RS2, muS);  %km....
 
 %definition of plane of motion
 r1norm_2 = norm(R1_2);

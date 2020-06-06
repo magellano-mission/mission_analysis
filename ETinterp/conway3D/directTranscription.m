@@ -1,14 +1,26 @@
 %% DIRECT TRANSCRIPTION
-data = dataNS1;
-data.n_int = 70;
-data.Tmax = 0.29;
-href = hvers_1;
-TOF = TOF1;
-t0 = t01;
-r1vers = r1vers_1;
+% data = dataNS1;
+% data.n_int = 120;
+% data.Tmax = 0.25;
+% href = hvers_1;
+% TOF = TOF1;
+% t0 = t01;
+% r1vers = r1vers_1;
+% 
+% [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, theta_dot, time, TOFr] = ...
+%     Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, data);
+
+
+data = dataNS3;
+data.n_int = 1000;
+data.Tmax = 0.25;
+href = hvers_3;
+TOF = TOF3;
+t0 = t03;
+r1vers = r1vers_3;
 
 [ m, T, r, z, s, vr, vt, vz, acc_inplane, acc_out, acc, TH, L, gamma1, gamma2, gamma, v1perp, v2perp, v1tra, v2tra, vnorm, dmdt, T_inplane, T_outplane, theta_dot, time, TOFr] = ...
-    Conway(TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, data);
+    Conway(TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, muS, data);
 
 X = [r', TH', z', vr', theta_dot', vz', m'];
 options = optimset( 'Algorithm','interior-point', ...
@@ -145,29 +157,29 @@ function J = DTmethod(X, data)
     N =data.n_int;
     m = zeros(1, N);
     x = zeros(N,7);
-%     T = m;
-%     time = data.time;
+    T = m;
+    time = data.time;
 % alpha = m; beta = m;
 
 
     for k=1:N
         x(k,:) = X((k-1)*10 + 1:(k-1)*10+7);
         m(k) = x(k,7);
-%         T(k) = X((k-1)*10+8); 
+        T(k) = X((k-1)*10+8); 
 
     end
     
-%     J = 0;
-%     for k = 2:N-1
-%         %integration of cost function
-%         dt = time(k+1) - time(k);
-%         J = J +  dt/6 * (T(k-1) + 4*T(k) + T(k + 1));
-%     end
+    J = 0;
+    for k = 2:N-1
+        %integration of cost function
+        dt = time(k+1) - time(k);
+        J = J +  dt/6 * (T(k-1) + 4*T(k) + T(k + 1));
+    end
 %     J = J + T(end)*dt;
 %     T_inplane = a_in .*m * 1000;
 %     T_outplane = a_out .*m * 1000;
 %     T = (T_inplane.^2 + T_outplane.^2).^0.5;
-    J = m(1) - m(end);
+%     J = m(1) - m(end);
 
 end
 
@@ -269,18 +281,18 @@ function [lb, ub] = LBUB(XX0, X,  data)
     N = data.n_int;
     T_lb = 0;
     T_ub = data.Tmax;
-    alpha_lb = -pi;
-    alpha_ub = pi;
-    beta_lb = -pi/2;
-    beta_ub = pi/2;
+    alpha_lb = deg2rad(-10);%-pi;
+    alpha_ub = deg2rad(10);%pi;
+    beta_lb = deg2rad(-20);%-pi/4;
+    beta_ub = deg2rad(20);%pi/4;
     
     %limits definition
     ub = zeros(1,10*N);
     lb = zeros(1,10*N);
         
     %r
-    r_ub = 2;
-    r_lb = 0.8;
+    r_ub = 1.55;
+    r_lb = 0.85;
 
     %theta
     th_ub = Inf;
@@ -289,14 +301,14 @@ function [lb, ub] = LBUB(XX0, X,  data)
     z_ub =  0.05;
     z_lb =  -0.05;
     %vr
-    vr_ub = 2;
-    vr_lb = -2;
+    vr_ub = 0.1;
+    vr_lb = -0.2;
     %theta_dot
     thd_ub = Inf;
     thd_lb = -Inf;
     %vz
-    vz_ub = 1;
-    vz_lb = -1;
+    vz_ub = 0.03;
+    vz_lb = -0.03;
     
     %
     m_ub = X(1,7)*1.1;
@@ -304,11 +316,11 @@ function [lb, ub] = LBUB(XX0, X,  data)
 
     %INITIAL CONDITION
     ub(1:10) = XX0(1:10); 
-    ub(8) = T_ub;% ub(9) = alpha_ub; ub(10) = beta_ub;
+    ub(8) = T_ub; ub(9) = alpha_ub; ub(10) = beta_ub;
     ub(7) = m_ub;
     lb(1:10) = XX0(1:10); 
     lb(7) = m_lb;
-    lb(8) = 0; %lb(9) = alpha_lb; lb(10) = beta_lb;
+    lb(8) = 0; lb(9) = alpha_lb; lb(10) = beta_lb;
     
     %PATH CONSTRAINTS
     ub(11:10:((N-1)*10)) = r_ub;
@@ -335,9 +347,9 @@ function [lb, ub] = LBUB(XX0, X,  data)
 
     %FINAL CONDITION
     ub(end-9:end) = XX0(end-9:end);
-    ub(end-2)=T_ub;% ub(end-1)=alpha_ub; ub(end)=beta_ub;
+    ub(end-2)=T_ub; ub(end-1)=alpha_ub; ub(end)=beta_ub;
     ub(end-3) = m_lb;
     lb(end-9:end) = XX0(end-9:end);
-    lb(end-2)=0; %lb(end-1)=alpha_lb; lb(end)=beta_lb;
+    lb(end-2)=0; lb(end-1)=alpha_lb; lb(end)=beta_lb;
     lb(end-3) = m_lb;
 end
