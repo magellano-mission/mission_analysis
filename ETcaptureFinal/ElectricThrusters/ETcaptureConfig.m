@@ -1,13 +1,67 @@
 %% Setup of the Electric Thrust capture
 % Time
-InitData = [2028 06 04 0 0 0 ];           % initial date
-data.InitDay = date2mjd2000(InitData);    % initial day
+SM = "NS1";
+% SM = "NS2";
+% SM = "NS3";
+% SM = "ECS";
+% SM = "RSeq";
+% SM = "RSpol";
 
 % Propulsion parameter
 data.Isp_fun = @(X) 0.051346711071873*X.^2-6.382637268333952*X+3554.166890279770;
-data.g0 = 9.807;                          % [m/s^2]      
-data.M = 1600;                            % s/c mass at arrival [kg]
+data.g0 = 9.807;                          % [m/s^2]  
 
+switch SM
+    case "NS1"
+        data.M = 1750;                            % s/c mass at arrival [kg]
+        data.Apanels = 52;
+        data.r_final = 12300;                     % NS final radius
+        data.i = 45*pi/180;                       % inclination [rad]
+        InitData = [2028 06 12 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day
+        data.rp0 = [50000, 62000];
+    case "ECS"
+        data.M = 1450;
+        data.Apanels = 52;
+        data.r_final = 7400;                      % ECS final radius
+        data.i = 0*pi/180;                        % inclination [rad]
+        InitData = [2028 06 16 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day
+        data.rp0 = [32000, 45000];
+    case "RSeq"
+        data.M = 1350;
+        data.Apanels = 52;
+        data.r_final = 4900;                      % NS final radius
+        data.i = 0*pi/180;                        % inclination [rad]
+        InitData = [2028 06 14 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day
+        data.rp0 = [28000, 40000];
+    case "NS2"
+        data.M = 1750;                            % s/c mass at arrival [kg]
+        data.Apanels = 52;
+        data.r_final = 12300;                     % NS final radius
+        data.i = 45*pi/180;                       % inclination [rad]
+        InitData = [2028 12 13 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day
+        data.rp0 = [50000, 65000];
+    case "RSpol"
+        data.M = 1350;
+        data.Apanels = 52;
+        data.r_final = 4900;                      % NS final radius
+        data.i = 89.999*pi/180;                        % inclination [rad]
+        InitData = [2028 12 16 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day
+        data.rp0 = [30000, 45000];
+    case "NS3"
+        data.M = 1750;                            % s/c mass at arrival [kg]
+        data.Apanels = 52;
+        data.r_final = 12300;                     % NS final radius
+        data.i = 45*pi/180;                       % inclination [rad]
+        InitData = [2029 06 22 0 0 0 ];           % initial date
+        data.InitDay = date2mjd2000(InitData);    % initial day 
+        data.rp0 = [50000, 62000];
+end
+        
 % Planetary parameter
 data.mi = astroConstants(14);             % planetary constant [km^3/s^2]
 data.switchers.grav = true;               % set gravity effects on/off
@@ -21,13 +75,8 @@ data.R_pl = nthroot(3*V/(4*pi), 3);       % Mars equivalent radius [km]
 data.R_SOI = 570000;                      % SOI radius [km] (from Curtis)
 
 % Orbit parameters: SOI entry
-data.Vinf = 0.001;                        % velocity at infinite [km/s]
-data.i = 45*pi/180;                       % inclination [rad] 
+data.Vinf = 0.001;                        % velocity at infinite [km/s] 
 data.Om0 = 359.999*pi/180;
-
-% Stop conditions
-data.r_final = 12300;                     % NS final radius
-data.eccF = 0.0005;
 
 % ODE options
 data.opt = odeset('RelTol', 1e-10, 'AbsTol', 1e-10, 'Event', @ETfinalEvent);

@@ -24,16 +24,15 @@ mi = data.mi;
 E = ((v^2 - mi/r)*R - (dot(R, V)*V))/mi;
 ec = norm(E);
 
-value(1) = ec - 5e-4;
-value(2) = r - data.r_final;
+value = ec - 2.9e-3;
 
 if t > 1
-    isterminal(1:2) = 1;
+    isterminal = 1;
 else 
-    isterminal(1:2) = 0;
+    isterminal = 0;
 end
 
-direction(1:2) = 0;
+direction = 0;
 
 
 
