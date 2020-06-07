@@ -118,8 +118,8 @@ porpagationAD(THSECS, alphaHSECS, betaHSECS, XHSECS, muS, dataECS,  TOFECS, N_re
 
 dataNS2.n_int = 70;
 
-Bounds.alpha_lb = deg2rad(-45);%-pi;
-Bounds.alpha_ub = deg2rad(45);%pi;
+Bounds.alpha_lb = deg2rad(-15);%-pi;
+Bounds.alpha_ub = deg2rad(15);%pi;
 Bounds.beta_lb = deg2rad(-45);%-pi/4;
 Bounds.beta_ub = deg2rad(45);%pi/4;
 %r
