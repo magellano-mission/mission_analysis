@@ -1,4 +1,4 @@
-function [T] = d2T (d)
+function [T] = d2T (d,data)
 
 % Function to compute maximum available thrust at a given distance from the Sun
 
@@ -10,7 +10,8 @@ function [T] = d2T (d)
 
 % Parameters
 AU = 149597870.7;   % 1 AU [km]
-A = 51.2534;        % Solar panels surface [m2]
+A = data.Apanels;        % Solar panels surface [m2] for NS
+% A = 42; % for ECS and RS
 
 % Total available power
 P = DistArray(d/AU, A);

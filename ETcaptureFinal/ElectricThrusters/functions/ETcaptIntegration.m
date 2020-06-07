@@ -1,20 +1,12 @@
-function dY = ETcaptIntegration(t, Y, data)
+function [dY, thrust] = ETcaptIntegration(t, Y, data)
 %{
 ODE function to integrate the Thrusted electric arches
 %}
-
 % States
 R = Y(1:3);
 V = Y(4:6);
 M = Y(7);
 
-% input checks
-% if isrow(R)
-%     R = R';
-% end
-% if isrow(V)
-%     V = V';
-% end
 %% Gravity perturb
 R_pl = data.R_pl;                          % planet radius
 J2 = data.J2;                              % J2 perturbation constant
@@ -60,19 +52,18 @@ a_j4_z = kj*(15 - 70*(s_sc(3)/r)^2 + 63*(s_sc(3)/r)^4)*s_sc(1)/r;
 a_J4 = [a_j4_x; a_j4_y; a_j4_z];                        % [km/s^2]
 
 % rotation in ECI
-a_J2 = B'*a_J2;
-a_J3 = B'*a_J3;
-a_J4 = B'*a_J4;
+a_J2eci = B'*a_J2;
+a_J3eci = B'*a_J3;
+a_J4eci = B'*a_J4;
 
 %% Out of gravity perturb
-aJ2_car = a_J2 + a_J3 + a_J4;
+aJ2_car = a_J2eci + a_J3eci + a_J4eci;
 
 %% ET capture thrust
 mjd2000 = data.InitDay + t/86400; 
 
-% uplanet
+%% uplanet
 DEG2RAD=pi/180;
-
 
 KM  = 149597870.66;
 
@@ -105,6 +96,7 @@ theta=2*atan(sqrt((1+KepS(2))/(1-KepS(2)))*tan(phi/2));
 
 KepS(6)=theta;
 
+%% thrust
 rM2S = - kep2car_r_only(KepS);         % retriving the sun position vector wrt the planet
 light = los(R, rM2S, data.R_pl);       % checking the line of sight
 
@@ -122,15 +114,15 @@ else
     thrust = 0;
 end
 
-%Isp = data.Isp_fun(thrust);
+%%
+Isp = round(data.Isp_fun(norm(thrust*1e3)), 1);
 
 % Derivative of the states
 dY(1:3) = V;
 dY(4:6) = - data.mi/norm(R)^3.*R + aT_car + aJ2_car;
-%dY(7) = - norm(thrust)/Isp/data.g0;
-dY(7) = - norm(thrust)/4300/data.g0;
-
+dY(7) = - norm(thrust)/Isp/data.g0;
 
 dY = dY';
+
 
 end
