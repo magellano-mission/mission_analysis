@@ -2,7 +2,7 @@ function dY = ETcaptIntegration(t, Y, data)
 %{
 ODE function to integrate the Thrusted electric arches
 %}
-t
+
 % States
 R = Y(1:3);
 V = Y(4:6);
