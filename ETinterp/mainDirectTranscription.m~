@@ -151,9 +151,11 @@ conway3Dplots2(t02, linspace(dataNS2.TOFdays(1),dataNS2.TOFdays(end),70), dataNS
 % propagation for validation of results
 porpagationAD(THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, muS, dataNS2,  TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, Bounds);
 %% Interpolation of control...
-clearvars T_i alpha_i beta_i X_i
-[T_i, alpha_i, beta_i, X_i, dataNS2.optim.interp.TOF] = interpolateDT(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2);
-dataNS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_2, hvers_2);
+
+Xinterp = zeros(1400);
+= interp(betaHSNS2,20);
+figure(), subplot(2,1,1), plot(betaHSNS2), hold on, 
+subplot(2,1,2), plot(XHSinterpNS2)
 %%
 dataRS2.n_int = 70;
 
