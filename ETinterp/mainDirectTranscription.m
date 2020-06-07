@@ -7,10 +7,10 @@ close all
 % FIRST LAUNCH
 dataNS1.n_int = 70; 
 
-Bounds.alpha_lb = deg2rad(-15);%-pi;
-Bounds.alpha_ub = deg2rad(15);%pi;
-Bounds.beta_lb = deg2rad(-25);%-pi/4;
-Bounds.beta_ub = deg2rad(25);%pi/4;
+Bounds.alpha_lb = deg2rad(-180);%-pi;
+Bounds.alpha_ub = deg2rad(180);%pi;
+Bounds.beta_lb = deg2rad(-180);%-pi/4;
+Bounds.beta_ub = deg2rad(180);%pi/4;
 
 %r
 Bounds.r_ub = 1.55;
@@ -187,7 +187,7 @@ runDirectTranscription(t02, TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, 
 
 dataRS2.optim = polar2cart(XHSRS2, THSRS2, alphaHSRS2, betaHSRS2, r1vers_2, hvers_RS2);
 % propagation for validation of results
-porpagationAD(THSRS2, alphaHSRS2, betaHSRS2, XHSNS3, muS, dataNS3,  TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, Bounds);
+porpagationAD(THSRS2, alphaHSRS2, betaHSRS2, XHSRS2, muS, dataRS2,  TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, Bounds);
 %% THIRD LAUNCH
 
 dataNS3.n_int = 70;
