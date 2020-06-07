@@ -74,7 +74,7 @@ function [c, ceq] = EoMconstr(X, data)
     %quality constrataints
     ceq     = [csi, DDD, BCi, BCf]; 
     
-    maxT = d2T (s);
+    maxT = d2T (s,data.panels);
     maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
     c = T - maxT;
 end
