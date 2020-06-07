@@ -19,43 +19,24 @@ run('ETcaptureConfig.m')
 
 %% Computations
 tic
-data.TT = 56.8800e+006;              % long period, Event function inside the ode
+data.TT = 1e8;              % long period, Event function inside the ode
 data.direction = "tangential";
 
-%% fmincon
-% 
-% [SOL, feval, exitflag] = fmincon(@(x) BCfindRHyp(x, data), [65000, 2e7],[], []);
+% %% Optimization
+% options = optimset('Display','iter','TolX',1e-4);
+% rp = fzero(@(x) BCfindRHyp(x, data), data.rp0, options);
 
-
-%% Genetic Algorithm
-% Output: SOL --> rp hyperbola
-% lower boundary
-lb = 0; ub = lb;
-lb(1) = 29000;
-
-% upper boundary 
-ub(1) = 70000;
-
-Bound = [lb; ub];
-
-% options = optimoptions('gamultiobj', 'Display', 'Iter', ...
-options = optimoptions('ga', 'Display', 'Iter', ...
-                       'PopulationSize', 200, 'StallGenLimit', 200, ... %          
-                       'MaxGenerations', 200, ...
-                       'UseParallel', true, 'PopInitRange', Bound);
-                   
-[SOL, feval, exitflag] = ga(@(x) BCfindRHyp(x, data), 2, [], [], [], [], lb, ub, [], options);
-
-
-
-%% Capture maneuver
-data.direction = "tangential";
-[T, Y] = ode113(@ETcaptIntegration, [0, TT], data.Y0, data.opt, data);
-parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi)
-r_fin = norm(Y(end,1:3))
-mass = Y(end,7)
+%% Retrieve trajectory
+rp = 58628;
+[~, Y, T, VectorThrust] = BCfindRHyp(rp, data);
 
 %% Post-process
+parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi)
+mass = Y(end,7)
+TOF = T(end)/86400
+ArrivalDate = mjd20002date(data.InitDay + TOF)
+
+%% Sun vector for ADCS
 vecDates = data.InitDay +  T/86400;
 
 vecSun = zeros(length(vecDates),3);
@@ -78,7 +59,6 @@ Mars2sc = Y(:,1:3);
 
 SunDirection = - (Mars2sc + Sun2Mars);
 
-
 %% Graphs
 % Orbit
 figure()
@@ -97,47 +77,52 @@ xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
 
-plot3(Y(:, 1), Y(:, 2), Y(:, 3),'Color',[155/255, 155/255, 155/255]), hold on, axis equal
+plot3(Y(:, 1), Y(:, 2), Y(:, 3),'Color',[0.9490, 0.4745, 0.3137]), hold on, axis equal
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
+
+% Thrust profile
+figure()
+plot(T, VectorThrust, 'Color',[0.1020, 0.6667, 0.74120])
+
+
 % [0.9490, 0.4745, 0.3137]
-% 
 % [0.1020, 0.6667, 0.74120]
-% 
 % [155/255, 155/255, 155/255]
 
-% other stuff for check
 
-Yk = zeros(length(Y),6);
-for kk = 1:length(T)
-    Yk(kk,1:6) = car2kep(Y(kk,1:3),Y(kk,4:6),data.mi);
-end
-
-figure()
-subplot(2,3,1)
-plot(T,Yk(:,1))
-ylabel('SMA')
-
-subplot(2,3,2)
-plot(T,Yk(:,2))
-ylabel('ecc')
-
-subplot(2,3,3)
-plot(T,Yk(:,3)*180/pi)
-ylabel('incl')
-
-subplot(2,3,4)
-plot(T,Yk(:,4)*180/pi)
-ylabel('RAAN')
-
-subplot(2,3,5)
-plot(T,Yk(:,5)*180/pi)
-ylabel('omeghino')
-
-subplot(2,3,6)
-plot(T,Yk(:,6)*180/pi)
-ylabel('theta')
-
-
+% %% other stuff for check
+% 
+% Yk = zeros(length(Y),6);
+% for kk = 1:length(T)
+%     Yk(kk,1:6) = car2kep(Y(kk,1:3),Y(kk,4:6),data.mi);
+% end
+% 
+% figure()
+% subplot(2,3,1)
+% plot(T,Yk(:,1))
+% ylabel('SMA')
+% 
+% subplot(2,3,2)
+% plot(T,Yk(:,2))
+% ylabel('ecc')
+% 
+% subplot(2,3,3)
+% plot(T,Yk(:,3)*180/pi)
+% ylabel('incl')
+% 
+% subplot(2,3,4)
+% plot(T,Yk(:,4)*180/pi)
+% ylabel('RAAN')
+% 
+% subplot(2,3,5)
+% plot(T,Yk(:,5)*180/pi)
+% ylabel('omeghino')
+% 
+% subplot(2,3,6)
+% plot(T,Yk(:,6)*180/pi)
+% ylabel('theta')
+% 
+% 
 
