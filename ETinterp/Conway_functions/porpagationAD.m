@@ -76,8 +76,8 @@ rHS = X(:,1); thHS = X(:,2); zHS = X(:,3); vrHS = X(:,4);
 thdHS = X(:,5); vzHS = X(:,6); mHS = X(:,7); 
 
 sHS = (rHS.^2 + zHS.^2).^0.5;
-maxT = d2T (sHS/DU);
-maxT = 0.25*(maxT >= 0.25) + maxT.*(maxT < 0.25);
+maxT = d2T (sHS/DU, data.panels);
+maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
 
 
 figure()

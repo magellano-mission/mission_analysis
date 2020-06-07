@@ -1,13 +1,14 @@
-function maxT = d2T(s)
+function maxT = d2T(s, A)
 % Function to compute maximum available thrust at a given distance from the Sun
 % Input 
 % d : distance from the Sun [km]
+% A : panels surf
 % Output
 % T : maximum thrust available [N]
 
 % Parameters
 % AU = 149597870.7;   % 1 AU [km]
-A = 51.2534;        % Solar panels surface [m2]
+% A = data.panels;        % Solar panels surface [m2] (from stacks_config file!)
 
 % Total available power
 P = DistArray(s, A);

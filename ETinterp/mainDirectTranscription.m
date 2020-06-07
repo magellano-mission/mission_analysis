@@ -47,10 +47,10 @@ porpagationAD(THSNS1, alphaHSNS1, betaHSNS1, XHSNS1, muS, dataNS1,  TOF1, N_rev1
 %%
 dataRS1.n_int = 70;
 
-Bounds.alpha_lb = deg2rad(-10);%-pi;
-Bounds.alpha_ub = deg2rad(10);%pi;
-Bounds.beta_lb = deg2rad(-45);%-pi/4;
-Bounds.beta_ub = deg2rad(45);%pi/4;
+Bounds.alpha_lb = deg2rad(-25);%-pi;
+Bounds.alpha_ub = deg2rad(25);%pi;
+Bounds.beta_lb = deg2rad(-35);%-pi/4;
+Bounds.beta_ub = deg2rad(35);%pi/4;
 
 %r
 Bounds.r_ub = 1.55;
@@ -84,8 +84,8 @@ dataECS.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-45);%-pi;
 Bounds.alpha_ub = deg2rad(45);%pi;
-Bounds.beta_lb = deg2rad(-45);%-pi/4;
-Bounds.beta_ub = deg2rad(45);%pi/4;
+Bounds.beta_lb = deg2rad(-35);%-pi/4;
+Bounds.beta_ub = deg2rad(35);%pi/4;
 
 %r
 Bounds.r_ub = 1.55;
