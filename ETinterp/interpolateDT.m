@@ -9,10 +9,15 @@ beta_i  = interp(beta,50);
 TOF_i   = interp(TOFdays,50);
 X_i     = zeros(3500,7);
 
+
 for i = 1:7
     X_i(:,i) = interp(X(:,i),50);
 end
-
+% T_i = T_i(1:end-40);
+% alpha_i = alpha_i(1:end-40);
+% beta_i = beta_i(1:end-40);
+% TOF_i = TOF_i(1:end-40);
+% X_i = X_i(1:end-40,:);
 figure(),
 subplot(7,2,1), plot(X(:,1)), hold on, title('initial')
 subplot(7,2,2), plot(X_i(:,1)),  title('interp')

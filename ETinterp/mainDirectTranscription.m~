@@ -150,12 +150,11 @@ dataNS2.optim = polar2cart(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, r1vers_2, hver
 conway3Dplots2(t02, linspace(dataNS2.TOFdays(1),dataNS2.TOFdays(end),70), dataNS2.optim.T_cart, dataNS2.optim.r_cart, dataNS2.optim.v_cart, muS);
 % propagation for validation of results
 porpagationAD(THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, muS, dataNS2,  TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, Bounds);
-%% Interpolation of control...
 
-Xinterp = zeros(1400);
-= interp(betaHSNS2,20);
-figure(), subplot(2,1,1), plot(betaHSNS2), hold on, 
-subplot(2,1,2), plot(XHSinterpNS2)
+%% Interpolation of control...
+clearvars T_i alpha_i beta_i X_i
+[T_i, alpha_i, beta_i, X_i, dataNS2.optim.interp.TOF] = interpolateDT(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2);
+dataNS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_2, hvers_2);
 %%
 dataRS2.n_int = 70;
 
@@ -227,3 +226,8 @@ dataNS3.optim = polar2cart(XHSNS3, THSNS3, alphaHSNS3, betaHSNS3, r1vers_3, hver
 conway3Dplots2(t03, linspace(dataNS3.TOFdays(1),dataNS3.TOFdays(end),70), dataNS3.optim.T_cart, dataNS3.optim.r_cart, dataNS3.optim.v_cart, muS);
 % propagation for validation of results
 porpagationAD(THSNS3, alphaHSNS3, betaHSNS3, XHSNS3, muS, dataNS3,  TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, Bounds);
+
+%% Interpolation of control...
+clearvars T_i alpha_i beta_i X_i
+[T_i, alpha_i, beta_i, X_i, dataNS3.optim.interp.TOF] = interpolateDT(XHSNS3, THSNS3, alphaHSNS3, betaHSNS3, TOF3, N_rev3, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2);
+dataNS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_2, hvers_2);
