@@ -34,7 +34,7 @@ dataRS1.Isp = fun_imp;                                       % specific impulse 
 dataRS1.Mdry = 1350; %1100;                                      % Total Mass of the s/c [kg]
 dataRS1.n_int = 1000;
 dataRS1.Tmax = 0.215; %0.25% N
-dataRS1.panels = 42; %m^2
+dataRS1.panels = 52; %m^2
 
 % RS2 stack
 % dataRS2.Isp = 4300;                                       % specific impulse [s]
@@ -42,7 +42,7 @@ dataRS2.Isp = fun_imp;                                       % specific impulse 
 dataRS2.Mdry = 1350; %1100;                                      % Total Mass of the s/c [kg]
 dataRS2.n_int = 1000;
 dataRS2.Tmax = 0.215; %0.25; % N
-dataRS2.panels = 42; %m^2
+dataRS2.panels = 52; %m^2
 
 % ECS stack
 % dataECS.Isp = 4300;                                       % specific impulse [s]
@@ -50,4 +50,4 @@ dataECS.Isp = fun_imp;                                       % specific impulse 
 dataECS.Mdry = 1450; %1300;                                      % Total Mass of the s/c [kg]
 dataECS.n_int = 1000;
 dataECS.Tmax = 0.215;%0.25; % N
-dataECS.panels = 42; %m^2
+dataECS.panels = 52; %m^2

@@ -114,6 +114,7 @@ dataECS.optim = polar2cart(XHSECS, THSECS, alphaHSECS, betaHSECS, r1vers_1, hver
 % propagation for validation of results
 porpagationAD(THSECS, alphaHSECS, betaHSECS, XHSECS, muS, dataECS,  TOFECS, N_rev1, q1, r1norm_1, r2norm_ECS, r1vers_1, r2vers_ECS, hvers_ECS, hh_ECS, v1_1, v2_ECS, Bounds);
         
+
 %% SECOND LAUNCH
 
 dataNS2.n_int = 70;
@@ -144,13 +145,16 @@ Bounds.vz_lb = -0.05;
 
 [THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, XSOLNS2,fvalNS2,exitflagNS2,outputNS2,lambdaNS2,gradNS2,hessianNS2] = ...
 runDirectTranscription (t02, TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2, Bounds);
-%%
+%% PLOTS AND CARTESIAN
 dataNS2.optim = polar2cart(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, r1vers_2, hvers_2);
 conway3Dplots2(t02, linspace(dataNS2.TOFdays(1),dataNS2.TOFdays(end),70), dataNS2.optim.T_cart, dataNS2.optim.r_cart, dataNS2.optim.v_cart, muS);
 % propagation for validation of results
 porpagationAD(THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, muS, dataNS2,  TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, Bounds);
+%% Interpolation of control...
+clearvars T_i alpha_i beta_i X_i
+[T_i, alpha_i, beta_i, X_i, dataNS2.optim.interp.TOF] = interpolateDT(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2);
+dataNS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_2, hvers_2);
 %%
-
 dataRS2.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-45);%-pi;
