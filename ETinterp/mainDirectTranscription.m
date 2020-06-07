@@ -7,10 +7,10 @@ close all
 % FIRST LAUNCH
 dataNS1.n_int = 70; 
 
-Bounds.alpha_lb = deg2rad(-10);%-pi;
-Bounds.alpha_ub = deg2rad(10);%pi;
-Bounds.beta_lb = deg2rad(-20);%-pi/4;
-Bounds.beta_ub = deg2rad(20);%pi/4;
+Bounds.alpha_lb = deg2rad(-15);%-pi;
+Bounds.alpha_ub = deg2rad(15);%pi;
+Bounds.beta_lb = deg2rad(-25);%-pi/4;
+Bounds.beta_ub = deg2rad(25);%pi/4;
 
 %r
 Bounds.r_ub = 1.55;
