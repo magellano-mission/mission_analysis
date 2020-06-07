@@ -75,6 +75,6 @@ function [c, ceq] = EoMconstr(X, data)
     ceq     = [csi, DDD, BCi, BCf]; 
     
     maxT = d2T (s);
-    maxT = 0.25*(maxT >= 0.25) + maxT.*(maxT < 0.25);
+    maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
     c = T - maxT;
 end

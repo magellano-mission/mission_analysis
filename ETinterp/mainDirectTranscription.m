@@ -1,5 +1,19 @@
+
+run('mainConway_ga_3NSlaunches.m')
+
+fprintf('press any button to close all plots')
+pause()
+close all
+
 %% Direct Transcription
+
+selectedstack = menu('Select a stack','NS1','RS1','ECS','NS2','RS2','NS3');
+runorplots = menu('Do you want to run a new optimization or load a SOL?','Run a simulation','Load SOL');
+
+switch selectedstack
+    case 1
 % FIRST LAUNCH
+if runorplots == 1 
 dataNS1.n_int = 70; 
 
 Bounds.alpha_lb = deg2rad(-10);%-pi;
@@ -29,7 +43,19 @@ Bounds.vz_lb = -0.03;
 
 [THSNS1, alphaHSNS1, betaHSNS1, XHSNS1, XSOLNS1,fvalNS1,exitflagNS1,outputNS1,lambdaNS1,gradNS1,hessianNS1] = ...
 runDirectTranscription(t01, TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, muS, dataNS1, Bounds);
+
 %%
+else
+    load('NS1optimal.mat')
+dataNS1.optim = polar2cart(XHSNS1, THSNS1, alphaHSNS1, betaHSNS1, r1vers_1, hvers_1);
+conway3Dplots2(t01, linspace(dataNS1.TOFdays(1),dataNS1.TOFdays(end),70), dataNS1.optim.T_cart, dataNS1.optim.r_cart, dataNS1.optim.v_cart, muS);
+
+% propagation for validation of results
+porpagationAD(THSNS1, alphaHSNS1, betaHSNS1, XHSNS1, muS, dataNS1,  TOF1, N_rev1, q1, r1norm_1, r2norm_1, r1vers_1, r2vers_1, hvers_1, hh_1, v1_1, v2_1, Bounds);
+end
+%%
+    case 2
+        if runorplots == 1 
 dataRS1.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-10);%-pi;
@@ -60,7 +86,17 @@ Bounds.vz_lb = -0.05;
 [THSRS1, alphaHSRS1, betaHSRS1, XHSRS1, XSOLRS1,fvalRS1,exitflagRS1,outputRS1,lambdaRS1,gradRS1,hessianRS1] = ...
 runDirectTranscription(t01, TOFRS1, N_rev1, q1, r1norm_1, r2norm_RS1, r1vers_1, r2vers_RS1, hvers_RS1, hh_RS1, v1_1, v2_RS1, muS, dataRS1, Bounds);
 
-%%
+        else
+            
+load('RS1optimal.mat')
+
+dataRS1.optim = polar2cart(XHSRS1, THSRS1, alphaHSRS1, betaHSRS1, r1vers_1, hvers_RS1);
+% propagation for validation of results
+porpagationAD(THSRS1, alphaHSRS1, betaHSRS1, XHSRS1, muS, dataRS1,  TOF1, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, Bounds);
+        end
+%% 
+    case 3
+        if runorplots == 1 
 dataECS.n_int = 70; 
 
 Bounds.alpha_lb = deg2rad(-45);%-pi;
@@ -90,7 +126,16 @@ Bounds.vz_lb = -0.05;
 
 [THSECS, alphaHSECS, betaHSECS, XHSECS, XSOLECS,fvalECS,exitflagECS,outputECS,lambdaECS,gradECS,hessianECS] = ...
 runDirectTranscription(t01, TOFECS, N_rev1, q1, r1norm_1, r2norm_ECS, r1vers_1, r2vers_ECS, hvers_ECS, hh_ECS, v1_1, v2_ECS, muS, dataECS, Bounds);
+        else
+                load('ECSoptimal.mat')
+
+dataECS.optim = polar2cart(XHSECS, THSECS, alphaHSECS, betaHSECS, r1vers_1, hvers_ECS);
+% propagation for validation of results
+porpagationAD(THSECS, alphaHSECS, betaHSECS, XHSECS, muS, dataECS,  TOFECS, N_rev1, q1, r1norm_1, r2norm_ECS, r1vers_1, r2vers_ECS, hvers_ECS, hh_ECS, v1_1, v2_ECS, Bounds);
+        end
 %% SECOND LAUNCH
+    case 4
+        if runorplots == 1 
 dataNS2.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-45);%-pi;
@@ -119,8 +164,17 @@ Bounds.vz_lb = -0.05;
 
 [THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, XSOLNS2,fvalNS2,exitflagNS2,outputNS2,lambdaNS2,gradNS2,hessianNS2] = ...
 runDirectTranscription (t02, TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, muS, dataNS2, Bounds);
+        else
+    load('NS2optimal.mat')
 
+dataNS2.optim = polar2cart(XHSNS2, THSNS2, alphaHSNS2, betaHSNS2, r1vers_2, hvers_2);
+conway3Dplots2(t02, linspace(dataNS2.TOFdays(1),dataNS2.TOFdays(end),70), dataNS2.optim.T_cart, dataNS2.optim.r_cart, dataNS2.optim.v_cart, muS);
+% propagation for validation of results
+porpagationAD(THSNS2, alphaHSNS2, betaHSNS2, XHSNS2, muS, dataNS2,  TOF2, N_rev2, q2, r1norm_2, r2norm_2, r1vers_2, r2vers_2, hvers_2, hh_2, v1_2, v2_2, Bounds);
+        end
 %%
+    case 5
+        if runorplots == 1 
 dataRS2.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-45);%-pi;
@@ -149,7 +203,16 @@ Bounds.vz_lb = -0.05;
 
 [THSRS2, alphaHSRS2, betaHSRS2, XHSRS2, XSOLRS2,fvalRS2,exitflagRS2,outputRS2,lambdaRS2,gradRS2,hessianRS2] = ...
 runDirectTranscription(t02, TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, muS, dataRS2, Bounds);
-%%
+        else
+                load('RS2optimal.mat')
+
+dataRS2.optim = polar2cart(XHSRS2, THSRS2, alphaHSRS2, betaHSRS2, r1vers_2, hvers_RS2);
+% propagation for validation of results
+porpagationAD(THSRS2, alphaHSRS2, betaHSRS2, XHSNS3, muS, dataNS3,  TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, Bounds);
+        end
+%% THIRD LAUNCH
+    case 6
+        if runorplots == 1 
 dataNS3.n_int = 70;
 
 Bounds.alpha_lb = deg2rad(-35);%-pi;
@@ -178,3 +241,13 @@ Bounds.vz_lb = -0.05;
 
 [THSNS3, alphaHSNS3, betaHSNS3, XHSNS3, XSOLNS3,fvalNS3,exitflagNS3,outputNS3,lambdaNS3,gradNS3,hessianNS3] = ...
 runDirectTranscription(t03, TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, muS, dataNS3, Bounds);
+
+        else
+                load('NS3optimal.mat')
+
+dataNS3.optim = polar2cart(XHSNS3, THSNS3, alphaHSNS3, betaHSNS3, r1vers_3, hvers_3);
+conway3Dplots2(t03, linspace(dataNS3.TOFdays(1),dataNS3.TOFdays(end),70), dataNS3.optim.T_cart, dataNS3.optim.r_cart, dataNS3.optim.v_cart, muS);
+% propagation for validation of results
+porpagationAD(THSNS3, alphaHSNS3, betaHSNS3, XHSNS3, muS, dataNS3,  TOF3, N_rev3, q3, r1norm_3, r2norm_3, r1vers_3, r2vers_3, hvers_3, hh_3, v1_3, v2_3, Bounds);
+        end
+end

@@ -138,7 +138,7 @@ thdHS = XHS(:,5); vzHS = XHS(:,6); mHS = XHS(:,7);
 
 sHS = (rHS.^2 + zHS.^2).^0.5;
 maxT = d2T (sHS/DU);
-maxT = 0.25*(maxT >= 0.25) + maxT.*(maxT < 0.25);
+maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
 
 
 figure()
