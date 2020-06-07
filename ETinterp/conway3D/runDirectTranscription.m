@@ -137,7 +137,7 @@ rHS = XHS(:,1); thHS = XHS(:,2); zHS = XHS(:,3); vrHS = XHS(:,4);
 thdHS = XHS(:,5); vzHS = XHS(:,6); mHS = XHS(:,7); 
 
 sHS = (rHS.^2 + zHS.^2).^0.5;
-maxT = d2T (sHS/DU);
+maxT = d2T (sHS/DU, data.panels);
 maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
 
 
