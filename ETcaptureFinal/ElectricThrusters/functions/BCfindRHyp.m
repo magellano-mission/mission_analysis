@@ -1,4 +1,4 @@
-function [J, Y, T, VectorThrust] = BCfindRHyp(x, data)
+function [J, Y, T, VectorThrust, VectorLight, VectorThRange] = BCfindRHyp(x, data)
 
 rp = x(1);                                % pericenter of arrival hyp [km]
 
@@ -18,8 +18,13 @@ Y0 = [R0; V0; M0];
 [T, Y] = ode113(@ETcaptIntegration, [0, 1e8], Y0, data.opt, data);
 
 VectorThrust = zeros(length(T),1);
+VectorLight = zeros(length(T),1);
+VectorThRange = zeros(length(T),1);
 for k = 1:length(T)
-    [~, VectorThrust(k)] = ETcaptIntegration(T(k),Y(k,:)', data);
+    [~, parout] = ETcaptIntegration(T(k),Y(k,:)', data);
+    VectorThrust(k) = parout{1};
+    VectorLight(k) = parout{2};
+    VectorThRange(k) = parout{3};
 end
 
 rFout = norm(Y(end,1:3));

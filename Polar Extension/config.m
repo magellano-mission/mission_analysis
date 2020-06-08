@@ -3,7 +3,7 @@
 data.Norb = 3;                  % number of orbits in Walker constellation
 data.walk_phas = 2;             % phase shift in Walker constellation
 
-data.Nsat = 21;                 % number of satellites in Walker constellation
+data.Nsat = 18;                 % number of satellites in Walker constellation
 data.bw = 40;                   % beamwidth [deg]
 data.inc = deg2rad(45);         % inclination [deg (inserted) --> rad (converted)]
 data.sma = 12300;               % semi-major axis [km]
@@ -36,8 +36,8 @@ data.alt = 0;                    % altitude at which evaluate the coverage ( gro
 % data.alt = 4.0150e+003;
 data.N_orbits = 2.1435;            % number of orbits in the simulation
 
-% data.study = "DOP";
-data.study = "coverage";
+data.study = "DOP";
+% data.study = "coverage";
 
 if data.study == "DOP"
     disc = [160, 150];             % discretization grid
@@ -50,7 +50,7 @@ data.lat = linspace(lat(1), lat(2), disc(2));
 
 %% Ellipsoid model
 data.mi = astroConstants(14);      % Mars planetary constant [km^3/s^2]
-data.NT = 900;                    % timestep
+data.NT = 900;                     % timestep
 
 data.rM_eq = 3393.4;               % equatorial radius [km]
 rM_pol = 3375.7;                   % polar radius [km]

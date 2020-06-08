@@ -22,19 +22,21 @@ tic
 data.TT = 1e8;              % long period, Event function inside the ode
 data.direction = "tangential";
 
-% %% Optimization
+% %% Optimization --> results reported in ETcaptureConfig.m
 % options = optimset('Display','iter','TolX',1e-4);
 % rp = fzero(@(x) BCfindRHyp(x, data), data.rp0, options);
 
 %% Retrieve trajectory
-rp = 58628;
-[~, Y, T, VectorThrust] = BCfindRHyp(rp, data);
+[~, Y, T, VectorThrust, VectorLight, VectorThRange] = BCfindRHyp(data.rp, data);
 
 %% Post-process
-parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi)
-mass = Y(end,7)
-TOF = T(end)/86400
-ArrivalDate = mjd20002date(data.InitDay + TOF)
+parameters = car2kep(Y(end,1:3),Y(end,4:6),data.mi);
+mass = Y(end,7);
+TOF = T(end)/86400;
+ArrivalDate = mjd20002date(data.InitDay + TOF);
+
+timeInterval = T(2:end)-T(1:end-1);
+Itot = sum(abs(VectorThrust(1:end-1)).*timeInterval);
 
 %% Sun vector for ADCS
 vecDates = data.InitDay +  T/86400;
@@ -84,7 +86,24 @@ zlabel('Z [km]')
 
 % Thrust profile
 figure()
-plot(T, VectorThrust, 'Color',[0.1020, 0.6667, 0.74120])
+sgtitle("Propulsion system on/off", 'FontSize', 20)
+subplot(3,1,1)
+plot(T/86400, abs(VectorThrust), 'Color',[0.1020, 0.6667, 0.74120])
+ylabel('Thrust [N]','FontSize',20)
+
+% On/Off propulsion system
+subplot(3,1,2)
+plot(T/86400, VectorLight, 'Color',[155/255, 155/255, 155/255])
+yticks([0 1])
+yticklabels({'false','true'})
+ylabel('Eclipse','FontSize',20)
+
+subplot(3,1,3)
+plot(T/86400, VectorThRange, 'Color',[0.9490, 0.4745, 0.3137])
+xlabel('T [days]')
+yticks([0 1])
+yticklabels({'false','true'})
+ylabel('$\frac{de}{dt} > 0$','Interpreter','Latex','FontSize',20)
 
 
 % [0.9490, 0.4745, 0.3137]

@@ -20,6 +20,7 @@ switch SM
         InitData = [2028 06 12 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day
         data.rp0 = [50000, 62000];
+        data.rp = 58628;
     case "ECS"
         data.M = 1450;
         data.Apanels = 52;
@@ -28,6 +29,7 @@ switch SM
         InitData = [2028 06 16 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day
         data.rp0 = [32000, 45000];
+        data.rp = 45562;
     case "RSeq"
         data.M = 1350;
         data.Apanels = 52;
@@ -36,6 +38,7 @@ switch SM
         InitData = [2028 06 14 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day
         data.rp0 = [28000, 40000];
+        data.rp = 37654.4;
     case "NS2"
         data.M = 1750;                            % s/c mass at arrival [kg]
         data.Apanels = 52;
@@ -44,6 +47,7 @@ switch SM
         InitData = [2028 12 13 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day
         data.rp0 = [50000, 65000];
+        data.rp = 54657;
     case "RSpol"
         data.M = 1350;
         data.Apanels = 52;
@@ -52,6 +56,7 @@ switch SM
         InitData = [2028 12 16 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day
         data.rp0 = [30000, 45000];
+        data.rp = 35119;
     case "NS3"
         data.M = 1750;                            % s/c mass at arrival [kg]
         data.Apanels = 52;
@@ -60,6 +65,7 @@ switch SM
         InitData = [2029 06 22 0 0 0 ];           % initial date
         data.InitDay = date2mjd2000(InitData);    % initial day 
         data.rp0 = [50000, 62000];
+        data.rp = 56723;
 end
         
 % Planetary parameter

@@ -37,6 +37,28 @@ end
 close all
 sim_plots(data, Cov_Results, time_map);
 
+figure()
+subplot(2,1,1)
+timeGap = Cov_Results.max_cov_gap;
+maximum = max(timeGap);
+maximum = maximum - maximum(end);
+gap = barh(data.lat, maximum);
+gap.FaceColor = [0.9490    0.4745    0.3137];
+gap.EdgeColor = [0.9490    0.4745    0.3137];
+ylabel('Latitude')
+xlabel('Maximum time gap')
+
+subplot(2,1,2)
+percCov = Cov_Results.percent_cov;
+minimum = min(percCov);
+perc = barh(data.lat, minimum);
+perc.FaceColor = [0.9490    0.4745    0.3137];
+perc.EdgeColor = [0.9490    0.4745    0.3137];
+xlim([75 100])
+ylabel('Latitude')
+xlabel('Percent coverage')
+
+
 if data.study == "DOP"
     % curiosity coord: lon = 137.4 lat = -4.6
     figure()
@@ -44,7 +66,6 @@ if data.study == "DOP"
     T_orb = 2 * pi * sqrt(data.sma^3 / data.mi);
     tspan = linspace(0, data.N_orbits*T_orb, data.NT);
     plot(tspan/3600, squeeze(GDOP_map(159,86,:)), 'Color', [0.1020, 0.6667, 0.74120])
-    %xlabel('Time [hr]')
     ylabel('GDOP')
     legend('Curiosiry','Location','northwest')
     grid minor
@@ -74,3 +95,4 @@ end
 % Colori Magellano
 % [0.1020    0.6667    0.74120]
 % [0.9490    0.4745    0.3137]
+

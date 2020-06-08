@@ -1,4 +1,4 @@
-function [dY, thrust] = ETcaptIntegration(t, Y, data)
+function [dY, parout] = ETcaptIntegration(t, Y, data)
 %{
 ODE function to integrate the Thrusted electric arches
 %}
@@ -112,6 +112,7 @@ if light
 else
     aT_car = [0; 0; 0];
     thrust = 0;
+    th_range = ThRange(R, V, data);
 end
 
 %%
@@ -123,6 +124,10 @@ dY(4:6) = - data.mi/norm(R)^3.*R + aT_car + aJ2_car;
 dY(7) = - norm(thrust)/Isp/data.g0;
 
 dY = dY';
+
+parout{1} = thrust;
+parout{2} = light;
+parout{3} = th_range;
 
 
 end
