@@ -88,7 +88,7 @@ porpagationAD(THSRS1, alphaHSRS1, betaHSRS1, XHSRS1, muS, dataRS1,  TOFRS1, N_re
 clearvars T_i alpha_i beta_i X_i
 [T_i, alpha_i, beta_i, X_i, dataRS1.optim.interp.TOF] = ...
     interpolateDT(XHSRS1, THSRS1, alphaHSRS1, betaHSRS1, TOFRS1, N_rev1, q1, r1norm_1, r2norm_RS1, r1vers_1, r2vers_RS1, hvers_RS1, hh_RS1, v1_1, v2_RS1, muS, dataRS1);
-dataRS1.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_RS1, hvers_RS1);
+dataRS1.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_1, hvers_RS1);
 %% 
 
 dataECS.n_int = 70; 
@@ -131,7 +131,7 @@ porpagationAD(THSECS, alphaHSECS, betaHSECS, XHSECS, muS, dataECS,  TOFECS, N_re
 clearvars T_i alpha_i beta_i X_i
 [T_i, alpha_i, beta_i, X_i, dataECS.optim.interp.TOF] = ...
     interpolateDT(XHSECS, THSECS, alphaHSECS, betaHSECS, TOFECS, N_rev1, q1, r1norm_1, r2norm_ECS, r1vers_1, r2vers_ECS, hvers_ECS, hh_ECS, v1_1, v2_ECS, muS, dataECS);
-dataECS.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_ECS, hvers_ECS);
+dataECS.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_1, hvers_ECS);
 %% SECOND LAUNCH
 
 dataNS2.n_int = 70;
@@ -210,8 +210,9 @@ porpagationAD(THSRS2, alphaHSRS2, betaHSRS2, XHSRS2, muS, dataRS2,  TOFRS2, N_re
 
 % Interpolation of control...
 clearvars T_i alpha_i beta_i X_i
-[T_i, alpha_i, beta_i, X_i, dataRS2.optim.interp.TOF] = interpolateDT(THSRS2, alphaHSRS2, betaHSRS2, TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, muS, dataRS2);
-dataRS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_RS2, hvers_RS2);
+
+[T_i, alpha_i, beta_i, X_i, dataRS2.optim.interp.TOF] = interpolateDT(XHSRS2, THSRS2, alphaHSRS2, betaHSRS2, TOFRS2, N_rev2, q2, r1norm_2, r2norm_RS2, r1vers_2, r2vers_RS2, hvers_RS2, hh_RS2, v1_2, v2_RS2, muS, dataRS2);
+dataRS2.optim.interp = polar2cart(X_i, T_i, alpha_i, beta_i, r1vers_2, hvers_RS2);
 %% THIRD LAUNCH
 
 dataNS3.n_int = 70;

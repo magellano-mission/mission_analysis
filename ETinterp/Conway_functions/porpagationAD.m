@@ -47,7 +47,7 @@ Xd(:,6) = Xpropad(:,6)*DU/TU;
 Xd(:,7) = Xpropad(:,7)*MU;
 
 figure()
-sgtitle('confrontatio of propagated and adimensional states..')
+sgtitle('confronto of propagated and adimensional states..')
 subplot(7,1,1), plot(Xad(:,1)), hold on, plot(Xpropad(:,1))
 subplot(7,1,2), plot(Xad(:,2)), hold on, plot(Xpropad(:,2))
 subplot(7,1,3), plot(Xad(:,3)), hold on, plot(Xpropad(:,3))
@@ -79,6 +79,8 @@ sHS = (rHS.^2 + zHS.^2).^0.5;
 maxT = d2T (sHS/DU, data.panels);
 maxT = data.Tmax*(maxT >= data.Tmax) + maxT.*(maxT < data.Tmax);
 
+% thr = 1e-2;
+% ualpha = NaN*(maxT<thr).*maxT + maxT.*(maxT>=thr);
 
 figure()
 sgtitle('Optimal Control')

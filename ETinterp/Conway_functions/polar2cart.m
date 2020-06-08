@@ -17,6 +17,7 @@ function data = polar2cart(X, Tpolar, alpha, beta, r1vers, RCRRv)
     data.r_cart = rr;
     data.v_cart = vv;
     data.m = X(:,7);
-    
+    data.alpha = alpha;
+    data.beta = beta;
 end
 
