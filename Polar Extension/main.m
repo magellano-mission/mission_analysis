@@ -33,31 +33,39 @@ switch data.study
         time_map = Maps_Results.time_map;
 end
 
+%% Save data
+if data.Nsat == 21 && data.study == "DOP"
+    save('NominalConditions')
+elseif data.Nsat == 18 && data.study == "DOP"
+    save('OffNominalConditions')
+end
+
 %% plot
 close all
 sim_plots(data, Cov_Results, time_map);
 
-figure()
-subplot(2,1,1)
-timeGap = Cov_Results.max_cov_gap;
-maximum = max(timeGap);
-maximum = maximum - maximum(end);
-gap = barh(data.lat, maximum);
-gap.FaceColor = [0.9490    0.4745    0.3137];
-gap.EdgeColor = [0.9490    0.4745    0.3137];
-ylabel('Latitude')
-xlabel('Maximum time gap')
+if data.study == "coverage"
+    figure()
+    subplot(1,2,1)
+    timeGap = Cov_Results.max_cov_gap;
+    maximum = max(timeGap);
+    maximum = maximum - maximum(end);
+    gap = barh(data.lat, maximum);
+    gap.FaceColor = [0.9490,0.4745,0.3137];
+%     gap.EdgeColor = [1.949    0.4745    0.3137];
+    ylabel('Latitude')
+    xlabel('Maximum time gap [hr]')
 
-subplot(2,1,2)
-percCov = Cov_Results.percent_cov;
-minimum = min(percCov);
-perc = barh(data.lat, minimum);
-perc.FaceColor = [0.9490    0.4745    0.3137];
-perc.EdgeColor = [0.9490    0.4745    0.3137];
-xlim([75 100])
-ylabel('Latitude')
-xlabel('Percent coverage')
-
+    subplot(1,2,2)
+    percCov = Cov_Results.percent_cov;
+    minimum = min(percCov);
+    perc = barh(data.lat, minimum);
+    perc.FaceColor = [0.9490,0.4745,0.3137];
+%     perc.EdgeColor = [0.9490    0.4745    0.3137];
+    xlim([75 100])
+    ylabel('Latitude')
+    xlabel('Percent coverage [%]')
+end
 
 if data.study == "DOP"
     % curiosity coord: lon = 137.4 lat = -4.6

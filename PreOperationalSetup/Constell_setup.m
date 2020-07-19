@@ -18,72 +18,15 @@ set(0,'defaultAxesTickLabelInterpreter','latex');
 
 %% GNSS orbital parameters
 
-a_GNSS = 10500;
+a_GNSS = 12300;
 e_GNSS = 0;
-i_GNSS = 25;
+i_GNSS = 45;
 mi = 42828.3;                       % mars gravity constant [km^2/s^3]
 J2 = 1.955e-3;                      % mars J2 gravity coefficient
 V = 1.6318e11;                      % mars volume [km^3]
 R = nthroot(3*V/(4*pi), 3);         % mars equivalent radius [km]
 n = sqrt(mi/a_GNSS^3);              % GNSS angular velocity [rad/s]
 v_GNSS = sqrt(mi/a_GNSS);           % linear velocity of the GNSS constellation [km/s]
-
-%% Orbital Parameters secular variation (J2 on GNNS orbit) 
-
-a_J2 = 6400:10:14000;
-K = -3*J2*sqrt(mi)*R^2./(2*a_J2.^(7/2)*(1-e_GNSS^2)^2);
-
-% variation per seconds in rad
-RAAN_dot = K*cosd(i_GNSS);
-PA_dot = K*(5/2*(sind(i_GNSS))^2 - 2);
-
-% variation over a synodic period
-
-T_syn = 86400*365*2 + 86400*60;
-RAAN_T = RAAN_dot*T_syn*180/pi;
-
-[~, ind1] = min(abs(RAAN_T + 240));
-a_shift(1) = a_J2(ind1);
-
-[~, ind2] = min(abs(RAAN_T + 120));
-a_shift(2) = a_J2(ind2);
-
-% PA_y = PA_dot*T_syn*180/pi;
-
-figure; plot(a_J2, RAAN_T, 'LineWidth', 2);
-xlabel('a [km]'); ylabel(' \Delta \Omega [deg/year]'); 
-title('RAAN variation due to J2 in synodic period');
-
-% figure; plot(a_J2, PA_d, 'LineWidth', 2);
-% xlabel('a [km]'); ylabel(' PA [deg]'); 
-% title('PA variation');
-
-
-%% Fake RAAN shift plot
-
-I = imread('mars.jpg');                             % earth image
-RI = imref2d(size(I));
-RI.XWorldLimits = [-180 180];                       % earth image x sizes
-RI.YWorldLimits = [-90 90];                         % earth image y sizes
-
-figure; hold on; view(-140, 30)
-set(gca,'Color','none','visible','off','YDir','normal')
-axis equal
-% axis([-1.3e4, 1.3e4, -1.3e4, 1.3e4, -1.3e4, 1.3e4])
-
-[X, Y, Z] = ellipsoid(0, 0, 0, R, R, R, 100); % spheric centered earth
-planet = surf(X, Y, -Z,'Edgecolor', 'none');
-set(planet,'FaceColor','texturemap','Cdata',I)
-
-OrbPar2 = [a_shift(2), 0, 25*pi/180, 0*pi/180, 0, 0];
-OrbParf = [a_shift(2), 0, 25*pi/180, 120*pi/180, 0, 0];
-
-[~, ~] = PlotConic(OrbPar2, [0.9490    0.4745    0.3137], 1, '--', 1:360);
-[~, ~] = PlotConic(OrbParf, [0.9490    0.4745    0.3137], 1, '--', 1:360);
-
-th = 0:0.01:1080;
-N = length(th);
-[hR2, RR2] = FakeRAANplot(OrbPar2, [0.1020    0.6667    0.74120], 2, '-', th, linspace(0, 120*pi/180, N));
 
 
 %% Phasing Maneuvers
@@ -92,9 +35,9 @@ N = length(th);
 %%%%%%% NS
 T = 2*pi/n;                         % GNSS period [s]
 
-m2 = 86400*60;                  % 2 months
+m2 = 86400*90;                      % 3 months
 nrev = ceil(m2/T);
-phas_angle = 60;
+phas_angle = 51.43;
 dT_tot = (phas_angle*pi/180)/n;
 dT_rev = dT_tot/nrev;
 T_phas = T - dT_rev;
@@ -106,9 +49,9 @@ v_phas = sqrt(mi/a_phas)*(1 - e_phas);
 dv_phas_NS = 2*abs(v_GNSS - v_phas)*1e3;
 
 %%%%%%%%% RS
-a_RS = 6400;
+a_RS = 4900;
 v_RS = sqrt(mi/a_RS);
-phas_angle = 72;
+phas_angle = 90;
 n_RS = sqrt(mi/a_RS^3);
 T_RS = 2*pi/n_RS;
 nrev = ceil(m2/T_RS);
@@ -121,6 +64,25 @@ rp_phas = 2*a_phas - ra_phas;
 e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
 v_phas = sqrt(mi/a_phas)*(1 - e_phas);
 dv_phas_RS = 2*abs(v_RS - v_phas)*1e3;
+
+
+%%%%%%%%% ECS
+a_ECS = 7400;
+v_ECS = sqrt(mi/a_ECS);
+phas_angle = 180;
+n_ECS = sqrt(mi/a_ECS^3);
+T_ECS = 2*pi/n_ECS;
+nrev = ceil(m2/T_ECS);
+dT_tot_ECS = (phas_angle*pi/180)/n_ECS;
+dT_rev = dT_tot_ECS/nrev;
+T_phas = T_ECS - dT_rev;
+a_phas  = (T_phas*sqrt(mi)/(2*pi))^(2/3);
+ra_phas = a_ECS;
+rp_phas = 2*a_phas - ra_phas;
+e_phas = (ra_phas - rp_phas)/(ra_phas + rp_phas);
+v_phas = sqrt(mi/a_phas)*(1 - e_phas);
+dv_phas_ECS = 2*abs(v_ECS - v_phas)*1e3;
+
 
 %% phasing plot PM3
 
@@ -161,35 +123,6 @@ plot3(R1(1, 1), R1(1, 2), R1(1, 3), 'o', 'MarkerEdgeColor', [0.9490    0.4745   
     [0.9490    0.4745    0.3137], 'MarkerSize', 20 )
 plot3(R1(61:60:end, 1), R1(61:60:end, 2), R1(61:60:end, 3), 'o', 'MarkerEdgeColor', [0.1020    0.6667    0.74120], 'MarkerFaceColor',...
     [0.1020    0.6667    0.74120], 'MarkerSize', 7)
-
-
-%% Homhann transfer from RS to ECS
-% ECS constellation is not defined, circular orbit in the same plane of RS as an hyphotesys
-
-a_ECS = 6400:50:7400;
-N = length(a_ECS);
-
-dv_h = zeros(N, 1);
-tof_ECS = zeros(N, 1);
-for i = 1:N
-    ra_h = a_ECS(i);
-    rp_h = a_RS;
-    a_h = (ra_h + rp_h)/2;
-    v_ECS = sqrt(mi/ra_h);
-    vp_h = sqrt(2*mi*(1/rp_h - 1/(2*a_h)));
-    va_h = sqrt(2*mi*(1/ra_h - 1/(2*a_h)));
-    dv_h(i) = abs(v_ECS - va_h) + abs(v_RS - vp_h);
-    tof_ECS(i) = pi*sqrt(a_h^3/mi)/3600;
-end
-
-figure; plot(a_ECS, dv_h, 'LineWidth', 2)
-xlabel('radius of ECS [km]'), ylabel('\Delta_v [km/s]');
-title('homhann to reach ECS')
-
-figure; plot(a_ECS, tof_ECS, 'LineWidth', 2)
-xlabel('radius of ECS [km]'), ylabel('\Delta_t [h]');
-title('homhann to reach ECS')
-
 
 %% Homhann transfer from lower orbit to shift RAAN to NS
 % ECS constellation is not defined, circular orbit in the same plane of RS as an hyphotesys
@@ -235,40 +168,5 @@ OrbParf2 = [a_GNSS, 0, 25*pi/180, 120*pi/180, 0, 0];
 [h_h2, Rh2] = PlotConic(OrbParh2, [0.1020    0.6667    0.74120], 2, '-', 1:180);
 [hf1, Rf1] = PlotConic(OrbParf1, [0.9490    0.4745    0.3137], 1, '--', 1:360);
 [hf2, Rf2] = PlotConic(OrbParf2, [0.1020    0.6667    0.74120], 1, '--', 1:360);
-
-
-%% Low Thrust analytical-approx for ECS transfer from RS orbit
-% acceleration along theta direction and constant mass
-
-m_ECS = 1000;                % mass [kg]
-T = 0.1:0.005:1;             % thrust [N]
-at = T/m_ECS*1e-3;           % acceleration [km/s^2]
-
-
-figure; hold on
-
-t = 2*(a_ECS(end) - a_RS)./(at*a_RS*sqrt(a_ECS(end)/mi))/86400/30;
-plot(T, t, 'LineWidth', 2)
-
-xlabel('on-board continuos thrust [N]'), ylabel('tof [months]');
-title('low-thrust to reach ECS')
-
-
-%% Low Thrust analytical-approx for NS transfer from lower orbit
-% acceleration along theta direction and constant mass
-
-m_ECS = 1500;                % mass [kg]
-T = 0.01:0.005:1;             % thrust [N]
-at = T/m_ECS*1e-3;           % acceleration [km/s^2]
-
-figure; hold on
-
-t1 = 2*(a_GNSS - a_shift(1))./(at*a_shift(1)*sqrt(a_GNSS(end)/mi))/86400/30;
-t2 = 2*(a_GNSS - a_shift(2))./(at*a_shift(2)*sqrt(a_GNSS(end)/mi))/86400/30;
-plot(T, t1, T, t2, 'LineWidth', 2)
-
-xlabel('on-board continuos thrust [N]'), ylabel('tof [months]');
-title('low-thrust to reach ECS')
-legend('from a = 8100', 'from a = 9850')
 
 

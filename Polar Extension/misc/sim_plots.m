@@ -85,16 +85,16 @@ switch data.SimType
             text(Text_lon(i), Text_lat(i), Rovers(i), 'Color', 'w')
         end
         
-        switch data.SubType
-            case "min"
-                title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
-            case "mean"  
-                title('Mean satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
-        end
+%         switch data.SubType
+%             case "min"
+%                 title('Minimum satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+%             case "mean"  
+%                 title('Mean satellites coverage on surface', 'interpreter', 'latex', 'FontSize', 20)
+%         end
         
         
-        xlabel('Longitude [deg]', 'interpreter', 'latex', 'FontSize', 15)
-        ylabel('Latitude [deg]' , 'interpreter', 'latex', 'FontSize', 15)
+        xlabel('Longitude [deg]', 'FontSize', 20)
+        ylabel('Latitude [deg]', 'FontSize', 20)
         colormap(MagellanoColorMap); colorbar
         
     case "percent_cov"

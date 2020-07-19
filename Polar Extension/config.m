@@ -3,7 +3,7 @@
 data.Norb = 3;                  % number of orbits in Walker constellation
 data.walk_phas = 2;             % phase shift in Walker constellation
 
-data.Nsat = 18;                 % number of satellites in Walker constellation
+data.Nsat = 21;                 % number of satellites in Walker constellation
 data.bw = 40;                   % beamwidth [deg]
 data.inc = deg2rad(45);         % inclination [deg (inserted) --> rad (converted)]
 data.sma = 12300;               % semi-major axis [km]
@@ -22,8 +22,8 @@ if data.PE == true
     data.sma_pol = data.sma + 100;      % still have to understand how to avoid 
 end                                     % sats collisions between wlk and polar
 
-data.mask = 12;                  % minimum elevation angle [deg] for ground users
-% data.mask = 0;                     % minimum elevation angle [deg] for satellites
+% data.mask = 12;                  % minimum elevation angle [deg] for ground users
+data.mask = 0;                     % minimum elevation angle [deg] for satellites
 data.trashold = 4; 
 data.perturb = false;              % false/true --> perturbations off/on
 
@@ -31,16 +31,16 @@ data.perturb = false;              % false/true --> perturbations off/on
 lon = [-180, 180];                 % [deg]  
 lat = [-90, 90];                   % [deg]
 
-data.alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)              
-% data.alt = 1.5150e+003;          % RS altitude
+% data.alt = 0;                    % altitude at which evaluate the coverage ( ground level = 0)              
+data.alt = 1.5150e+003;          % RS altitude
 % data.alt = 4.0150e+003;
 data.N_orbits = 2.1435;            % number of orbits in the simulation
 
-data.study = "DOP";
-% data.study = "coverage";
+% data.study = "DOP";
+data.study = "coverage";
 
 if data.study == "DOP"
-    disc = [160, 150];             % discretization grid
+    disc = [180, 180];             % discretization grid
 else
     disc = [90, 90]; 
 end
