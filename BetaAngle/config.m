@@ -3,7 +3,6 @@
 InitData = [2030 05 01 0 0 0 ];                         % initial date
 data.InitDay = date2mjd2000(InitData);                  % initial day
 data.walker = [1, 1, 1];
-% data.bw = 40;              % beamwidth [deg]
 data.inc = 0;
 data.sma = 4900;
 
@@ -11,7 +10,7 @@ data.X0_kep = [data.sma, 1e-4, data.inc, 359.999/180*pi, pi/3, 0];
 
 data.mi = astroConstants(14);                           % Mars planetary constant
 
-data.tend = 86400*365*1;
+data.tend = 86400*365;
 
 %% perturbation switchers
 data.switchers.Moon = true;

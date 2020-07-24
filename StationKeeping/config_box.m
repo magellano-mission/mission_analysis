@@ -1,7 +1,7 @@
 
 %% Simulation Setup
 data.walker = [4, 1, 1];
-data.bw = 67;              % beamwidth [deg]
+data.bw = 67;               % beamwidth [deg]
 data.inc = deg2rad(0);
 data.sma = 6400;
 
@@ -38,17 +38,5 @@ T_lla2 = 1.02749125 * 24 * 3600;   % period [s]
 data.wM = 2 * pi / T_lla2;         % [rad/s]
 data.theta_Airy_0 = 0;             % Mars principal meridian
 
-%% plot selection
-
 clearvars -except data
 
-
-%% partial results
-% RS:
-% delta_a = -786 km
-% delta_e = 0.8
-% delta_i = +10.6 deg
-% NS:
-% delta_a =  km
-% delta_e = 
-% delta_i =  deg

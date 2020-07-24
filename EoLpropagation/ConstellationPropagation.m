@@ -44,16 +44,3 @@ end
 %% Plots
 plot3(Ycar(:,1),Ycar(:,2),Y(:,3))
 axis equal
-% figure, plot(T, da) , ylabel('\Deltaa [km]');
-% figure, plot(T, de), ylabel('e');
-% figure, plot(T, di), ylabel('\Deltai [deg]');
-% figure, plot(T, dO), ylabel('\Delta\Omega [deg]');
-% figure, plot(T, do), ylabel('\Delta\omega [deg]');
-% figure, plot(T, dth), ylabel('\Delta\theta [deg]');
-
-%% report subplot
-% 
-% figure;
-% subplot(3, 1, 1), plot(T/86400, da) , ylabel('\Deltaa [km]'), xlabel('time [days]');
-% subplot(3, 1, 2), plot(T/86400, de), ylabel('e'), xlabel('time [days]');
-% subplot(3, 1, 3), plot(T/86400, di), ylabel('\Deltai [deg]'), xlabel('time [days]');

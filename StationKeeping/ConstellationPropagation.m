@@ -42,15 +42,6 @@ dth = rad2deg(const.Y(:, 6) - data.X0_kep(6));
 %% SK maneuver
 dv = SKmaneuver([const.Y(ia, 1), const.Y(ie, 2), const.Y(ii, 3)], data);  %[m/s]
 
-%% plots
-
-% figure, plot(T, da) , ylabel('\Deltaa [km]');
-% figure, plot(T, de), ylabel('e');
-% figure, plot(T, di), ylabel('\Deltai [deg]');
-% figure, plot(T, dO), ylabel('\Delta\Omega [deg]');
-% figure, plot(T, do), ylabel('\Delta\omega [deg]');
-% figure, plot(T, dth), ylabel('\Delta\theta [deg]');
-
 %% report subplot
 
 figure;

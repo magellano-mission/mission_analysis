@@ -1,8 +1,8 @@
 clc; clear; close all;
 load('beamwith.mat')
 
-hmin = 500;
-RM = 3393;
+hmin = 500;                          % minimum altitude [km]
+RM = 3393;                           % Mars radius [km]
 h_sat = SMa - RM;
 SMa = SMa(h_sat > hmin);
 Psat = P_sat((h_sat > hmin), :)';
